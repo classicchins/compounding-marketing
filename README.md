@@ -2,9 +2,9 @@
 
 **Make each unit of marketing work easier than the last.**
 
-A Claude Code + ChatGPT plugin with 55 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
+A Claude Code + ChatGPT plugin with 58 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
 
-**v1.1** — Now with pre-configured MCPs (Perplexity + Exa), optional integrations, and npx setup wizard.
+**v1.3** — Expanded CRO skills, new ABM strategy, social media strategy, and email deliverability skills.
 
 ---
 
@@ -26,16 +26,16 @@ Each project should make the next project easier.
 
 ## What's Inside
 
-**50 marketing skills** across 10 categories:
+**58 marketing skills** across 10 categories:
 
 | Category | Skills | What You Get |
 |----------|--------|--------------|
 | **Foundation** | 5 | Product-market context, positioning, messaging, value props, brand voice |
 | **Research** | 6 | ICP development, customer research, **customer interviews**, competitive analysis, market sizing, psychology |
-| **Content & Copy** | 7 | Copywriting, editing, strategy, case studies, social, video, lead magnets |
+| **Content & Copy** | 8 | Copywriting, editing, strategy, case studies, social, **social media strategy**, video, lead magnets |
 | **SEO & Discovery** | 6 | SEO audit, AI search optimization, programmatic SEO, site architecture, schema, comparison pages |
-| **CRO** | 7 | Landing page optimization, signup flows, onboarding, forms, popups, paywalls, pricing |
-| **Outreach & Email** | 3 | Cold email, automated sequences, testimonial collection |
+| **CRO** | 7 | Landing page optimization, **signup flows**, **onboarding**, **forms**, **popups**, **paywalls**, pricing |
+| **Outreach & Email** | 5 | **ABM strategy**, cold email, automated sequences, **email deliverability**, testimonial collection |
 | **Paid Acquisition** | 3 | Paid ads strategy, **LinkedIn ads**, ad creative |
 | **Measurement** | 3 | Analytics tracking, A/B test design, attribution modeling |
 | **GTM & Launch** | 5 | Launch planning, GTM strategy, channel strategy, **Product Hunt launch**, **press/PR** |
@@ -459,6 +459,7 @@ Just finished the homepage redesign project.
 | **content-strategy** | Plan content calendar | Content plan mapped to customer journey |
 | **case-study** | Write customer success stories | Case study (Before → Decision → After) |
 | **social-content** | Create social media content | Platform-specific posts (Twitter, LinkedIn) |
+| **social-media-strategy** | Plan social media presence across platforms | Channel strategy, content calendars, posting cadence, growth tactics |
 | **video-marketing** | Plan video content | Video script + distribution plan |
 | **lead-magnets** | Design lead magnets | Ebook/template/calculator spec |
 
@@ -489,8 +490,10 @@ Just finished the homepage redesign project.
 
 | Skill | Purpose | Output |
 |-------|---------|--------|
+| **abm-strategy** | Plan account-based marketing campaigns | Target account selection, personalization playbooks, multi-channel orchestration |
 | **cold-email** | Write personalized cold outreach | Cold email templates |
 | **email-sequence** | Design automated email flows | Email sequence with timing + triggers |
+| **email-deliverability** | Ensure emails reach inbox (not spam) | Authentication setup (SPF, DKIM, DMARC), warmup plan, sender reputation monitoring |
 | **testimonial-collection** | Systematically gather social proof | Testimonial collection process |
 
 ### Paid Acquisition Skills
