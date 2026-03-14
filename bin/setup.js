@@ -1,0 +1,256 @@
+#!/usr/bin/env node
+
+/**
+ * Compounding Marketing Setup Wizard
+ * 
+ * Interactive setup for configuring MCPs, integrations, and AI tool preferences.
+ * Run with: npx compounding-marketing
+ */
+
+const fs = require('fs');
+const path = require('path');
+const readline = require('readline');
+
+// ANSI colors
+const colors = {
+  reset: '\x1b[0m',
+  bright: '\x1b[1m',
+  dim: '\x1b[2m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  blue: '\x1b[34m',
+  cyan: '\x1b[36m',
+  red: '\x1b[31m',
+};
+
+const c = (color, text) => `${colors[color]}${text}${colors.reset}`;
+
+// Banner
+function printBanner() {
+  console.log(`
+${c('cyan', '╔═══════════════════════════════════════════════════════════════╗')}
+${c('cyan', '║')}     ${c('bright', 'COMPOUNDING MARKETING')} — Setup Wizard                     ${c('cyan', '║')}
+${c('cyan', '║')}     ${c('dim', 'Make each unit of marketing work easier than the last')}      ${c('cyan', '║')}
+${c('cyan', '╚═══════════════════════════════════════════════════════════════╝')}
+`);
+}
+
+// Create readline interface
+function createPrompt() {
+  return readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+}
+
+// Promisified question
+function ask(rl, question) {
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      resolve(answer.trim());
+    });
+  });
+}
+
+// Select from options
+async function select(rl, question, options) {
+  console.log(`\n${c('bright', question)}`);
+  options.forEach((opt, i) => {
+    console.log(`  ${c('cyan', `[${i + 1}]`)} ${opt.label}`);
+  });
+  
+  const answer = await ask(rl, `\nEnter choice (1-${options.length}): `);
+  const index = parseInt(answer, 10) - 1;
+  
+  if (index >= 0 && index < options.length) {
+    return options[index].value;
+  }
+  
+  console.log(c('yellow', 'Invalid choice, using default.'));
+  return options[0].value;
+}
+
+// Yes/No question
+async function confirm(rl, question, defaultYes = true) {
+  const hint = defaultYes ? '[Y/n]' : '[y/N]';
+  const answer = await ask(rl, `${question} ${c('dim', hint)} `);
+  
+  if (answer === '') return defaultYes;
+  return answer.toLowerCase().startsWith('y');
+}
+
+// Multi-select
+async function multiSelect(rl, question, options) {
+  console.log(`\n${c('bright', question)}`);
+  console.log(c('dim', '(Enter numbers separated by commas, or "all" for all, or "none" to skip)'));
+  
+  options.forEach((opt, i) => {
+    console.log(`  ${c('cyan', `[${i + 1}]`)} ${opt.label}`);
+  });
+  
+  const answer = await ask(rl, `\nYour choices: `);
+  
+  if (answer.toLowerCase() === 'all') {
+    return options.map(o => o.value);
+  }
+  if (answer.toLowerCase() === 'none' || answer === '') {
+    return [];
+  }
+  
+  const indices = answer.split(',').map(s => parseInt(s.trim(), 10) - 1);
+  return indices
+    .filter(i => i >= 0 && i < options.length)
+    .map(i => options[i].value);
+}
+
+// Main setup flow
+async function main() {
+  // Silent mode for postinstall
+  if (process.argv.includes('--silent')) {
+    console.log(c('green', '✓ Compounding Marketing installed successfully!'));
+    console.log(c('dim', '  Run `npx compounding-marketing` to configure.\n'));
+    process.exit(0);
+  }
+
+  printBanner();
+  
+  const rl = createPrompt();
+  const config = {
+    version: '1.1.0',
+    aiTool: null,
+    mcp: {},
+    integrations: {},
+  };
+
+  try {
+    // Step 1: AI Tool
+    console.log(c('blue', '\n━━━ Step 1: AI Tool ━━━'));
+    config.aiTool = await select(rl, 'Which AI tool are you using?', [
+      { label: 'Claude Code (VS Code extension)', value: 'claude-code' },
+      { label: 'Cursor', value: 'cursor' },
+      { label: 'ChatGPT (Custom GPT)', value: 'chatgpt' },
+      { label: 'Windsurf', value: 'windsurf' },
+      { label: 'Other / Multiple', value: 'other' },
+    ]);
+    console.log(c('green', `✓ Selected: ${config.aiTool}`));
+
+    // Step 2: MCPs
+    console.log(c('blue', '\n━━━ Step 2: MCP Integrations ━━━'));
+    console.log(c('dim', 'MCPs add powerful research tools to your AI assistant.'));
+    
+    // Perplexity
+    const usePerplexity = await confirm(rl, '\nEnable Perplexity MCP? (AI-powered web research)');
+    if (usePerplexity) {
+      const apiKey = await ask(rl, `  Enter Perplexity API key ${c('dim', '(or press Enter to set later)')}: `);
+      config.mcp.perplexity = {
+        enabled: true,
+        apiKey: apiKey || '${PERPLEXITY_API_KEY}',
+      };
+      console.log(c('green', '  ✓ Perplexity enabled'));
+    }
+
+    // Exa
+    const useExa = await confirm(rl, '\nEnable Exa MCP? (Neural search & company research)');
+    if (useExa) {
+      const apiKey = await ask(rl, `  Enter Exa API key ${c('dim', '(or press Enter to set later)')}: `);
+      config.mcp.exa = {
+        enabled: true,
+        apiKey: apiKey || '${EXA_API_KEY}',
+      };
+      console.log(c('green', '  ✓ Exa enabled'));
+    }
+
+    // Step 3: Integrations
+    console.log(c('blue', '\n━━━ Step 3: Optional Integrations ━━━'));
+    console.log(c('dim', 'Connect to your existing tools for better workflows.'));
+
+    // Task tracking
+    const taskTools = await multiSelect(rl, 'Which task tracking tools do you use?', [
+      { label: 'Linear', value: 'linear' },
+      { label: 'Trello', value: 'trello' },
+      { label: 'Asana', value: 'asana' },
+      { label: 'ClickUp', value: 'clickup' },
+    ]);
+    
+    for (const tool of taskTools) {
+      config.integrations[tool] = { enabled: true, apiKey: '' };
+      console.log(c('green', `  ✓ ${tool} enabled (configure API key in .cm-config.json)`));
+    }
+
+    // Analytics
+    const analyticsTools = await multiSelect(rl, 'Which analytics tools do you use?', [
+      { label: 'Google Analytics 4', value: 'googleAnalytics' },
+      { label: 'Google Search Console', value: 'searchConsole' },
+      { label: 'Mixpanel', value: 'mixpanel' },
+      { label: 'Meta Ads', value: 'metaAds' },
+    ]);
+    
+    for (const tool of analyticsTools) {
+      config.integrations[tool] = { enabled: true };
+      console.log(c('green', `  ✓ ${tool} enabled (configure in .cm-config.json)`));
+    }
+
+    // Step 4: Write config
+    console.log(c('blue', '\n━━━ Step 4: Save Configuration ━━━'));
+    
+    const configPath = path.join(process.cwd(), '.cm-config.json');
+    const configJSON = JSON.stringify(config, null, 2);
+    
+    console.log(c('dim', `\nConfiguration preview:`));
+    console.log(configJSON);
+    
+    const saveConfig = await confirm(rl, `\nSave to ${configPath}?`);
+    
+    if (saveConfig) {
+      fs.writeFileSync(configPath, configJSON);
+      console.log(c('green', `✓ Saved to ${configPath}`));
+      
+      // Add to .gitignore if exists
+      const gitignorePath = path.join(process.cwd(), '.gitignore');
+      if (fs.existsSync(gitignorePath)) {
+        const gitignore = fs.readFileSync(gitignorePath, 'utf8');
+        if (!gitignore.includes('.cm-config.json')) {
+          fs.appendFileSync(gitignorePath, '\n# Compounding Marketing config (contains API keys)\n.cm-config.json\n');
+          console.log(c('green', '✓ Added .cm-config.json to .gitignore'));
+        }
+      }
+    }
+
+    // Done
+    console.log(`
+${c('cyan', '╔═══════════════════════════════════════════════════════════════╗')}
+${c('cyan', '║')}     ${c('green', '✓ Setup Complete!')}                                          ${c('cyan', '║')}
+${c('cyan', '╚═══════════════════════════════════════════════════════════════╝')}
+
+${c('bright', 'Next Steps:')}
+
+  ${c('cyan', '1.')} Start with foundation:
+     ${c('dim', 'Ask your AI: "Run the cm-context skill to create our product-marketing context."')}
+
+  ${c('cyan', '2.')} Use workflows for big projects:
+     ${c('dim', '/cm:research — Deep market research')}
+     ${c('dim', '/cm:position — Full positioning workshop')}
+     ${c('dim', '/cm:copy — End-to-end copywriting')}
+     ${c('dim', '/cm:launch — Launch planning')}
+
+  ${c('cyan', '3.')} Read the docs:
+     ${c('dim', 'mcp/README.md — MCP setup details')}
+     ${c('dim', 'integrations/README.md — Integration guides')}
+     ${c('dim', 'skills/[skill-name]/SKILL.md — Individual skill docs')}
+
+${c('bright', 'Questions?')} 
+  GitHub: ${c('cyan', 'https://github.com/classicchins/compounding-marketing')}
+  Twitter: ${c('cyan', '@classicchins')}
+
+${c('dim', 'Make marketing compound. 🚀')}
+`);
+
+  } catch (err) {
+    console.error(c('red', `\nError: ${err.message}`));
+    process.exit(1);
+  } finally {
+    rl.close();
+  }
+}
+
+main();

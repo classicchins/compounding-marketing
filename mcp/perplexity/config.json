@@ -1,0 +1,17 @@
+{
+  "name": "perplexity",
+  "description": "Perplexity AI MCP server for web research and Q&A",
+  "package": "@perplexity-ai/mcp-server",
+  "version": "0.8.3",
+  "command": "npx",
+  "args": ["-y", "@perplexity-ai/mcp-server"],
+  "env": {
+    "PERPLEXITY_API_KEY": "${PERPLEXITY_API_KEY}"
+  },
+  "tools": [
+    "perplexity_search",
+    "perplexity_ask",
+    "perplexity_reason",
+    "perplexity_research"
+  ]
+}

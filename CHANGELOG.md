@@ -5,6 +5,54 @@ All notable changes to the Compounding Marketing plugin will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-03-14
+
+### Added
+
+**MCP Integrations:**
+- `mcp/` directory with pre-configured MCP servers
+- Perplexity MCP — AI-powered web research (search, ask, reason, research)
+- Exa MCP — Neural search and company intelligence (company research, people search, web search, deep researcher)
+- Setup guides and tool references for each MCP
+
+**Optional Integrations:**
+- `integrations/` directory with setup guides
+- Task tracking: Linear, Trello, Asana, ClickUp
+- Analytics: Google Analytics 4, Search Console, Mixpanel, Meta Ads
+- `hooks.md` documenting how skills interact with integrations
+
+**npx Setup Wizard:**
+- `package.json` for npm package distribution
+- `bin/setup.js` interactive configuration wizard
+- `.cm-config.json.example` configuration template
+- AI tool selection, MCP configuration, integration enablement
+
+**New Skills (5):**
+- `product-hunt-launch` — Product Hunt launch strategy and execution
+- `linkedin-ads` — LinkedIn advertising for B2B lead generation
+- `customer-interview` — Interview guide, questions, and synthesis
+- `press-pr` — PR strategy, media outreach, and press releases
+- `newsletter-growth` — Email list growth tactics and optimization
+
+### Improved
+
+**Skill Quality:**
+- `seo-audit` — Expanded from basic checklist to comprehensive audit covering Core Web Vitals, crawlability, content, backlinks, and prioritization
+- `market-sizing` — Added detailed methodologies, data sources, validation process, and MCP research commands
+
+**Documentation:**
+- README updated with npx as primary install method
+- Added MCP and Integrations sections to README
+- Updated skill counts to reflect new additions
+
+### Changed
+
+- Skill count increased from 50 to 55
+- Skills now reference MCP tools when available for enhanced research
+- Skills now reference integration hooks for task/analytics connections
+
+---
+
 ## [1.0.0] - 2026-03-14
 
 ### Added
@@ -115,4 +163,5 @@ Planned additions for future versions:
 
 ---
 
-[1.0.0]: https://github.com/[username]/compounding-marketing/releases/tag/v1.0.0
+[1.1.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.1.0
+[1.0.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.0.0

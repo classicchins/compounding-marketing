@@ -1,0 +1,46 @@
+{
+  "version": "1.1.0",
+  "aiTool": "claude-code",
+  "mcp": {
+    "perplexity": {
+      "enabled": true,
+      "apiKey": "${PERPLEXITY_API_KEY}"
+    },
+    "exa": {
+      "enabled": true,
+      "apiKey": "${EXA_API_KEY}"
+    }
+  },
+  "integrations": {
+    "linear": {
+      "enabled": true,
+      "apiKey": "lin_api_xxxx",
+      "defaultTeamId": "team-uuid"
+    },
+    "trello": {
+      "enabled": false
+    },
+    "asana": {
+      "enabled": false
+    },
+    "clickup": {
+      "enabled": false
+    },
+    "googleAnalytics": {
+      "enabled": true,
+      "propertyId": "123456789",
+      "serviceAccountKey": "./ga-service-account.json"
+    },
+    "searchConsole": {
+      "enabled": true,
+      "siteUrl": "https://example.com",
+      "serviceAccountKey": "./gsc-service-account.json"
+    },
+    "mixpanel": {
+      "enabled": false
+    },
+    "metaAds": {
+      "enabled": false
+    }
+  }
+}

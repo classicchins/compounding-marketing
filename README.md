@@ -2,7 +2,9 @@
 
 **Make each unit of marketing work easier than the last.**
 
-A Claude Code + ChatGPT plugin with 50 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
+A Claude Code + ChatGPT plugin with 55 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
+
+**v1.1** — Now with pre-configured MCPs (Perplexity + Exa), optional integrations, and npx setup wizard.
 
 ---
 
@@ -29,15 +31,15 @@ Each project should make the next project easier.
 | Category | Skills | What You Get |
 |----------|--------|--------------|
 | **Foundation** | 5 | Product-market context, positioning, messaging, value props, brand voice |
-| **Research** | 5 | ICP development, customer research, competitive analysis, market sizing, psychology |
+| **Research** | 6 | ICP development, customer research, **customer interviews**, competitive analysis, market sizing, psychology |
 | **Content & Copy** | 7 | Copywriting, editing, strategy, case studies, social, video, lead magnets |
 | **SEO & Discovery** | 6 | SEO audit, AI search optimization, programmatic SEO, site architecture, schema, comparison pages |
 | **CRO** | 7 | Landing page optimization, signup flows, onboarding, forms, popups, paywalls, pricing |
 | **Outreach & Email** | 3 | Cold email, automated sequences, testimonial collection |
-| **Paid Acquisition** | 2 | Paid ads strategy, ad creative |
+| **Paid Acquisition** | 3 | Paid ads strategy, **LinkedIn ads**, ad creative |
 | **Measurement** | 3 | Analytics tracking, A/B test design, attribution modeling |
-| **GTM & Launch** | 3 | Launch planning, GTM strategy, channel strategy |
-| **Growth & Retention** | 5 | Referral programs, free tools, churn prevention, partnerships, community |
+| **GTM & Launch** | 5 | Launch planning, GTM strategy, channel strategy, **Product Hunt launch**, **press/PR** |
+| **Growth & Retention** | 6 | Referral programs, free tools, churn prevention, partnerships, community, **newsletter growth** |
 | **Sales & RevOps** | 3 | Sales enablement, revenue operations, webinar strategy |
 | **Meta** | 1 | 140+ SaaS marketing ideas |
 
@@ -53,44 +55,81 @@ Each project should make the next project easier.
 
 ## Quick Start
 
-### For Claude Code
-
-1. **Add this plugin to your repo:**
+### Option 1: npx Setup (Recommended)
 
 ```bash
-git clone https://github.com/[username]/compounding-marketing.git
+npx compounding-marketing
+```
+
+This interactive wizard will:
+- Configure your AI tool (Claude Code, Cursor, ChatGPT)
+- Set up MCP integrations (Perplexity, Exa)
+- Enable optional integrations (Linear, GA, etc.)
+- Create `.cm-config.json` with your settings
+
+### Option 2: Manual Setup
+
+1. **Clone the repo:**
+```bash
+git clone https://github.com/classicchins/compounding-marketing.git
 # Or add as git submodule
 ```
 
-2. **Claude Code auto-reads `CLAUDE.md`** in your repo root.
+2. **For Claude Code:** Plugin auto-loads from `CLAUDE.md`
 
-3. **Start with foundation:**
+3. **For ChatGPT:** Upload `AGENTS.md` to your Custom GPT
+
+4. **For Cursor:** Add skills directory to your project
+
+### Getting Started
 
 ```
+# Start with foundation
 Run the cm-context skill to create our product-marketing context document.
-```
 
-4. **Use workflows for big projects:**
-
-```
+# Use workflows for big projects  
 Run /cm:position to develop our positioning, messaging, and value props.
-```
 
-5. **Use individual skills for specific tasks:**
-
-```
+# Use individual skills for specific tasks
 Use the copywriting skill to write copy for our new landing page.
 ```
 
-### For ChatGPT / Other AI Assistants
+---
 
-1. **Upload `AGENTS.md`** to your Custom GPT or assistant.
+## MCP Integrations (v1.1)
 
-2. **Point to skills directory:** "Load skills from `skills/` when I ask for marketing help."
+Supercharge research skills with pre-configured MCP servers:
 
-3. **Start with `cm-context`:** "Read and execute `skills/cm-context/SKILL.md`"
+### Perplexity
+AI-powered web research with real-time search:
+- `perplexity_search` — Get ranked sources
+- `perplexity_ask` — Quick Q&A with web search
+- `perplexity_reason` — Complex analysis and comparisons
+- `perplexity_research` — Deep comprehensive research
 
-4. **Reference skills by name:** "Use the `positioning` skill to help me define our market position."
+### Exa
+Neural search and company intelligence:
+- `company_research_exa` — Deep company profiles
+- `people_search_exa` — Find executives and professionals
+- `web_search_exa` — Semantic content discovery
+- `deep_researcher_start/check` — Async AI research agent
+
+**Setup:** See `mcp/README.md` for configuration.
+
+---
+
+## Optional Integrations (v1.1)
+
+Connect to your existing tools:
+
+| Category | Integrations |
+|----------|--------------|
+| **Task Tracking** | Linear, Trello, Asana, ClickUp |
+| **Analytics** | Google Analytics 4, Search Console, Mixpanel, Meta Ads |
+
+Skills can push tasks and pull data from these integrations when configured.
+
+**Setup:** See `integrations/README.md` for guides.
 
 ---
 
