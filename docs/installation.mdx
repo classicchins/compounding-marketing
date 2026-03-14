@@ -1,0 +1,81 @@
+---
+title: Installation
+description: Install Compounding Marketing for Claude, Claude Code, or ChatGPT
+---
+
+# Installation
+
+Compounding Marketing works with Claude Code, Claude Desktop, and any MCP-compatible AI assistant.
+
+## Claude Code (Recommended)
+
+The fastest way to get started:
+
+```bash
+claude mcp add compounding-marketing -- npx -y compounding-marketing
+```
+
+Verify it's working:
+```bash
+claude mcp list
+```
+
+You should see `compounding-marketing` in the list.
+
+## Claude Desktop
+
+Edit your Claude Desktop config file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+
+Add the MCP server:
+
+```json
+{
+  "mcpServers": {
+    "compounding-marketing": {
+      "command": "npx",
+      "args": ["-y", "compounding-marketing"]
+    }
+  }
+}
+```
+
+Restart Claude Desktop.
+
+## OpenClaw
+
+If you're using OpenClaw, add to your mcporter config:
+
+```json
+{
+  "servers": {
+    "compounding-marketing": {
+      "command": "npx",
+      "args": ["-y", "compounding-marketing"]
+    }
+  }
+}
+```
+
+## Verify Installation
+
+After installation, ask your AI:
+
+```
+What marketing skills do you have?
+```
+
+It should list the available skills and categories.
+
+## Troubleshooting
+
+### "MCP server not found"
+- Ensure Node.js 18+ is installed
+- Run `npx -y compounding-marketing` manually to test
+- Check that the config file path is correct
+
+### Skills not loading context
+- Create a `.cm-context` file in your project root
+- The AI reads this file automatically when you run skills

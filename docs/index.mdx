@@ -1,0 +1,73 @@
+---
+title: Getting Started
+description: Give your AI a marketing brain with 55 research-backed skills
+---
+
+# Getting Started with Compounding Marketing
+
+Compounding Marketing is a plugin for Claude, Claude Code, and ChatGPT that gives your AI 55 marketing skills — positioning, copywriting, SEO, outreach, GTM, CRO, and analytics.
+
+## Why Compounding Marketing?
+
+Most AI marketing tools give you generic prompts. Compounding Marketing gives you **research-backed frameworks** from the best marketing minds: April Dunford, Eugene Schwartz, Joanna Wiebe, and more.
+
+Each skill:
+- Uses proven frameworks, not vague instructions
+- Loads your business context automatically via `.cm-context`
+- Outputs actionable deliverables, not fluff
+
+## Quick Start
+
+### 1. Install the Plugin
+
+For Claude Code:
+```bash
+claude mcp add compounding-marketing -- npx -y compounding-marketing
+```
+
+For Claude Desktop, add to your `claude_desktop_config.json`:
+```json
+{
+  "mcpServers": {
+    "compounding-marketing": {
+      "command": "npx",
+      "args": ["-y", "compounding-marketing"]
+    }
+  }
+}
+```
+
+### 2. Create Your Context File
+
+In your project root, create `.cm-context`:
+```yaml
+product:
+  name: "Your Product"
+  description: "What it does"
+  category: "SaaS / E-commerce / etc."
+
+icp:
+  title: "Your ideal customer"
+  pain_points:
+    - "Pain point 1"
+    - "Pain point 2"
+
+competitors:
+  - name: "Competitor 1"
+    positioning: "How they position"
+```
+
+### 3. Run a Skill
+
+```
+/cm:position
+```
+
+That's it. Your AI now has a marketing brain.
+
+## Next Steps
+
+- [Installation Guide](/docs/installation) — Detailed setup for all platforms
+- [Configuration](/docs/configuration) — Full `.cm-context` reference
+- [Skills Overview](/docs/skills) — Browse all 55 skills
+- [Commands](/docs/commands) — Workflow commands for common tasks

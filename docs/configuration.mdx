@@ -1,0 +1,105 @@
+---
+title: Configuration
+description: Configure your business context with .cm-context
+---
+
+# Configuration
+
+The `.cm-context` file tells Compounding Marketing about your business. Skills automatically load this context to generate relevant, personalized output.
+
+## File Location
+
+Create `.cm-context` in your project root (same directory where you run Claude).
+
+## Full Schema
+
+```yaml
+# Product information
+product:
+  name: "AuthorityMax"
+  description: "AI-powered personal branding for founders"
+  category: "SaaS"
+  stage: "growth"  # idea | mvp | growth | scale
+  pricing_model: "subscription"
+  price_point: "$49/month"
+
+# Ideal Customer Profile
+icp:
+  title: "Series A-B Founders"
+  demographics:
+    role: "Founder / CEO"
+    company_size: "10-50 employees"
+    industry: "B2B SaaS"
+  psychographics:
+    goals:
+      - "Build thought leadership"
+      - "Attract investors and talent"
+    fears:
+      - "Being invisible in a crowded market"
+      - "Wasting time on content that doesn't convert"
+  pain_points:
+    - "Know they should post but never have time"
+    - "AI tools make them sound generic"
+    - "2 hours to write a single LinkedIn post"
+  buying_triggers:
+    - "Just raised a round, need to build profile"
+    - "Competitor founder going viral"
+
+# Competitors
+competitors:
+  - name: "Taplio"
+    url: "https://taplio.com"
+    positioning: "LinkedIn growth tool"
+    strengths:
+      - "Large user base"
+      - "Analytics"
+    weaknesses:
+      - "Generic AI voice"
+      - "No audience intelligence"
+  - name: "Typefully"
+    positioning: "Writing tool for Twitter/LinkedIn"
+    strengths:
+      - "Clean UI"
+      - "Scheduling"
+    weaknesses:
+      - "No AI voice matching"
+
+# Brand voice (used by copywriting skills)
+voice:
+  tone: "confident, direct, slightly irreverent"
+  avoid: "corporate jargon, buzzwords, fluff"
+  examples:
+    - "We built this because existing tools suck."
+    - "Stop writing posts. Start publishing."
+
+# Channels (used by GTM and distribution skills)
+channels:
+  primary:
+    - "LinkedIn"
+    - "Twitter"
+  secondary:
+    - "Email newsletter"
+    - "Podcast guesting"
+```
+
+## Minimal Example
+
+You don't need everything. A minimal `.cm-context`:
+
+```yaml
+product:
+  name: "MyApp"
+  description: "What it does"
+
+icp:
+  title: "Who it's for"
+  pain_points:
+    - "Their biggest problem"
+```
+
+## Tips
+
+- **Be specific.** "Series A B2B SaaS founders" beats "startups"
+- **Include real pain points.** Use actual language from customer interviews
+- **Update regularly.** Your context should evolve as you learn
+- **One context per project.** Different products = different `.cm-context` files

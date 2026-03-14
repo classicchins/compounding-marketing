@@ -1,0 +1,16 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "installation",
+    "configuration",
+    "---Skills---",
+    "skills",
+    "---Commands---",
+    "commands",
+    "---Integrations---",
+    "mcps",
+    "---Philosophy---",
+    "philosophy"
+  ]
+}

@@ -1,0 +1,80 @@
+---
+title: Positioning Skill
+description: Define your market position using April Dunford's framework
+---
+
+# Positioning Skill
+
+The positioning skill helps you define who your product is for, what alternatives exist, and why you're different — using April Dunford's "Obviously Awesome" methodology.
+
+## Usage
+
+```
+/cm:position
+```
+
+With depth parameter:
+```
+/cm:position --depth=full
+```
+
+## What It Does
+
+1. **Loads your context** — Reads `.cm-context` for product, ICP, and competitors
+2. **Maps alternatives** — Identifies what customers would use if you didn't exist
+3. **Finds unique attributes** — What you do that alternatives don't
+4. **Identifies value** — What those attributes mean for customers
+5. **Defines the market** — Where you play and how you frame it
+6. **Writes the statement** — A clear positioning statement
+
+## Output
+
+The skill generates a positioning document with:
+
+- **Competitive alternatives** — Direct and indirect competitors
+- **Unique attributes** — Your differentiators
+- **Value themes** — Benefits that matter to your ICP
+- **Target segment** — Who cares most about your value
+- **Market category** — How to frame your product
+- **Positioning statement** — The final articulation
+
+## Example Output
+
+```markdown
+## Competitive Alternatives
+- Taplio (LinkedIn scheduling + AI)
+- Typefully (Writing tool for social)
+- Buffer (General social scheduling)
+- Hiring a ghostwriter ($2-5k/month)
+
+## Unique Attributes
+- AI that learns your voice from past posts
+- Audience intelligence (what topics resonate)
+- One-click publishing to LinkedIn
+
+## Value for Customer
+- Posts in their voice, not generic AI slop
+- Knows what their audience engages with
+- 10 minutes/week instead of 2 hours/post
+
+## Best-Fit Customers
+Series A-B founders who know they should build their
+personal brand but never have time to write.
+
+## Market Category
+AI personal branding assistant
+
+## Positioning Statement
+"For founders who know they should post but never
+have time, AuthorityMax is an AI that learns your
+voice and drafts posts your audience actually
+engages with — unlike Taplio or Typefully, which
+generate generic content that sounds like everyone
+else."
+```
+
+## Tips
+
+- **Run before other skills** — Positioning informs everything else
+- **Update when you pivot** — Re-run if your ICP or product changes
+- **Use the output** — Copy the statement to your website, pitch deck, everywhere
