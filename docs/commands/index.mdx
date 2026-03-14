@@ -1,0 +1,62 @@
+---
+title: Commands Overview
+description: Workflow commands for common marketing tasks
+---
+
+# Commands Overview
+
+Commands are pre-built workflows that combine multiple skills into a single action. Instead of running skills one by one, commands orchestrate the full process.
+
+## Available Commands
+
+| Command | Description | Skills Used |
+|---------|-------------|-------------|
+| `/cm:full-positioning` | Complete positioning + messaging | position, differentiate, copy |
+| `/cm:launch-prep` | Full launch preparation | position, copy, landing, email |
+| `/cm:content-engine` | Content strategy + briefs | seo, cluster, brief |
+| `/cm:outreach-campaign` | Full outreach sequence | research, outreach, followup |
+| `/cm:cro-audit` | Complete conversion audit | cro, friction, experiment |
+
+## How Commands Work
+
+Commands run multiple skills in sequence, passing context between them:
+
+```
+/cm:full-positioning
+
+1. Running /cm:position...
+   ✓ Positioning document generated
+
+2. Running /cm:differentiate...
+   ✓ Differentiation angles identified
+
+3. Running /cm:copy...
+   ✓ Homepage copy generated
+
+→ deliverables/full-positioning/
+```
+
+## Output Structure
+
+Commands create a folder with all outputs:
+
+```
+deliverables/
+└── full-positioning/
+    ├── positioning.md
+    ├── differentiation.md
+    └── homepage-copy.md
+```
+
+## Creating Custom Commands
+
+You can ask the AI to create custom workflows:
+
+```
+Create a workflow that:
+1. Runs positioning
+2. Generates 3 headline variations
+3. Writes a LinkedIn announcement post
+```
+
+The AI will execute the skills in sequence.

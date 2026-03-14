@@ -1,0 +1,112 @@
+---
+title: MCP Integrations
+description: Connect Compounding Marketing with other MCP tools
+---
+
+# MCP Integrations
+
+Compounding Marketing is built on the Model Context Protocol (MCP). It works seamlessly with other MCP tools to extend your AI's capabilities.
+
+## What is MCP?
+
+MCP (Model Context Protocol) is a standard for connecting AI assistants to external tools and data sources. Compounding Marketing is an MCP server that exposes marketing skills to any MCP-compatible client.
+
+## Compatible Clients
+
+- **Claude Code** — Full integration
+- **Claude Desktop** — Full integration
+- **ChatGPT** — Via MCP bridge
+- **OpenClaw** — Native support
+
+## Complementary MCP Servers
+
+These MCP servers work well alongside Compounding Marketing:
+
+### Research Tools
+
+**Perplexity MCP** — Web search and research
+```json
+{
+  "perplexity": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/perplexity-mcp"]
+  }
+}
+```
+Use with: `/cm:research` skill for market research
+
+**Exa MCP** — Neural search and company research
+```json
+{
+  "exa": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/exa-mcp"]
+  }
+}
+```
+Use with: `/cm:competitive` skill for competitor analysis
+
+### Content Tools
+
+**GitHub MCP** — Access repos and code
+```json
+{
+  "github": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/github-mcp"]
+  }
+}
+```
+Use with: Content versioning and collaboration
+
+### CRM Tools
+
+**HubSpot MCP** — CRM and sales data
+```json
+{
+  "hubspot": {
+    "command": "npx",
+    "args": ["-y", "@anthropic/hubspot-mcp"]
+  }
+}
+```
+Use with: `/cm:outreach` skill for personalized sequences
+
+## Example: Full Marketing Stack
+
+```json
+{
+  "mcpServers": {
+    "compounding-marketing": {
+      "command": "npx",
+      "args": ["-y", "compounding-marketing"]
+    },
+    "perplexity": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/perplexity-mcp"]
+    },
+    "exa": {
+      "command": "npx",
+      "args": ["-y", "@anthropic/exa-mcp"]
+    }
+  }
+}
+```
+
+With this stack:
+1. Perplexity handles web research
+2. Exa handles company/people lookup
+3. Compounding Marketing transforms research into marketing assets
+
+## Workflow Example
+
+```
+User: Research Notion's positioning and create a competitive analysis
+
+AI:
+1. [Using Exa] Looking up Notion company data...
+2. [Using Perplexity] Researching Notion's recent positioning...
+3. [Using /cm:competitive] Generating competitive analysis...
+
+→ deliverables/competitive-analysis.md
+```
