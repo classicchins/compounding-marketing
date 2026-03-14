@@ -104,11 +104,18 @@ Load skills from `skills/` when working on marketing tasks.
 
 ## Workflow Commands
 
+### Project Workflows
 - `/cm:research` — Deep market and customer research workflow
 - `/cm:position` — Full positioning workshop
 - `/cm:copy` — End-to-end copywriting workflow
 - `/cm:launch` — Launch planning and execution
 - `/cm:compound` — Document learnings to compound knowledge
+
+### Periodic Workflows (v1.2)
+- `/cm:daily` — Daily marketing review (10 min — what's live, performing, needs attention)
+- `/cm:standup` — Marketing standup (5 min — yesterday/today/blockers)
+- `/cm:weekly` — Weekly marketing review + planning (30-45 min)
+- `/cm:eod` — End-of-day wrap (5-10 min — capture progress, prep tomorrow)
 
 ## How to Use
 

@@ -84,13 +84,29 @@ When a user asks for marketing help:
 
 ## Workflow Commands
 
-For multi-step marketing work, use these workflows:
+Commands are in `commands/` directory. Use `/cm:{command}` syntax.
 
-- **Deep research** — Run icp-research → competitive-analysis → customer-research → synthesize
-- **Full positioning** — Run positioning → messaging-framework → value-proposition
-- **Copywriting** — Read positioning/messaging → copywriting → page-cro (QA)
-- **Launch** — Run launch-strategy → gtm-strategy → channel-strategy
-- **Compound learnings** — After completing work, ask what was learned and save to `.agents/learnings/{category}.md`
+### Project Workflows
+- `/cm:research` — Deep market + customer research workflow
+- `/cm:position` — Full positioning workshop (Dunford framework)
+- `/cm:copy` — End-to-end copywriting with CRO review
+- `/cm:launch` — Launch planning and execution
+- `/cm:compound` — Document learnings to compound knowledge
+
+### Periodic Workflows (v1.2)
+- `/cm:daily` — Daily marketing review (10 min — what's live, performing, needs attention)
+- `/cm:standup` — Marketing standup (5 min — yesterday/today/blockers)
+- `/cm:weekly` — Weekly marketing review + planning (30-45 min — patterns, wins, plan ahead)
+- `/cm:eod` — End-of-day wrap (5-10 min — what shipped, what's pending, tomorrow's start)
+
+### Rhythm Recommendations
+| Time | Command | Purpose |
+|------|---------|---------|
+| Morning | `/cm:daily` | Orient, set the day's marketing priority |
+| Async sync | `/cm:standup` | Team accountability, surface blockers |
+| End of day | `/cm:eod` | Capture progress, prep tomorrow's start |
+| Friday | `/cm:weekly` | Review patterns, plan next week |
+| Post-project | `/cm:compound` | Document learnings for future use |
 
 ## Cross-Platform Compatibility
 

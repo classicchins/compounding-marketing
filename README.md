@@ -43,13 +43,20 @@ Each project should make the next project easier.
 | **Sales & RevOps** | 3 | Sales enablement, revenue operations, webinar strategy |
 | **Meta** | 1 | 140+ SaaS marketing ideas |
 
-**5 workflow commands** for complex marketing work:
+**9 workflow commands** for complex marketing work:
 
+**Project Workflows:**
 - `/cm:research` — Deep market + customer research workflow
 - `/cm:position` — Full positioning workshop (Dunford framework)
 - `/cm:copy` — End-to-end copywriting with CRO review
 - `/cm:launch` — Launch planning and execution
 - `/cm:compound` — Document learnings for future projects
+
+**Periodic Workflows (v1.2):**
+- `/cm:daily` — Daily marketing review (10 min)
+- `/cm:standup` — Marketing standup (5 min)
+- `/cm:weekly` — Weekly review + planning (30-45 min)
+- `/cm:eod` — End-of-day wrap (5-10 min)
 
 ---
 
@@ -193,6 +200,230 @@ Run /cm:compound
 This captures what you learned (what worked, what didn't, what surprised you) and saves it to `.agents/learnings/[category].md`.
 
 **Next project?** You'll have those insights ready.
+
+---
+
+## Workflow Commands — Examples
+
+Workflow commands combine multiple skills for common marketing rhythms. Here's what each one looks like in practice.
+
+### `/cm:daily` — Daily Marketing Review (10 min)
+
+**Input:**
+```
+/cm:daily
+```
+
+**What it asks:**
+- What campaigns/content are active?
+- What metrics moved yesterday?
+- Any wins or red flags?
+- What's your ONE marketing priority today?
+
+**Output:**
+```markdown
+# Daily Marketing Review — Mar 14, 2026
+
+## What's Live
+- **Campaigns:** LinkedIn retargeting (Week 2), Google Search
+- **Content:** Blog post on pricing published yesterday
+- **Sequences:** Trial nurture sequence (423 active)
+
+## Performance Snapshot
+- **Traffic:** 2,847 (+12% vs last week)
+- **Signups:** 34 (+6)
+- **Trial→Paid:** 18% (stable)
+
+## Wins
+- Pricing blog ranking #4 for "SaaS pricing strategy"
+
+## Flags
+- LinkedIn CPC up 23% — may need creative refresh
+
+## Today's Focus
+1. **Priority:** Write Q1 case study with Acme Corp
+2. **Quick wins:** Schedule 3 social posts, reply to PR inquiry
+```
+
+---
+
+### `/cm:standup` — Marketing Standup (5 min)
+
+**Input:**
+```
+/cm:standup
+```
+
+**What it asks:**
+- What shipped yesterday?
+- What are you working on today?
+- Any blockers?
+
+**Output:**
+```markdown
+# Marketing Standup — Mar 14, 2026
+
+## Yesterday
+- ✅ Published pricing blog post
+- ✅ Set up LinkedIn retargeting campaign
+- 🔄 Continued homepage copy revision (80% done)
+
+## Today
+- 🎯 Finish homepage copy — ready for design by 3pm
+- 📝 Draft cold email sequence for enterprise — first 2 emails
+- 💡 Review competitor's new landing page
+
+## Blockers
+- ⚠️ Waiting on customer quote approval from Sarah (Acme)
+- ⚠️ Need product screenshots for homepage (asked design yesterday)
+```
+
+---
+
+### `/cm:eod` — End of Day Wrap (5-10 min)
+
+**Input:**
+```
+/cm:eod
+```
+
+**What it asks:**
+- What shipped today?
+- What's in progress?
+- What's blocked?
+- What's your first task tomorrow?
+
+**Output:**
+```markdown
+# EOD Marketing Wrap — Mar 14, 2026
+
+## Shipped ✅
+- Homepage copy v2 — sent to design
+- Cold email sequence (2/5 emails drafted)
+- Competitor analysis on Rival Inc's new page
+
+## In Progress 🔄
+- Case study with Acme — Next: Schedule interview — ETA: Monday
+- Email sequence — Next: Write emails 3-5 — ETA: Tomorrow
+
+## Blocked ⚠️
+- Customer quote — Waiting on: Sarah @ Acme (followed up via email)
+
+## Tomorrow's Start
+- **First task:** Finish remaining 3 cold emails
+- **Prep done:** Outline saved in drafts folder
+
+## Notes
+- Competitor using "results in 30 days" angle — test this?
+- PR inquiry from TechCrunch — hand off to founder
+```
+
+---
+
+### `/cm:weekly` — Weekly Review (30-45 min)
+
+**Input:**
+```
+/cm:weekly
+```
+
+**What it asks:**
+- What content/campaigns shipped this week?
+- How did key metrics move?
+- What patterns emerged?
+- What's the plan for next week?
+
+**Output:**
+```markdown
+# Weekly Marketing Review — Week of Mar 10, 2026
+
+## This Week's Activity
+- **Content published:** 2 blog posts, 8 social posts
+- **Campaigns active:** LinkedIn retargeting, Google Search
+- **Experiments run:** Homepage headline A/B test
+- **Shipped vs. planned:** 5/6 tasks completed
+
+## Metrics Summary
+| Metric | This Week | Last Week | Change |
+|--------|-----------|-----------|--------|
+| Traffic | 14,280 | 12,650 | +13% |
+| Signups | 156 | 142 | +10% |
+| Trial→Paid | 18.2% | 17.8% | +0.4% |
+
+## Wins 🏆
+1. Pricing blog → #4 ranking in 3 days (outcome-focused headline worked)
+2. Homepage test: Variant B +23% clicks (social proof above fold)
+
+## Losses 📉
+1. LinkedIn CPC up 23% — creative fatigue
+2. Case study delayed (waiting on customer)
+
+## Patterns Identified
+- **What resonated:** Outcome-focused headlines > feature-focused
+- **Best channel:** Organic search driving 62% of signups
+- **Audience insight:** "Time to value" messaging resonates with enterprise
+
+## Next Week's Plan
+
+### Top 3 Priorities
+1. Launch new LinkedIn creatives — expected: CPC back to baseline
+2. Finish enterprise cold email sequence — expected: 10 qualified replies
+3. Publish Acme case study — expected: sales enablement asset
+
+### Experiments
+- Testing: Social proof placement on pricing page
+- Success criteria: +15% pricing page → signup
+
+## Learnings to Compound
+- "Outcome-focused headlines outperform feature-focused" → saved to `learnings/copywriting.md`
+```
+
+---
+
+### `/cm:compound` — Document Learnings (10-15 min)
+
+**Input:**
+```
+/cm:compound
+
+Just finished the homepage redesign project.
+```
+
+**What it asks:**
+- What worked well?
+- What didn't work?
+- What surprised you?
+- What would you do differently?
+
+**Output:**
+```markdown
+# Learnings Captured
+
+## Project: Homepage Redesign (Mar 2026)
+
+### What Worked
+- Putting social proof above the fold increased clicks 23%
+- "See results in X days" framing outperformed "Get started" CTA
+- Customer logos → testimonials → case study (trust ladder)
+
+### What Didn't Work
+- Feature comparison table below the fold — low engagement
+- Video hero slowed page load, hurt mobile conversions
+
+### Surprising
+- Enterprise visitors spent 3x longer on pricing page than SMB
+- "Free trial" converted better than "Start free" (unexpected)
+
+### Next Time
+- Always A/B test hero section — highest impact
+- Check mobile load time BEFORE launch
+- Social proof above fold is non-negotiable
+
+---
+
+✅ Saved to `.agents/learnings/cro.md`
+✅ Saved to `.agents/learnings/copywriting.md`
+```
 
 ---
 
