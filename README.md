@@ -2,9 +2,9 @@
 
 **Make each unit of marketing work easier than the last.**
 
-A Claude Code + ChatGPT plugin with 58 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
+A Claude Code + ChatGPT plugin with 61 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
 
-**v1.3** — Expanded CRO skills, new ABM strategy, social media strategy, and email deliverability skills.
+**v1.4** — Added content performance scoring, competitor content monitoring, marketing automation skills, plus social media and email campaign workflow commands.
 
 ---
 
@@ -26,24 +26,24 @@ Each project should make the next project easier.
 
 ## What's Inside
 
-**58 marketing skills** across 10 categories:
+**61 marketing skills** across 10 categories:
 
 | Category | Skills | What You Get |
 |----------|--------|--------------|
 | **Foundation** | 5 | Product-market context, positioning, messaging, value props, brand voice |
-| **Research** | 6 | ICP development, customer research, **customer interviews**, competitive analysis, market sizing, psychology |
+| **Research** | 7 | ICP development, customer research, **customer interviews**, competitive analysis, **competitor content monitoring**, market sizing, psychology |
 | **Content & Copy** | 8 | Copywriting, editing, strategy, case studies, social, **social media strategy**, video, lead magnets |
 | **SEO & Discovery** | 6 | SEO audit, AI search optimization, programmatic SEO, site architecture, schema, comparison pages |
 | **CRO** | 7 | Landing page optimization, **signup flows**, **onboarding**, **forms**, **popups**, **paywalls**, pricing |
-| **Outreach & Email** | 5 | **ABM strategy**, cold email, automated sequences, **email deliverability**, testimonial collection |
+| **Outreach & Email** | 6 | **ABM strategy**, cold email, automated sequences, **email deliverability**, **marketing automation**, testimonial collection |
 | **Paid Acquisition** | 3 | Paid ads strategy, **LinkedIn ads**, ad creative |
-| **Measurement** | 3 | Analytics tracking, A/B test design, attribution modeling |
+| **Measurement** | 4 | Analytics tracking, A/B test design, attribution modeling, **content performance scoring** |
 | **GTM & Launch** | 5 | Launch planning, GTM strategy, channel strategy, **Product Hunt launch**, **press/PR** |
 | **Growth & Retention** | 6 | Referral programs, free tools, churn prevention, partnerships, community, **newsletter growth** |
 | **Sales & RevOps** | 3 | Sales enablement, revenue operations, webinar strategy |
 | **Meta** | 1 | 140+ SaaS marketing ideas |
 
-**9 workflow commands** for complex marketing work:
+**11 workflow commands** for complex marketing work:
 
 **Project Workflows:**
 - `/cm:research` — Deep market + customer research workflow
@@ -51,6 +51,8 @@ Each project should make the next project easier.
 - `/cm:copy` — End-to-end copywriting with CRO review
 - `/cm:launch` — Launch planning and execution
 - `/cm:compound` — Document learnings for future projects
+- `/cm:social` — Social media campaign planning (platforms, calendar, engagement tactics) **(v1.4)**
+- `/cm:email` — Email campaign setup end-to-end (segmentation, copy, send time optimization) **(v1.4)**
 
 **Periodic Workflows (v1.2):**
 - `/cm:daily` — Daily marketing review (10 min)
@@ -447,6 +449,7 @@ Just finished the homepage redesign project.
 | **customer-research** | Synthesize interviews into JTBD insights | Customer research synthesis |
 | **customer-interview** | Plan and run structured customer interviews | Interview guide + synthesis framework |
 | **competitive-analysis** | Map competitive landscape | Competitive analysis with white space |
+| **competitor-content-monitoring** | Track competitor content and identify gaps | Monitoring stack setup, gap analysis, competitive intelligence reports |
 | **market-sizing** | Calculate TAM/SAM/SOM | Market sizing analysis |
 | **marketing-psychology** | Apply psychological principles | Psychology-informed recommendations |
 
@@ -494,6 +497,7 @@ Just finished the homepage redesign project.
 | **cold-email** | Write personalized cold outreach | Cold email templates |
 | **email-sequence** | Design automated email flows | Email sequence with timing + triggers |
 | **email-deliverability** | Ensure emails reach inbox (not spam) | Authentication setup (SPF, DKIM, DMARC), warmup plan, sender reputation monitoring |
+| **marketing-automation** | Set up and optimize marketing automation | Platform comparison, workflow architecture, lead scoring, segmentation, email templates |
 | **testimonial-collection** | Systematically gather social proof | Testimonial collection process |
 
 ### Paid Acquisition Skills
@@ -511,6 +515,7 @@ Just finished the homepage redesign project.
 | **analytics-tracking** | Set up event tracking | Tracking implementation plan |
 | **ab-test-setup** | Design statistically valid tests | A/B test plan with hypothesis + sample size |
 | **attribution-modeling** | Understand channel contribution | Attribution model + implementation |
+| **content-performance-scoring** | Score content quality pre/post-publish | Multi-dimensional scoring framework (SEO, readability, engagement, brand voice) |
 
 ### GTM & Launch Skills
 
