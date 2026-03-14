@@ -214,6 +214,7 @@ This captures what you learned (what worked, what didn't, what surprised you) an
 |-------|---------|--------|
 | **icp-research** | Develop Ideal Customer Profile | ICP document with qualification criteria |
 | **customer-research** | Synthesize interviews into JTBD insights | Customer research synthesis |
+| **customer-interview** | Plan and run structured customer interviews | Interview guide + synthesis framework |
 | **competitive-analysis** | Map competitive landscape | Competitive analysis with white space |
 | **market-sizing** | Calculate TAM/SAM/SOM | Market sizing analysis |
 | **marketing-psychology** | Apply psychological principles | Psychology-informed recommendations |
@@ -266,6 +267,7 @@ This captures what you learned (what worked, what didn't, what surprised you) an
 | Skill | Purpose | Output |
 |-------|---------|--------|
 | **paid-ads** | Plan paid campaigns | Campaign plan (targeting, budget, structure) |
+| **linkedin-ads** | Design LinkedIn-specific ad campaigns | LinkedIn campaign structure + copy variations |
 | **ad-creative** | Write ad copy and creative | Ad variations + creative concepts |
 
 ### Measurement & Testing Skills
@@ -283,6 +285,8 @@ This captures what you learned (what worked, what didn't, what surprised you) an
 | **launch-strategy** | Plan product launches | Launch timeline + checklist |
 | **gtm-strategy** | Design go-to-market motion | GTM strategy (PLG vs. sales-led) |
 | **channel-strategy** | Prioritize marketing channels | Channel plan with resource allocation |
+| **product-hunt-launch** | Plan and execute a Product Hunt launch | PH submission, hunter outreach, launch-day playbook |
+| **press-pr** | Get media coverage and press mentions | Press kit, journalist outreach, pitch angles |
 
 ### Growth & Retention Skills
 
@@ -293,6 +297,7 @@ This captures what you learned (what worked, what didn't, what surprised you) an
 | **churn-prevention** | Reduce customer churn | Churn prevention playbook |
 | **partnership-marketing** | Leverage partnerships | Partnership plan |
 | **community-strategy** | Build online communities | Community strategy |
+| **newsletter-growth** | Grow and monetize an email newsletter | Newsletter strategy + growth playbook |
 
 ### Sales & RevOps Skills
 
@@ -418,7 +423,16 @@ See `CONTRIBUTING.md` for guidelines.
 
 Created by **Chinmaya Shankar** ([@classicchins](https://twitter.com/classicchins))
 
-Part of the [AuthorityMax](https://authoritymax.ai) ecosystem.
+Chinmaya is the founder of [BigDeal Ventures](https://bigdeal.ventures) — a portfolio of AI-native companies:
+
+| Company | Description |
+|---------|-------------|
+| [AuthorityMax](https://authoritymax.ai) | SaaS personal branding platform for founders & operators |
+| [MagicAssist](https://magicassist.co) | AI-powered productivity assistant |
+| [SuperContent](https://supercontent.io) | AI-native design & video production for SaaS |
+| [DesignCrew](https://designcrew.io) | AI-native apps & digital experiences |
+
+This plugin was built to make world-class marketing frameworks accessible to every founder and marketer building with AI.
 
 ---
 
