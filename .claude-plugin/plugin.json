@@ -1,7 +1,7 @@
 {
   "name": "compounding-marketing",
-  "version": "1.0.0",
-  "description": "50 skills for positioning, messaging, copywriting, CRO, SEO, and GTM. Make each unit of marketing work easier than the last.",
+  "version": "1.1.0",
+  "description": "61 skills for positioning, messaging, copywriting, CRO, SEO, and GTM. Make each unit of marketing work easier than the last.",
   "author": {
     "name": "Chinmaya Shankar",
     "url": "https://authoritymax.ai"
@@ -20,8 +20,8 @@
     "compound-marketing"
   ],
   "components": {
-    "skills": 50,
-    "commands": 5
+    "skills": 61,
+    "commands": 11
   },
   "license": "MIT"
 }

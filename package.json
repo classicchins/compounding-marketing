@@ -1,7 +1,7 @@
 {
   "name": "compounding-marketing",
-  "version": "1.1.0",
-  "description": "50 marketing skills for Claude Code, ChatGPT & Cursor. Make each unit of marketing work easier than the last.",
+  "version": "1.1.1",
+  "description": "61 marketing skills for Claude Code, Codex CLI, ChatGPT, Cursor & more. Make each unit of marketing work easier than the last.",
   "keywords": [
     "marketing",
     "saas",
@@ -17,7 +17,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/classicchins/compounding-marketing.git"
+    "url": "git+https://github.com/classicchins/compounding-marketing.git"
   },
   "homepage": "https://github.com/classicchins/compounding-marketing",
   "bugs": {
@@ -25,8 +25,8 @@
   },
   "main": "bin/setup.js",
   "bin": {
-    "compounding-marketing": "./bin/setup.js",
-    "cm": "./bin/setup.js"
+    "compounding-marketing": "bin/setup.js",
+    "cm": "bin/setup.js"
   },
   "files": [
     "bin/",
@@ -34,7 +34,12 @@
     "commands/",
     "mcp/",
     "integrations/",
+    "scripts/",
+    "docs/",
     ".agents/",
+    ".claude-plugin/",
+    ".cursor-plugin/",
+    ".cm-config.json.example",
     "CLAUDE.md",
     "AGENTS.md",
     "README.md",
@@ -47,7 +52,5 @@
     "setup": "node bin/setup.js",
     "postinstall": "node bin/setup.js --silent"
   },
-  "dependencies": {
-    "inquirer": "^9.2.12"
-  }
+  "dependencies": {}
 }

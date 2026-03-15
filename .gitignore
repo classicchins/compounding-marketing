@@ -1,0 +1,4 @@
+node_modules/
+.cm-config.json
+.env
+.DS_Store
