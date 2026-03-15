@@ -347,6 +347,65 @@ async function main() {
 
         console.log(c('green', '\n  ✓ Plugin installed'));
 
+        // Register commands and skills as Claude Code slash commands via symlinks
+        const claudeCommandsDir = path.join(cwd, '.claude', 'commands');
+        if (!fs.existsSync(path.join(cwd, '.claude'))) {
+          fs.mkdirSync(path.join(cwd, '.claude'));
+        }
+        if (!fs.existsSync(claudeCommandsDir)) {
+          fs.mkdirSync(claudeCommandsDir);
+        }
+
+        // Clean up old cm-* symlinks (handles removed skills/commands on update)
+        const existingEntries = fs.readdirSync(claudeCommandsDir);
+        for (const entry of existingEntries) {
+          if (entry.startsWith('cm-') && entry.endsWith('.md')) {
+            const entryPath = path.join(claudeCommandsDir, entry);
+            try {
+              const stat = fs.lstatSync(entryPath);
+              if (stat.isSymbolicLink()) {
+                fs.unlinkSync(entryPath);
+              }
+            } catch (_) {
+              // ignore
+            }
+          }
+        }
+
+        // Symlink workflow commands (cm-*.md)
+        const cmCommandsDir = path.join(pluginDir, 'commands');
+        let cmdCount = 0;
+        if (fs.existsSync(cmCommandsDir)) {
+          const cmdFiles = fs.readdirSync(cmCommandsDir).filter(f => f.endsWith('.md'));
+          for (const file of cmdFiles) {
+            const linkPath = path.join(claudeCommandsDir, file);
+            const targetPath = path.relative(claudeCommandsDir, path.join(cmCommandsDir, file));
+            fs.symlinkSync(targetPath, linkPath);
+            cmdCount++;
+          }
+          console.log(c('green', `  ✓ Registered ${cmdCount} workflow commands as /slash commands`));
+        }
+
+        // Symlink skills as slash commands (cm-{skill-name}.md)
+        const skillsDir = path.join(pluginDir, 'skills');
+        let skillCount = 0;
+        if (fs.existsSync(skillsDir)) {
+          const skillDirs = fs.readdirSync(skillsDir).filter(d => {
+            try { return fs.statSync(path.join(skillsDir, d)).isDirectory(); } catch (_) { return false; }
+          });
+          for (const skill of skillDirs) {
+            const skillFile = path.join(skillsDir, skill, 'SKILL.md');
+            if (fs.existsSync(skillFile)) {
+              const linkName = skill.startsWith('cm-') ? `${skill}.md` : `cm-${skill}.md`;
+              const linkPath = path.join(claudeCommandsDir, linkName);
+              const targetPath = path.relative(claudeCommandsDir, skillFile);
+              fs.symlinkSync(targetPath, linkPath);
+              skillCount++;
+            }
+          }
+          console.log(c('green', `  ✓ Registered ${skillCount} skills as /cm-{skill} slash commands`));
+        }
+
         // Ask about .gitignore
         const gitignorePlugin = await confirm(rl, '\n  Add compounding-marketing/ to .gitignore? (Recommended if you won\'t customize skills)');
         if (gitignorePlugin) {
@@ -377,7 +436,7 @@ ${c('cyan', '╚═════════════════════�
 ${c('bright', 'Next Steps:')}
 
   ${c('cyan', '1.')} Start with foundation:
-     ${c('dim', 'Ask your AI: "Run the cm-context skill to create our product-marketing context."')}
+     ${c('dim', 'Type /cm-context in Claude Code to create your product-marketing context.')}
 
   ${c('cyan', '2.')} Use workflows for big projects:
      ${c('dim', '/cm:research — Deep market research')}
