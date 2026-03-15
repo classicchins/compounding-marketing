@@ -276,7 +276,8 @@ async function main() {
       { src: 'mcp', label: 'mcp/ (MCP server configs)' },
     ];
 
-    const cmRef = '\n<!-- Compounding Marketing Plugin -->\nSee `compounding-marketing/CLAUDE.md` for 61 marketing skills and 11 workflow commands.\n';
+    const MARKER_START = '<!-- COMPOUNDING-MARKETING-START -->';
+    const MARKER_END = '<!-- COMPOUNDING-MARKETING-END -->';
 
     if (isLocalClone) {
       console.log(c('dim', 'Running from the plugin repo itself — skipping file copy.\n'));
@@ -306,19 +307,42 @@ async function main() {
           console.log(c('green', `  ✓ ${item.label}`));
         }
 
-        // Handle CLAUDE.md reference in project root
+        // Build plugin CLAUDE.md content with rewritten paths for root embedding
+        const pluginClaudeMdPath = path.join(pkgRoot, 'CLAUDE.md');
+        let pluginContent = '';
+        if (fs.existsSync(pluginClaudeMdPath)) {
+          pluginContent = fs.readFileSync(pluginClaudeMdPath, 'utf8');
+          // Rewrite skill/command paths to point into the subdirectory
+          pluginContent = pluginContent
+            .replace(/`skills\//g, '`compounding-marketing/skills/')
+            .replace(/`commands\//g, '`compounding-marketing/commands/')
+            .replace(/`mcp\//g, '`compounding-marketing/mcp/')
+            .replace(/`integrations\//g, '`compounding-marketing/integrations/')
+            .replace(/`\.agents\//g, '`compounding-marketing/.agents/');
+        }
+
+        const markerBlock = `\n${MARKER_START}\n${pluginContent}\n${MARKER_END}\n`;
+
+        // Handle CLAUDE.md in project root — append full content with markers
         const claudeMdPath = path.join(cwd, 'CLAUDE.md');
         if (fs.existsSync(claudeMdPath)) {
-          const existing = fs.readFileSync(claudeMdPath, 'utf8');
-          if (!existing.includes('compounding-marketing/CLAUDE.md')) {
-            fs.appendFileSync(claudeMdPath, cmRef);
-            console.log(c('green', '  ✓ Added plugin reference to existing CLAUDE.md'));
+          let existing = fs.readFileSync(claudeMdPath, 'utf8');
+          const startIdx = existing.indexOf(MARKER_START);
+          const endIdx = existing.indexOf(MARKER_END);
+
+          if (startIdx !== -1 && endIdx !== -1) {
+            // Replace existing marker block with updated content
+            existing = existing.substring(0, startIdx) + MARKER_START + '\n' + pluginContent + '\n' + MARKER_END + existing.substring(endIdx + MARKER_END.length);
+            fs.writeFileSync(claudeMdPath, existing);
+            console.log(c('green', '  ✓ Updated plugin skill catalog in CLAUDE.md'));
           } else {
-            console.log(c('dim', '  CLAUDE.md already references plugin — skipped'));
+            // Append new marker block
+            fs.appendFileSync(claudeMdPath, markerBlock);
+            console.log(c('green', '  ✓ Appended plugin skill catalog to existing CLAUDE.md'));
           }
         } else {
-          fs.writeFileSync(claudeMdPath, `# CLAUDE.md\n\nThis file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.\n${cmRef}`);
-          console.log(c('green', '  ✓ Created CLAUDE.md with plugin reference'));
+          fs.writeFileSync(claudeMdPath, `# CLAUDE.md\n\nThis file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.\n${markerBlock}`);
+          console.log(c('green', '  ✓ Created CLAUDE.md with full plugin skill catalog'));
         }
 
         console.log(c('green', '\n  ✓ Plugin installed'));
