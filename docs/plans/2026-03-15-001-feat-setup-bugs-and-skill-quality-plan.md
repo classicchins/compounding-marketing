@@ -1,7 +1,7 @@
 ---
 title: "feat: Fix setup wizard bugs and expand weak skills"
 type: feat
-status: active
+status: completed
 date: 2026-03-15
 deepened: 2026-03-15
 origin: docs/brainstorms/2026-03-15-plugin-quality-brainstorm.md
