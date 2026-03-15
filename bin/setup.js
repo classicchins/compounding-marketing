@@ -256,13 +256,18 @@ async function main() {
       }
     }
 
-    // Step 5: Install plugin files into project
+    // Step 5: Install plugin files into project subdirectory
     console.log(c('blue', '\n━━━ Step 5: Install Plugin Files ━━━'));
-    console.log(c('dim', 'Copy skills, commands, and config files into your project so your AI tool can discover them.\n'));
+    console.log(c('dim', 'Install skills and commands into a compounding-marketing/ subdirectory.'));
+    console.log(c('dim', 'Your existing files will not be modified or overwritten.\n'));
 
     const pkgRoot = path.resolve(__dirname, '..');
+    const pluginDir = path.join(cwd, 'compounding-marketing');
+    const isLocalClone = path.resolve(pkgRoot) === path.resolve(cwd);
+
+    // Items to copy into compounding-marketing/ subdirectory
     const pluginItems = [
-      { src: 'CLAUDE.md', label: 'CLAUDE.md (Claude Code entry point)' },
+      { src: 'CLAUDE.md', label: 'CLAUDE.md (skill catalog)' },
       { src: 'AGENTS.md', label: 'AGENTS.md (ChatGPT / cross-platform)' },
       { src: 'skills', label: 'skills/ (61 marketing skills)' },
       { src: 'commands', label: 'commands/ (11 workflow commands)' },
@@ -271,20 +276,26 @@ async function main() {
       { src: 'mcp', label: 'mcp/ (MCP server configs)' },
     ];
 
-    // Check if files are already present (e.g. user cloned the repo directly)
-    const srcClaudeMd = path.join(pkgRoot, 'CLAUDE.md');
-    const destClaudeMd = path.join(cwd, 'CLAUDE.md');
-    const alreadyPresent = fs.existsSync(destClaudeMd) && fs.existsSync(path.join(cwd, 'skills'));
-    const isLocalClone = path.resolve(pkgRoot) === path.resolve(cwd);
+    const cmRef = '\n<!-- Compounding Marketing Plugin -->\nSee `compounding-marketing/CLAUDE.md` for 61 marketing skills and 11 workflow commands.\n';
 
     if (isLocalClone) {
       console.log(c('dim', 'Running from the plugin repo itself — skipping file copy.\n'));
-    } else if (alreadyPresent) {
-      const overwrite = await confirm(rl, 'Plugin files already exist in this directory. Overwrite with latest?', false);
-      if (overwrite) {
+    } else {
+      const pluginDirExists = fs.existsSync(pluginDir);
+      const promptMsg = pluginDirExists
+        ? 'Update compounding-marketing/ to latest version?'
+        : 'Install plugin files into compounding-marketing/ subdirectory?';
+
+      const installFiles = await confirm(rl, promptMsg);
+      if (installFiles) {
+        // Create or update the subdirectory
+        if (!fs.existsSync(pluginDir)) {
+          fs.mkdirSync(pluginDir);
+        }
+
         for (const item of pluginItems) {
           const srcPath = path.join(pkgRoot, item.src);
-          const destPath = path.join(cwd, item.src);
+          const destPath = path.join(pluginDir, item.src);
           if (!fs.existsSync(srcPath)) continue;
           const stat = fs.statSync(srcPath);
           if (stat.isDirectory()) {
@@ -294,44 +305,42 @@ async function main() {
           }
           console.log(c('green', `  ✓ ${item.label}`));
         }
-      } else {
-        console.log(c('dim', '  Skipped — keeping existing files.\n'));
-      }
-    } else {
-      const installFiles = await confirm(rl, 'Install plugin files into this directory?');
-      if (installFiles) {
-        for (const item of pluginItems) {
-          const srcPath = path.join(pkgRoot, item.src);
-          const destPath = path.join(cwd, item.src);
-          if (!fs.existsSync(srcPath)) continue;
-          const stat = fs.statSync(srcPath);
-          if (stat.isDirectory()) {
-            fs.cpSync(srcPath, destPath, { recursive: true });
-          } else {
-            fs.copyFileSync(srcPath, destPath);
-          }
-          console.log(c('green', `  ✓ ${item.label}`));
-        }
-        console.log(c('green', '\n  ✓ Plugin files installed'));
 
-        // Ask about .gitignore for copied files
-        const gitignorePlugin = await confirm(rl, '\n  Add copied plugin files to .gitignore? (Recommended if you won\'t customize them)');
+        // Handle CLAUDE.md reference in project root
+        const claudeMdPath = path.join(cwd, 'CLAUDE.md');
+        if (fs.existsSync(claudeMdPath)) {
+          const existing = fs.readFileSync(claudeMdPath, 'utf8');
+          if (!existing.includes('compounding-marketing/CLAUDE.md')) {
+            fs.appendFileSync(claudeMdPath, cmRef);
+            console.log(c('green', '  ✓ Added plugin reference to existing CLAUDE.md'));
+          } else {
+            console.log(c('dim', '  CLAUDE.md already references plugin — skipped'));
+          }
+        } else {
+          fs.writeFileSync(claudeMdPath, `# CLAUDE.md\n\nThis file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.\n${cmRef}`);
+          console.log(c('green', '  ✓ Created CLAUDE.md with plugin reference'));
+        }
+
+        console.log(c('green', '\n  ✓ Plugin installed'));
+
+        // Ask about .gitignore
+        const gitignorePlugin = await confirm(rl, '\n  Add compounding-marketing/ to .gitignore? (Recommended if you won\'t customize skills)');
         if (gitignorePlugin) {
           const gitignorePath = path.join(cwd, '.gitignore');
-          const gitignoreEntries = '\n# Compounding Marketing plugin files\nskills/\ncommands/\nmcp/\nCLAUDE.md\nAGENTS.md\n.claude-plugin/\n.cursor-plugin/\n';
+          const gitignoreEntry = '\n# Compounding Marketing plugin\ncompounding-marketing/\n';
           if (fs.existsSync(gitignorePath)) {
             const existing = fs.readFileSync(gitignorePath, 'utf8');
-            if (!existing.includes('# Compounding Marketing plugin files')) {
-              fs.appendFileSync(gitignorePath, gitignoreEntries);
+            if (!existing.includes('compounding-marketing/')) {
+              fs.appendFileSync(gitignorePath, gitignoreEntry);
             }
           } else {
-            fs.writeFileSync(gitignorePath, gitignoreEntries.trimStart());
+            fs.writeFileSync(gitignorePath, gitignoreEntry.trimStart());
           }
-          console.log(c('green', '  ✓ Added plugin files to .gitignore'));
+          console.log(c('green', '  ✓ Added compounding-marketing/ to .gitignore'));
         }
       } else {
-        console.log(c('yellow', '\n  ⚠  Skipped. Your AI tool won\'t see the skills until you copy them manually.'));
-        console.log(c('dim', '     You can re-run `npx compounding-marketing` anytime to install.\n'));
+        console.log(c('yellow', '\n  ⚠  Skipped. Your AI tool won\'t see the skills until you install them.'));
+        console.log(c('dim', '     Re-run `npx compounding-marketing` anytime to install.\n'));
       }
     }
 
