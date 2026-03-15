@@ -59,14 +59,20 @@ async function select(rl, question, options) {
     console.log(`  ${c('cyan', `[${i + 1}]`)} ${opt.label}`);
   });
 
-  const answer = await ask(rl, `\nEnter choice (1-${options.length}): `);
-  const index = parseInt(answer, 10) - 1;
-
-  if (index >= 0 && index < options.length) {
-    return options[index].value;
+  let attempts = 0;
+  while (attempts < 3) {
+    const answer = await ask(rl, `\nEnter choice (1-${options.length}): `);
+    const index = parseInt(answer, 10) - 1;
+    if (index >= 0 && index < options.length) {
+      return options[index].value;
+    }
+    attempts++;
+    if (attempts < 3) {
+      console.log(c('yellow', `Invalid choice. Please enter a number from 1 to ${options.length}.`));
+    }
   }
 
-  console.log(c('yellow', 'Invalid choice, using default.'));
+  console.log(c('yellow', `Using default: ${options[0].label}`));
   return options[0].value;
 }
 
@@ -101,6 +107,24 @@ async function multiSelect(rl, question, options) {
   return indices
     .filter(i => i >= 0 && i < options.length)
     .map(i => options[i].value);
+}
+
+// Create symlink with copy fallback (Windows compat)
+function createLink(targetPath, linkPath, label) {
+  try {
+    fs.symlinkSync(targetPath, linkPath);
+    return true;
+  } catch (err) {
+    if (err.code === 'EPERM' || err.code === 'EACCES') {
+      try {
+        const absoluteTarget = path.resolve(path.dirname(linkPath), targetPath);
+        fs.copyFileSync(absoluteTarget, linkPath);
+        return true;
+      } catch (_) { /* fall through */ }
+    }
+    console.log(c('yellow', `  ⚠  Could not link ${label}: ${err.message}`));
+    return false;
+  }
 }
 
 // Check if running inside a project directory
@@ -150,7 +174,7 @@ async function main() {
   }
 
   const config = {
-    version: '1.1.0',
+    version: require('../package.json').version,
     aiTool: null,
     mcp: {},
     integrations: {},
@@ -181,7 +205,7 @@ async function main() {
       const apiKey = await ask(rl, `  Enter Perplexity API key ${c('dim', '(or press Enter to set later)')}: `);
       config.mcp.perplexity = {
         enabled: true,
-        apiKey: apiKey || '${PERPLEXITY_API_KEY}',
+        apiKey: apiKey || 'YOUR_API_KEY_HERE',
       };
       console.log(c('green', '  ✓ Perplexity enabled'));
     }
@@ -192,7 +216,7 @@ async function main() {
       const apiKey = await ask(rl, `  Enter Exa API key ${c('dim', '(or press Enter to set later)')}: `);
       config.mcp.exa = {
         enabled: true,
-        apiKey: apiKey || '${EXA_API_KEY}',
+        apiKey: apiKey || 'YOUR_API_KEY_HERE',
       };
       console.log(c('green', '  ✓ Exa enabled'));
     }
@@ -246,7 +270,7 @@ async function main() {
       const gitignorePath = path.join(cwd, '.gitignore');
       if (fs.existsSync(gitignorePath)) {
         const gitignore = fs.readFileSync(gitignorePath, 'utf8');
-        if (!gitignore.includes('.cm-config.json')) {
+        if (!gitignore.split('\n').map(l => l.trim()).includes('.cm-config.json')) {
           fs.appendFileSync(gitignorePath, '\n# Compounding Marketing config (contains API keys)\n.cm-config.json\n');
           console.log(c('green', '✓ Added .cm-config.json to .gitignore'));
         }
@@ -290,9 +314,7 @@ async function main() {
       const installFiles = await confirm(rl, promptMsg);
       if (installFiles) {
         // Create or update the subdirectory
-        if (!fs.existsSync(pluginDir)) {
-          fs.mkdirSync(pluginDir);
-        }
+        fs.mkdirSync(pluginDir, { recursive: true });
 
         for (const item of pluginItems) {
           const srcPath = path.join(pkgRoot, item.src);
@@ -330,13 +352,17 @@ async function main() {
           const startIdx = existing.indexOf(MARKER_START);
           const endIdx = existing.indexOf(MARKER_END);
 
-          if (startIdx !== -1 && endIdx !== -1) {
+          if (startIdx !== -1 && endIdx !== -1 && endIdx > startIdx) {
             // Replace existing marker block with updated content
             existing = existing.substring(0, startIdx) + MARKER_START + '\n' + pluginContent + '\n' + MARKER_END + existing.substring(endIdx + MARKER_END.length);
             fs.writeFileSync(claudeMdPath, existing);
             console.log(c('green', '  ✓ Updated plugin skill catalog in CLAUDE.md'));
+          } else if (startIdx !== -1 || endIdx !== -1) {
+            // Malformed markers — append fresh block and warn
+            fs.appendFileSync(claudeMdPath, markerBlock);
+            console.log(c('yellow', '  ⚠  Found malformed markers in CLAUDE.md — appended fresh plugin section'));
           } else {
-            // Append new marker block
+            // No markers — append new block
             fs.appendFileSync(claudeMdPath, markerBlock);
             console.log(c('green', '  ✓ Appended plugin skill catalog to existing CLAUDE.md'));
           }
@@ -349,12 +375,7 @@ async function main() {
 
         // Register commands and skills as Claude Code slash commands via symlinks
         const claudeCommandsDir = path.join(cwd, '.claude', 'commands');
-        if (!fs.existsSync(path.join(cwd, '.claude'))) {
-          fs.mkdirSync(path.join(cwd, '.claude'));
-        }
-        if (!fs.existsSync(claudeCommandsDir)) {
-          fs.mkdirSync(claudeCommandsDir);
-        }
+        fs.mkdirSync(claudeCommandsDir, { recursive: true });
 
         // Clean up old cm-* symlinks (handles removed skills/commands on update)
         const existingEntries = fs.readdirSync(claudeCommandsDir);
@@ -380,8 +401,7 @@ async function main() {
           for (const file of cmdFiles) {
             const linkPath = path.join(claudeCommandsDir, file);
             const targetPath = path.relative(claudeCommandsDir, path.join(cmCommandsDir, file));
-            fs.symlinkSync(targetPath, linkPath);
-            cmdCount++;
+            if (createLink(targetPath, linkPath, file)) cmdCount++;
           }
           console.log(c('green', `  ✓ Registered ${cmdCount} workflow commands as /slash commands`));
         }
@@ -399,11 +419,31 @@ async function main() {
               const linkName = skill.startsWith('cm-') ? `${skill}.md` : `cm-${skill}.md`;
               const linkPath = path.join(claudeCommandsDir, linkName);
               const targetPath = path.relative(claudeCommandsDir, skillFile);
-              fs.symlinkSync(targetPath, linkPath);
-              skillCount++;
+              if (createLink(targetPath, linkPath, linkName)) skillCount++;
             }
           }
           console.log(c('green', `  ✓ Registered ${skillCount} skills as /cm-{skill} slash commands`));
+        }
+
+        // Verify symlinks resolve correctly
+        if (fs.existsSync(claudeCommandsDir)) {
+          const broken = [];
+          for (const entry of fs.readdirSync(claudeCommandsDir)) {
+            if (!entry.startsWith('cm-')) continue;
+            const fullPath = path.join(claudeCommandsDir, entry);
+            try {
+              const lstat = fs.lstatSync(fullPath);
+              if (lstat.isSymbolicLink()) {
+                fs.statSync(fullPath); // follows symlink — throws if target missing
+              }
+            } catch (err) {
+              if (err.code === 'ENOENT') broken.push(entry);
+            }
+          }
+          if (broken.length > 0) {
+            console.log(c('yellow', `\n  ⚠  ${broken.length} broken symlink(s) found:`));
+            broken.forEach(b => console.log(c('yellow', `    - ${b}`)));
+          }
         }
 
         // Ask about .gitignore
@@ -413,7 +453,7 @@ async function main() {
           const gitignoreEntry = '\n# Compounding Marketing plugin\ncompounding-marketing/\n';
           if (fs.existsSync(gitignorePath)) {
             const existing = fs.readFileSync(gitignorePath, 'utf8');
-            if (!existing.includes('compounding-marketing/')) {
+            if (!existing.split('\n').map(l => l.trim()).includes('compounding-marketing/')) {
               fs.appendFileSync(gitignorePath, gitignoreEntry);
             }
           } else {
