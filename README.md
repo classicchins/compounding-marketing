@@ -4,7 +4,7 @@
 
 A Claude Code + ChatGPT plugin with 61 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
 
-**v1.4** — Added content performance scoring, competitor content monitoring, marketing automation skills, plus social media and email campaign workflow commands.
+**v1.5** — Added sprint planning, campaign retrospectives, and marketing audit workflows. Improved setup wizard with auto MCP config generation. 14 workflow commands total.
 
 ---
 
@@ -43,7 +43,7 @@ Each project should make the next project easier.
 | **Sales & RevOps** | 3 | Sales enablement, revenue operations, webinar strategy |
 | **Meta** | 1 | 140+ SaaS marketing ideas |
 
-**11 workflow commands** for complex marketing work:
+**14 workflow commands** for complex marketing work:
 
 **Project Workflows:**
 - `/cm:research` — Deep market + customer research workflow
@@ -51,14 +51,19 @@ Each project should make the next project easier.
 - `/cm:copy` — End-to-end copywriting with CRO review
 - `/cm:launch` — Launch planning and execution
 - `/cm:compound` — Document learnings for future projects
-- `/cm:social` — Social media campaign planning (platforms, calendar, engagement tactics) **(v1.4)**
-- `/cm:email` — Email campaign setup end-to-end (segmentation, copy, send time optimization) **(v1.4)**
+- `/cm:social` — Social media campaign planning (platforms, calendar, engagement tactics)
+- `/cm:email` — Email campaign setup end-to-end (segmentation, copy, send time optimization)
 
-**Periodic Workflows (v1.2):**
-- `/cm:daily` — Daily marketing review (10 min)
+**Planning & Review:**
+- `/cm:sprint` — 2-week marketing sprint planning (goals, deliverables, schedule) **(NEW)**
+- `/cm:retro` — Campaign/sprint retrospective (what worked, what didn't, actions) **(NEW)**
+- `/cm:audit` — Quarterly marketing health check (channels, funnel, priorities) **(NEW)**
+
+**Daily Operations:**
 - `/cm:standup` — Marketing standup (5 min)
-- `/cm:weekly` — Weekly review + planning (30-45 min)
+- `/cm:daily` — Daily marketing review (10 min)
 - `/cm:eod` — End-of-day wrap (5-10 min)
+- `/cm:weekly` — Weekly review + planning (30-45 min)
 
 ---
 
@@ -93,14 +98,51 @@ git clone https://github.com/classicchins/compounding-marketing.git
 ### Getting Started
 
 ```
-# Start with foundation
+# Start with foundation — creates your product-marketing context doc
 Run the cm-context skill to create our product-marketing context document.
 
-# Use workflows for big projects  
+# Use workflows for big projects
 Run /cm:position to develop our positioning, messaging, and value props.
 
 # Use individual skills for specific tasks
 Use the copywriting skill to write copy for our new landing page.
+```
+
+### Example Workflows (Real Usage)
+
+**Week 1 — Foundation:**
+```
+1. "Run cm-context for [your product]"       → Creates product-marketing context
+2. "Run /cm:research"                         → ICP, competitors, market sizing
+3. "Run /cm:position"                         → Positioning, messaging, value props
+```
+
+**Week 2+ — Execution:**
+```
+4. "Run /cm:copy for our homepage"            → Full copywriting with CRO review
+5. "Run /cm:email for trial users"            → Welcome sequence + nurture flow
+6. "Run /cm:social for LinkedIn launch"       → 30-day content calendar
+7. "Run /cm:launch for v2 release"            → Launch plan with timeline
+```
+
+**Ongoing — Operations:**
+```
+"Run /cm:standup"                             → 5-min daily accountability check
+"Run /cm:daily"                               → 10-min performance review
+"Run /cm:sprint"                              → Plan next 2-week marketing sprint
+"Run /cm:retro"                               → Post-campaign retrospective
+"Run /cm:audit"                               → Quarterly marketing health check
+"Run /cm:compound"                            → Capture learnings after any project
+```
+
+**Individual skills (ask naturally):**
+```
+"Audit our SEO"                               → seo-audit skill
+"Write a case study about [customer]"         → case-study skill
+"Optimize our pricing page"                   → pricing-strategy + paywall-upgrade-cro
+"Design an A/B test for the signup page"      → ab-test-setup + signup-flow-cro
+"Analyze competitor [X]'s positioning"        → competitive-analysis skill
+"Create a lead magnet for [audience]"         → lead-magnets skill
 ```
 
 ---

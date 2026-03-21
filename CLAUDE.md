@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Compounding Marketing is a Claude Code / ChatGPT / Cursor plugin providing 61 marketing skills and 11 workflow commands for SaaS marketing. It is **not a traditional codebase** — it's a structured knowledge system where skills are SKILL.md files and workflows are command `.md` files.
+Compounding Marketing is a Claude Code / ChatGPT / Cursor plugin providing 61 marketing skills and 14 workflow commands for SaaS marketing. It is **not a traditional codebase** — it's a structured knowledge system where skills are SKILL.md files and workflows are command `.md` files.
 
 Philosophy: **Make each unit of marketing work easier than the last.** 80% research and planning, 20% execution. Core workflow: **Research → Position → Message → Execute → Compound.**
 
@@ -12,7 +12,7 @@ Philosophy: **Make each unit of marketing work easier than the last.** 80% resea
 
 ```
 skills/           # 61 self-contained marketing skills (each is a SKILL.md with YAML frontmatter)
-commands/         # 11 workflow commands (cm-*.md files invoked via /cm:*)
+commands/         # 14 workflow commands (cm-*.md files invoked via /cm:*)
 bin/setup.js      # npx setup wizard (interactive CLI using readline, no framework)
 scripts/          # generate-claude-md.js — regenerates this file's skills section from frontmatter
 mcp/              # Pre-configured MCP servers (Perplexity, Exa) for research enhancement
@@ -45,7 +45,8 @@ When a user requests marketing help, the correct skill should be loaded and exec
 Commands in `commands/cm-*.md` orchestrate multiple skills in sequence. They are invoked as `/cm:{name}` (e.g., `/cm:research`, `/cm:position`, `/cm:copy`).
 
 **Project workflows**: research, position, copy, launch, compound, social, email
-**Periodic workflows**: daily, standup, weekly, eod
+**Planning & review**: sprint, retro, audit
+**Daily operations**: standup, daily, eod, weekly
 
 ## Skill Categories
 

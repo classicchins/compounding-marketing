@@ -5,6 +5,39 @@ All notable changes to the Compounding Marketing plugin will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-03-21
+
+### Added
+
+**New Workflow Commands (3):**
+- `/cm:sprint` — 2-week marketing sprint planning with goals, deliverables, and schedule
+- `/cm:retro` — Campaign/sprint retrospective (what worked, what didn't, action items)
+- `/cm:audit` — Quarterly marketing health check across channels, funnel, and assets
+
+**Setup Wizard Improvements:**
+- Auto-generates MCP config for Claude Code and Cursor
+- Auto-creates CLAUDE.md for Claude Code users
+- Auto-creates .cursor/mcp.json for Cursor users
+- Better descriptions and inline help for non-technical users
+- Step numbering (1 of 4, 2 of 4...) for clarity
+- Descriptions for each option in select menus
+- Graceful handling of Ctrl+C / readline close
+
+### Improved
+
+**README:**
+- Added comprehensive "Example Workflows" section with real usage patterns
+- Better organized workflow command listing (Project / Planning / Daily)
+- Clearer getting started instructions
+
+**CLAUDE.md:**
+- Updated workflow command counts and categorization
+
+### Changed
+- Version bump to 1.5.0
+
+---
+
 ## [1.1.0] - 2026-03-14
 
 ### Added
