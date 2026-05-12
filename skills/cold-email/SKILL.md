@@ -2,7 +2,7 @@
 name: cold-email
 description: Write high-converting B2B cold outreach emails using direct-response frameworks. Personalized, value-first, clear CTA. Triggers - cold email, outreach email, prospecting, cold outreach, B2B email.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
 ---
 
 # Cold Email Outreach

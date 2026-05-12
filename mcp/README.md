@@ -55,7 +55,7 @@ Add to your MCP configuration (e.g., `cline_mcp_settings.json` or equivalent):
 {
   "perplexity": {
     "command": "npx",
-    "args": ["-y", "@anthropic-ai/mcp-server-perplexity"],
+    "args": ["-y", "@perplexity-ai/mcp-server"],
     "env": {
       "PERPLEXITY_API_KEY": "pplx-xxxxxxxxxxxx"
     }
@@ -68,7 +68,7 @@ Add to your MCP configuration (e.g., `cline_mcp_settings.json` or equivalent):
 {
   "exa": {
     "command": "npx",
-    "args": ["-y", "@anthropic-ai/mcp-server-exa"],
+    "args": ["-y", "exa-mcp-server"],
     "env": {
       "EXA_API_KEY": "exa-xxxxxxxxxxxx"
     }
@@ -133,7 +133,7 @@ mcp/
 ## Troubleshooting
 
 ### "MCP not found" errors
-- Ensure you've installed the MCP server: `npm install -g @anthropic-ai/mcp-server-perplexity`
+- Ensure you've installed the MCP server: `npm install -g @perplexity-ai/mcp-server`
 - Or use `npx -y` to auto-install on first run
 
 ### "Invalid API key" errors

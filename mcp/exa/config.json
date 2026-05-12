@@ -1,10 +1,10 @@
 {
   "name": "exa",
   "description": "Exa AI MCP server for neural web search and company research",
-  "package": "@anthropic-ai/mcp-server-exa",
+  "package": "exa-mcp-server",
   "version": "latest",
   "command": "npx",
-  "args": ["-y", "@anthropic-ai/mcp-server-exa"],
+  "args": ["-y", "exa-mcp-server"],
   "env": {
     "EXA_API_KEY": "${EXA_API_KEY}"
   },

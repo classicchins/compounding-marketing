@@ -5,6 +5,70 @@ All notable changes to the Compounding Marketing plugin will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-05-12
+
+Headline release: marketplace install for Claude Code, a hardened opt-in npx wizard with `--dry-run` / `--uninstall`, real per-tool install paths verified against each platform's docs (Claude Code, Cursor, Codex, Zed, ChatGPT), and all 61 skills expanded to a single gold-standard structure (~37,500 lines total).
+
+### Added
+
+**Marketplace + wizard surface.** First-class Claude Code marketplace entry plus two slash commands that mirror the npx wizard from inside the editor.
+- `.claude-plugin/marketplace.json` — enables `/plugin marketplace add classicchins/compounding-marketing`.
+- `.claude-plugin/plugin.json` refreshed with full author/repository/homepage metadata and `commands: 16`.
+- `commands/cm-setup.md` — explicit, opt-in per-project bootstrap (the in-Claude-Code equivalent of the npx wizard).
+- `commands/cm-uninstall.md` — manifest-driven rollback that restores `.bak` backups byte-identical and strips marker blocks.
+- `bin/setup.js` — full rewrite (~1,260 lines) with new flags: `--dry-run`, `--uninstall`, `--yes`/`-y` (CI-friendly defaults: merge instructions, skip everything else), `--scope=global|project|custom`, `--target=<path>`, `--tool=claude-code|claude-cowork|cursor|codex|chatgpt|zed|other`, plus `--version`/`-v`, `--info`, `--help`/`-h`.
+
+**Cross-platform support.** Every target path was verified against the upstream tool's own docs; the wizard now writes real MCP server config files instead of printing snippets.
+- Claude Code / Cowork: `~/.claude/plugins/` or `./compounding-marketing/`, with symlinks into `.claude/commands/cm-*.md` and `.claude/skills/<skill>/` for the native skill loader.
+- Cursor: `./compounding-marketing/` + generated `./.cursor/rules/cm-*.mdc` with proper Cursor frontmatter (`description`, `globs`, `alwaysApply`).
+- Codex (OpenAI): skill directories symlinked under `~/.agents/skills/<skill>/` (global) or `./.agents/skills/<skill>/` (project); `AGENTS.md` is project-scoped per Codex's Git-root discovery.
+- Zed: `./compounding-marketing/` + project-root `AGENTS.md`. No `.zed/` writes.
+- ChatGPT: project files + printed copy-paste block for Custom GPT Instructions.
+- MCP config writes land at each tool's documented location and flow through the same collision handler / manifest as every other write:
+  - Cursor: `.cursor/mcp.json` or `~/.cursor/mcp.json` (JSON, `{"mcpServers": {...}}`).
+  - Codex: `./.codex/config.toml` or `~/.codex/config.toml` (TOML, `[mcp_servers.<name>]` tables).
+  - Claude Code project: `.mcp.json` (JSON).
+  - Claude Code global: wizard prints `claude mcp add --scope user …` instead of editing `~/.claude.json` (which holds Claude Code's own state).
+- Install manifest (`.compounding-marketing-install.json` for project scope, `~/.claude/.compounding-marketing-install.json` for global) tracks every `createdFiles[]`, `createdSymlinks[]`, `modifiedFiles[].backupPath`, `appendedMarkers[]`, and `mcpEntries[]`. Preserved across re-installs; `--uninstall` reverses exactly the recorded changes (files/symlinks removed, `.bak` backups restored, marker blocks stripped, MCP entries removed via JSON delete or TOML regex strip).
+
+**Skill quality infrastructure + 61 expansions.** A canonical template and a build-blocking validator now back every skill, and all 61 skills have been expanded to meet the bar.
+- `skills/_TEMPLATE.md` — canonical 7-section gold-standard structure (Role, Initial Assessment, Process, Output Format, Quality Bar with Common Mistakes, Examples, Related Skills).
+- `scripts/validate-skills.js` — enforces ≥300 lines, role prompt, all required sections, ≥5 common mistakes, ≥2 worked examples, ≥3 related skills. Wired into `npm run validate` and `npm run build`.
+- All 61 skills now meet the structure (~37,500 lines total, avg ~615 per skill). Highlights by group:
+  - **Tier A conformance** (8): ai-seo, cold-email, gtm-strategy, referral-program, paid-ads, brand-voice, positioning, seo-audit. `brand-voice` was fully rebuilt — previously passed the validator with placeholder `[Example]` text; now 474 lines with real worked examples grounded in Mailchimp Content Style Guide, NN/g four-dimensional tone, Marty Neumeier, and Lawrence Vincent. `ai-seo` stats audited honestly: unsourced precise figures (Wyzowl 67%, Mixpanel 3.2 min, +527% YoY, 85.79%) softened to qualitative claims and fabricated citations removed.
+  - **Foundational strategy** (7): content-strategy, copywriting, messaging-framework, value-proposition, launch-strategy, marketing-psychology, cm-context.
+  - **Channel + content** (7): email-sequence (58 → 575), social-content, channel-strategy, webinar-strategy, partnership-marketing, newsletter-growth, community-strategy.
+  - **CRO + SEO** (8): programmatic-seo, site-architecture, competitor-alternatives, ab-test-setup, page-cro, schema-markup, popup-cro, form-cro.
+  - **Lifecycle + ops** (6): churn-prevention, revops, marketing-automation, attribution-modeling, analytics-tracking, email-deliverability.
+  - **Research** (6): icp-research, customer-research, customer-interview, competitive-analysis, market-sizing, competitor-content-monitoring.
+  - **Channel + paid** (6): ad-creative, linkedin-ads, video-marketing, product-hunt-launch, press-pr, abm-strategy.
+  - **Conversion** (5): signup-flow-cro, onboarding-cro, paywall-upgrade-cro, pricing-strategy, copy-editing.
+  - **Sales + meta** (8): case-study, testimonial-collection, sales-enablement, lead-magnets, free-tool-strategy, marketing-ideas (130 → 576), social-media-strategy, content-performance-scoring.
+
+### Changed
+
+- Every existing-file write prompts: **Merge with markers** / **Overwrite (with `.bak` backup)** / **Skip**. With `--yes`: instructions files / `.gitignore` / MCP config default to merge; everything else defaults to skip.
+- `cm-*` symlink cleanup is gated behind a confirmation prompt; idempotent re-runs preserve manifest entries.
+- `CLAUDE.md` / `AGENTS.md` edits are always wrapped in `<!-- COMPOUNDING-MARKETING-START/END -->` markers so N installs produce a single marker pair.
+- Post-install verification offers to repair (or remove) broken symlinks instead of just reporting them.
+- README install section restructured: marketplace-first for Claude Code, hardened npx fallback for everything else, with the full per-tool target table.
+- AGENTS.md skill catalog regenerated to list all 61 skills across 12 categories with current names. `/cm-{name}` syntax replaces legacy `/cm:{name}` throughout.
+
+### Removed
+
+- `npm postinstall` hook — installation is now opt-in. `npm install` performs zero file writes outside `node_modules/`. **This was the root-cause bug from v1.1.5 / v1.5 that silently overwrote user `CLAUDE.md` files.**
+- `bin/setup.js --silent` mode (no longer needed; postinstall hook is gone).
+
+### Fixed
+
+- `CLAUDE.md` and `AGENTS.md` are no longer silently overwritten by `npm install` or by the wizard.
+- `fs.cpSync(..., { force: true })` replaced with a per-leaf `copyTreeRespectingCollisions` walker that consults the collision handler.
+- Re-running the wizard no longer duplicates marker blocks (idempotent replace path) and no longer zeros out the manifest (prior entries are merged forward).
+- Global scope no longer pollutes cwd — `.cm-config.json` and `.gitignore` only land in cwd for `--scope=project`; global installs write config to `~/.claude/.cm-config.json`.
+- Cursor target writes proper `.mdc` files (previously `.md` symlinks Cursor ignored).
+- Codex target writes to `~/.agents/skills/<skill>/` per the official docs (previously `~/.codex/prompts/`, which Codex does not read).
+- Zed target no longer writes a `.zed/` directory (Zed reads project-root `AGENTS.md` directly).
+
 ## [1.5.0] - 2026-03-21
 
 ### Added
@@ -196,5 +260,7 @@ Planned additions for future versions:
 
 ---
 
+[1.6.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.6.0
+[1.5.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.5.0
 [1.1.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.1.0
 [1.0.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.0.0

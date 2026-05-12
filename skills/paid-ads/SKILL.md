@@ -2,12 +2,10 @@
 name: paid-ads
 description: Plan and optimize paid advertising campaigns (Google, Facebook, LinkedIn). Covers targeting, budgeting, campaign structure. Triggers - paid ads, PPC, Google Ads, Facebook Ads, LinkedIn Ads, paid campaigns.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
 ---
 
 # Paid Advertising Strategy
-
-## Role
 
 You are a performance marketing strategist for B2B SaaS. Your goal is to design paid advertising campaigns that acquire customers at a sustainable CAC. You think in terms of unit economics first, platforms second. You never launch a campaign without knowing the target CAC, the payback period, and the kill criteria.
 
@@ -573,6 +571,46 @@ A paid ads campaign plan is not complete until every item is checked:
 9. **Not tracking downstream metrics.** CPL means nothing if leads do not convert to customers. Track lead-to-opportunity and opportunity-to-customer rates by campaign.
 
 10. **Ignoring retargeting.** Retargeting is the highest-ROI paid channel for most SaaS companies. Only 2–5% of visitors convert on the first visit. Retarget the other 95%.
+
+---
+
+## Examples
+
+Two worked examples — one mid-funnel B2B SaaS, one bottom-funnel demand-capture campaign — showing how unit economics drive platform and budget choices.
+
+### Example 1: $30K/Month LinkedIn Ads Plan — Mid-Market B2B HR SaaS
+
+**Context:** HR SaaS targeting 500-2,000 employee companies. ACV $48K. LTV $144K (3-year contract). Gross margin 80%. Target LTV:CAC = 3:1.
+
+- **Max CAC:** $144K LTV / 3 = **$48K max CAC** per closed-won.
+- **Funnel assumptions:** Lead → MQL 40%, MQL → SQL 25%, SQL → Closed-Won 20% (overall lead-to-customer 2%).
+- **Allowable cost per lead:** $48K * 0.02 = **$960 max CPL**. Target CPL: $500-$700 to give headroom.
+- **Platform choice:** LinkedIn first (precise firmographic targeting by company size + HR titles). Google Search secondary for high-intent terms like "best HRIS for 1000 employees."
+- **Budget allocation:** 70% LinkedIn ($21K), 25% Google Search ($7.5K), 5% retargeting ($1.5K).
+- **Campaign structure (LinkedIn):**
+  - Campaign A: Sponsored Content (gated buyer's guide PDF) — top of funnel.
+  - Campaign B: Sponsored Content (case study video) — mid-funnel.
+  - Campaign C: Conversation Ads (book a demo) — bottom of funnel.
+- **Audience:** Company size 500-2,000, industries (retail, manufacturing, healthcare), titles (Head of HR, VP People, CHRO, HR Director). Excluded job titles: students, junior roles.
+- **Kill criteria:** Pause any campaign at $1.5K CPL after 4 weeks unless it is delivering pipeline (SQL-stage) within 2x the target.
+- **Expected output:** ~45-55 leads/month, 18-22 MQLs, 4-6 SQLs, ~1 closed-won = $48K ARR per month. CAC = $30K. Payback period under 8 months.
+
+### Example 2: $10K/Month Google Search Plan — Bottom-Funnel Demand Capture, SMB SaaS
+
+**Context:** Project management SaaS for marketing agencies. ACV $4,800/year (10 seats at $40/seat/month). LTV $9,600 (24-month median). Gross margin 85%. Target LTV:CAC = 3:1.
+
+- **Max CAC:** $9,600 / 3 = **$3,200 max CAC**. Target CAC: $1,800 (LTV:CAC 5.3:1) to leave room for blended channel mix.
+- **Funnel assumptions:** Click → Trial 8%, Trial → Paid 15%. So click-to-paid ~1.2%.
+- **Allowable cost per click:** $1,800 * 0.012 = **$21.60 max CPC**. Realistic target $4-$8 CPC on bottom-funnel terms.
+- **Platform choice:** Google Search only (high commercial intent, narrow term set). Skip Performance Max — it spends too much on irrelevant placements at this scale.
+- **Budget allocation:** $10K/month entirely on Google Search, split across 3 ad groups.
+- **Campaign structure:**
+  - Ad group A — competitor terms: "asana alternative", "monday.com for agencies", "trello vs". Exact and phrase match only.
+  - Ad group B — category terms: "project management for marketing agencies", "agency project management software". Phrase match with tight negatives.
+  - Ad group C — branded defense: brand name + competitor brand to capture comparison searches. Low spend, high ROAS.
+- **Landing page:** Dedicated /agencies page with 3 social proof logos, 1 case study video, and a 14-day free trial CTA above the fold. No demo gate.
+- **Kill criteria:** Pause any keyword spending over $50 with zero trials after 4 weeks. Pause any ad group with CPL above $200 after 60 days.
+- **Expected output:** ~1,500 clicks/month at ~$6.50 CPC, ~120 trials, ~18 paid customers = ~$7,200 in new MRR commit per month (~$86K new ARR/year). CAC ~$555. Payback ~7 weeks.
 
 ---
 

@@ -2,7 +2,7 @@
 name: referral-program
 description: Design referral and affiliate programs that incentivize customer advocacy. Covers incentive structures, tracking, and promotion. Triggers - referral program, affiliate program, customer referrals, referral marketing, word-of-mouth.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
 ---
 
 # Referral Program Design
@@ -28,7 +28,7 @@ Before designing a referral program, gather context:
 
 ---
 
-## Core Program Design
+## Process — Core Program Design
 
 ### Incentive Types (Ranked by Effectiveness for SaaS)
 
@@ -412,7 +412,7 @@ K = 3.85 x 0.22 = **0.85** (+21% increase in K)
 
 ## Real-World Examples
 
-### Dropbox — The Gold Standard
+### Example 1: Dropbox — The Gold Standard
 
 - **Mechanic:** Two-sided, product credits
 - **Reward:** 500MB extra storage for both referrer and referee (later increased to 1GB)
@@ -420,7 +420,7 @@ K = 3.85 x 0.22 = **0.85** (+21% increase in K)
 - **Result:** 3,900% user growth in 15 months. Referral program drove 35% of all signups at peak.
 - **Why it worked:** The reward was the product itself (storage), perfectly aligned with user needs. Zero cash outlay. The invite was contextual — sharing files naturally led to "you should get Dropbox."
 
-### Typeform — Recurring Commission Model
+### Example 2: Typeform — Recurring Commission Model
 
 - **Mechanic:** Affiliate/partner program (single-sided for referrer, discount for referee)
 - **Reward:** 15% recurring commission for the referrer, up to $500 per referral
@@ -428,7 +428,7 @@ K = 3.85 x 0.22 = **0.85** (+21% increase in K)
 - **Result:** Built a large affiliate base of agencies and consultants who recommend Typeform to clients.
 - **Why it worked:** Recurring commissions align incentives long-term. The referrer is motivated to refer customers who will stay (not just sign up and churn).
 
-### Airtable — Single-Sided Simplicity
+### Example 3: Airtable — Single-Sided Simplicity
 
 - **Mechanic:** Single-sided, account credits
 - **Reward:** $10 credit to referrer; referee gets nothing extra (product is free)
@@ -436,7 +436,7 @@ K = 3.85 x 0.22 = **0.85** (+21% increase in K)
 - **Result:** Steady organic growth with low fraud (small reward does not attract gaming).
 - **Why it worked:** Airtable is free to start, so the referee does not need an incentive. The $10 credit is enough to motivate a quick share without attracting spam.
 
-### Trello — Capped Feature Unlock
+### Example 4: Trello — Capped Feature Unlock
 
 - **Mechanic:** Two-sided, plan upgrade
 - **Reward:** 1 month of Trello Gold for both referrer and referee, capped at 12 months total
@@ -444,7 +444,7 @@ K = 3.85 x 0.22 = **0.85** (+21% increase in K)
 - **Result:** Consistent referral channel with controlled costs (the cap prevents runaway liability).
 - **Why it worked:** The cap creates urgency ("only 8 months left to earn") and the reward is the premium product experience, which increases conversion to paid.
 
-### PayPal — Cash Incentive at Scale
+### Example 5: PayPal — Cash Incentive at Scale
 
 - **Mechanic:** Two-sided, cash
 - **Reward:** $10 for referrer, $10 for referee (at launch; later reduced and eventually removed)
@@ -528,17 +528,16 @@ A referral program design is complete when it meets ALL of the following:
 - [ ] Launch plan has soft launch phase before broad rollout
 - [ ] Tracking events are specified ("Invite Sent" and "Invite Accepted" at minimum)
 
-### Common Mistakes
+## Common Mistakes
 
-| Mistake | Why It Fails | Fix |
-|---------|-------------|-----|
-| **Stingy rewards** (<$20) | Below perceived value threshold; not worth the social effort | Set reward at 10-25% of first-year LTV, minimum $21 |
-| **Too much friction** (>2 steps to refer) | Every extra step loses 30-50% of referrers | One-click share link + pre-written message |
-| **Hiding the program** | If users cannot find it, they cannot use it | Persistent entry point in app + triggered prompts |
-| **Single-sided only** | Referrer feels like they are "selling" to friends | Default to double-sided (68% higher performance) |
-| **Wrong timing** (before value) | User has not experienced the product yet; no motivation to share | Trigger after aha moment or first success |
-| **Launching before PMF** | Amplifies a bad product; referred users churn and damage referrer trust | Wait until retention is >40% at 30 days |
-| **No fraud prevention** | Self-referrals and gaming drain budget | IP checks, email verification, clawback policy |
+- **Stingy rewards (under $20).** Below the perceived value threshold; not worth the social effort. *Fix:* set reward at 10-25% of first-year LTV with a minimum of $21.
+- **Too much friction (more than 2 steps to refer).** Every extra step loses 30-50% of referrers. *Fix:* one-click share link with a pre-written message.
+- **Hiding the program.** If users cannot find it, they cannot use it. *Fix:* persistent entry point in-app plus triggered prompts at aha moments.
+- **Single-sided only.** The referrer feels like they are "selling" to friends, which kills participation. *Fix:* default to double-sided — published case studies show large lifts over single-sided.
+- **Wrong timing (before value).** The user has not experienced the product yet; no motivation to share. *Fix:* trigger after the aha moment or first success event, not at signup.
+- **Launching before PMF.** Amplifies a bad product; referred users churn and damage referrer trust. *Fix:* wait until 30-day retention is at least 40%.
+- **No fraud prevention.** Self-referrals and gaming drain budget. *Fix:* IP checks, email verification, device fingerprinting, and a clawback policy if the referee churns within 30 days.
+- **Treating it as a one-time launch.** Referral programs decay without iteration. *Fix:* run quarterly experiments on reward size, timing, and copy; keep a roadmap.
 
 ---
 
