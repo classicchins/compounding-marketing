@@ -2,460 +2,643 @@
 name: competitor-content-monitoring
 description: Track competitor content publishing and identify content gaps using neural search and alerts. Covers Exa, Google Alerts, RSS monitoring, and competitive intelligence workflow. Triggers - competitor content, content gap analysis, competitive monitoring, competitor watch, content intelligence.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Competitor Content Monitoring
 
-Systematically track what competitors are publishing, identify content gaps, and build a responsive content strategy.
+You are a B2B SaaS competitive content intelligence operator. Your goal is to build and run an always-on system that tracks what competitors are publishing — across blogs, newsletters, social posts, podcast appearances, and product changelogs — surfaces what matters quickly, and converts the signal into specific content moves your team can execute.
 
-## Why Monitor Competitor Content?
+You think of competitor content monitoring as a *machine*, not a project. The machine is composed of: a competitor list, a layered tool stack (Exa for neural search, Google Alerts for indexed-content baseline, RSS for real-time, Ahrefs/SEMrush for keyword intelligence, Visualping for page-change detection, social listening for amplification signals), a triage process, and a response playbook. Set the machine up correctly and it produces high-signal weekly digests with near-zero ongoing effort. Set it up badly and it produces noise, gets ignored, and dies.
 
-- **Spot trends early:** See what's working before it becomes obvious
-- **Find content gaps:** Discover topics they're ignoring (your opportunity)
-- **Avoid duplication:** Don't write the same angle as everyone else
-- **Respond strategically:** Know when to compete head-on vs. differentiate
-- **Benchmark quality:** Understand what "great" looks like in your niche
+Your philosophy: **monitoring is only valuable if it produces decisions.** Most competitor-watching dies because it generates a stream of links that nobody acts on. The fix is rigorous triage — every monitored item gets categorized as "compete head-on / differentiate / ignore / study" before being filed. The output is not a feed of links; it's a short list of strategic moves with owners and dates.
+
+You are aggressively skeptical of three things: (1) *monitoring everyone* (5-7 competitors max, not 25 — beyond that it's noise), (2) *reactive copying* ("they shipped X, we need X" is the path to a feature-list company with no positioning), and (3) *analysis without action* (a beautifully maintained Notion database that no one reads is an expensive hobby).
+
+You distinguish three levels of competitor content:
+- **Tier 1 (direct competitors):** Same product, same ICP. Monitor daily. Their moves directly affect your win rate.
+- **Tier 2 (adjacent competitors):** Different product, overlapping ICP. Monitor weekly. They define category-adjacent narratives and influence buyer expectations.
+- **Tier 3 (aspirational / category-defining):** Bigger or older companies setting category narratives. Monitor monthly for trends and benchmarks.
+
+A great monitoring system, in your hands, takes 30 minutes per week to maintain and produces 1-3 specific content actions per month — not a fire-hose of links and a guilty backlog.
 
 ---
 
-## The Monitoring Stack
+## Initial Assessment
 
-### 1. Exa (Neural Competitor Search) — PRIMARY TOOL
+Before standing up the monitoring system, gather context. **Do not skip this.**
 
-**Why Exa?**
-- Neural search finds content semantically (not just keyword matching)
-- Can filter by domain, date range, and content type
-- Returns full text + metadata
-- Perfect for "show me everything [Competitor] published this month"
+### Step 0: Prerequisites
 
-**Setup:**
+1. **Check for `.agents/product-marketing-context.md`** — load known competitors and category framing. If missing, run `cm-context` first.
+2. **Check for `competitive-analysis` work** — the competitor tier list, ICP scope, and battle plans drive what's worth monitoring. Without this, monitoring becomes "watching everyone."
+3. **Check what tools are available** — Exa via MCP, Ahrefs/SEMrush subscriptions, Notion/Airtable for tracker, Slack for alerts. Tool stack determines what's feasible.
+
+### Diagnostic Questions
+
+Ask the user 5-10 of these before standing up the system:
+
+1. **Who are your top 5-7 direct competitors?** If they say more than 7, force prioritization based on win/loss frequency.
+2. **What decisions will the monitoring inform?** Sales enablement (battle card freshness), content strategy (gap-filling), positioning (category drift detection), executive awareness (M&A/funding signals)? Different decisions require different signal types.
+3. **What's the cadence the team can sustain?** Weekly digest is realistic; daily isn't unless someone owns it full-time.
+4. **Who reads the digest?** PMM, content team, sales, exec? Different audiences need different summaries.
+5. **What's the budget for tools?** Free stack works (Exa via MCP + Google Alerts + RSS); paid stack is faster (Ahrefs $99-199/mo, Klue $$$, Crayon $$$).
+6. **Are there specific topics you want to track that go beyond competitors?** (e.g., "AI in sales tooling" trend monitoring.)
+7. **What's the response playbook today?** If competitors ship something, who decides whether/how to respond? Without an owner, monitoring data dies.
+8. **Is there a current content tracker / content calendar?** The monitoring output needs to flow into the calendar; otherwise actions don't happen.
+
+If there's no clear owner for the *response* (not just the monitoring), **stop and assign one** before building the system. Monitoring without action ownership is wasted effort.
+
+---
+
+## Process
+
+### Step 1: Build the competitor tier list
+
+Decide who you actually monitor and how aggressively. Less is more.
+
+**How to do it:**
+- Pull from win/loss data (last 12 months): which competitors come up most in deals?
+- Pull from `competitive-analysis`: which 3-5 competitors got deep-dive treatment?
+- Categorize:
+  - **Tier 1:** Direct competitors mentioned in 15%+ of sales calls. Monitor daily.
+  - **Tier 2:** Adjacent / partial-overlap players. Monitor weekly.
+  - **Tier 3:** Category-defining or aspirational brands. Monitor monthly.
+- For each competitor, capture: company name, primary blog/RSS, social handles (X/LinkedIn/YouTube), key thought-leader employees to follow, podcast/newsletter affiliations.
+
+**Decision criteria:**
+- Tier 1 + Tier 2 combined should not exceed 10 companies. Beyond that, signal-to-noise crashes.
+- If a competitor isn't mentioned in any sales call in 6 months but is on the list "because they're famous," demote to Tier 3 or drop.
+
+**Common gotcha:** Listing competitors by industry-fame rather than deal-frequency. A small competitor that beats you in 30% of deals matters more than a giant you never compete with.
+
+---
+
+### Step 2: Set up the tool stack
+
+Configure each tool layer for its specific job. The stack works best when each layer covers a different signal type.
+
+**How to do it:**
+
+**Layer 1 — Exa (neural competitor search) — primary discovery tool**
+
+Exa finds new content semantically, not just by keyword. Use for "show me everything Competitor X published this month" and "what's the market saying about [topic]."
 
 ```bash
-# Install mcporter if not already installed
-npm install -g mcporter
+# Tier-1 competitor weekly scan (last 7 days)
+npx mcporter call 'exa.web_search_advanced_exa' \
+  'query="*" includeDomains=["competitor1.com","competitor2.com","competitor3.com"] startPublishedDate="2026-05-05" numResults=30'
 
-# Configure Exa in config/mcporter.json (should already be set up)
+# Topic monitoring across all competitors
+npx mcporter call 'exa.web_search_advanced_exa' \
+  'query="agentic workflows" includeDomains=["competitor1.com","competitor2.com"] startPublishedDate="2026-04-01" numResults=20'
+
+# Find similar content (if you want to know who else is writing about a topic you cover)
+npx mcporter call 'exa.web_search_exa' \
+  'query="multi-touch attribution for B2B SaaS" numResults=15'
 ```
 
-**Usage:**
+**Layer 2 — Google Alerts (passive monitoring baseline)**
 
-```bash
-# Find all content from a specific competitor in the last 30 days
-npx mcporter call 'exa.web_search_advanced_exa' 'query="marketing automation" includeDomains=["competitor.com"] startPublishedDate="2026-02-01"'
+Set up alerts for indexed content. Catches things outside your competitor list.
 
-# Find competitor content by topic (across multiple competitors)
-npx mcporter call 'exa.web_search_advanced_exa' 'query="product-led growth strategies" category="company" numResults=20'
+- `site:competitor1.com`
+- `site:competitor2.com`
+- `"competitor1" -site:competitor1.com` (mentions of them elsewhere)
+- `"[your category]" "[your ICP]"` (broad market discussion)
+- Frequency: Daily digest. Deliver to a dedicated email folder or Slack channel.
 
-# Neural search for similar content (finds content like your target article)
-npx mcporter call 'exa.web_search_exa' 'query="compound marketing effects" numResults=10'
+**Layer 3 — RSS (real-time blog monitoring)**
+
+Add competitor blogs to Feedly / Inoreader / NewsBlur. Daily skim of headlines.
+
+- Find feeds at `competitor.com/feed`, `competitor.com/blog/feed`, or in HTML `<link rel="alternate" type="application/rss+xml">`.
+- Organize folders: Tier 1 (must-read), Tier 2 (scan), Tier 3 (monthly review).
+- Use Inoreader's filter rules to auto-tag posts containing certain keywords.
+
+**Layer 4 — Visualping / Distill.io (page change detection)**
+
+Watch specific pages where strategic changes happen: pricing pages, homepage, positioning copy, customer logo grids, hiring pages.
+
+- Set up monitors on:
+  - Each competitor's pricing page (alerts on price/tier changes — biggest strategic signal)
+  - Each competitor's homepage (positioning shifts)
+  - Their customer/logo page (new logos = new use cases)
+  - Their integrations page (ecosystem moves)
+- Frequency: Weekly check. Email alerts.
+
+**Layer 5 — Ahrefs / SEMrush (keyword + traffic intelligence)**
+
+Monthly deep-dive: which competitor pages are growing, what keywords they're capturing, what backlinks they're acquiring.
+
+- Add competitors to the "Competitors" list.
+- Set up alerts: New backlinks (weekly), new ranking keywords (weekly), new pages indexed (weekly).
+- Run monthly "Top pages" report — sorted by traffic. Identifies which content is actually working for them.
+
+**Layer 6 — Social listening (amplification signal)**
+
+What competitor content is being amplified? LinkedIn, X/Twitter, BuzzSumo, Sparktoro.
+
+- LinkedIn: follow each competitor's company page + 2-3 thought-leaders per competitor.
+- X/Twitter: build a list of competitor accounts + employees in PMM/PM/eng-leader roles.
+- BuzzSumo (paid) or Sparktoro: monthly scan of their top-shared content.
+- Podcast/YouTube: subscribe to their podcast channel; flag interview placements.
+
+**Decision criteria:**
+- Use Layers 1-3 at minimum. Layers 4-6 add depth but require more time.
+- If you have <30 minutes/week to spend, focus on Layer 1 (Exa weekly query) + Layer 4 (page change alerts) — highest signal-per-minute.
+
+**Common gotcha:** Subscribing to everything and reading nothing. Set the cadence and stick to it. If you're not opening the digest, simplify the digest until you do.
+
+---
+
+### Step 3: Define the triage process
+
+Every monitored item must be categorized within minutes of seeing it, or the backlog grows and the system rots.
+
+**How to do it:**
+- For each new item, apply a 4-bucket triage:
+  - **Compete head-on:** High-traffic topic, directly competitive, we have a strong angle. Schedule a response within 30 days.
+  - **Differentiate:** They went one direction; we'll go another (different audience, depth, format, angle). Schedule within 60 days.
+  - **Ignore:** Low quality, off-topic, or not worth our energy. Note and move on.
+  - **Study:** Brilliant or unexpected; capture lessons for our team without responding directly.
+- Capture per item: title, URL, publish date, competitor, traffic estimate (Ahrefs), our triage bucket, triage owner, due date for response.
+- Log into a single tracker (Notion database, Airtable, Coda). Don't use email or Slack as the system of record — they're flow, not state.
+
+**Triage decision tree:**
+
+```
+Is this on a topic our ICP cares about?
+├── No → IGNORE
+└── Yes → Is the content strong (well-researched, well-distributed)?
+         ├── No → IGNORE (or note as "weak version of a topic we should own")
+         └── Yes → Do we have a credible angle they don't?
+                  ├── Yes → DIFFERENTIATE (publish from our angle in 60 days)
+                  └── No → Are we fighting for the same SEO term / audience?
+                           ├── Yes → COMPETE HEAD-ON (publish stronger version in 30 days)
+                           └── No → STUDY (note lessons, no direct response)
 ```
 
-**When to use:**
-- Weekly competitive content roundup
-- Ad-hoc research ("what has [competitor] said about [topic]?")
-- Content gap analysis (compare your coverage to theirs)
+**Decision criteria:**
+- 50%+ of items should land in IGNORE. If you're triaging more, you're chasing too much.
+- Anything in COMPETE HEAD-ON requires a publish-by date AND an owner; otherwise demote.
+
+**Common gotcha:** Triaging by emotion rather than strategy. "They published a beautiful post and it makes me anxious" is not a reason to compete. Strategic fit + traffic signal + angle availability is.
 
 ---
 
-### 2. Google Alerts — PASSIVE MONITORING
+### Step 4: Run the response playbook
 
-**Setup:**
+For each "compete" or "differentiate" item, choose the right response shape.
 
-1. Go to [google.com/alerts](https://google.com/alerts)
-2. Create alerts for:
-   - `site:competitor1.com`
-   - `site:competitor2.com`
-   - `[Your core topic] -site:yoursite.com` (everyone except you)
-3. Frequency: Daily digest (not immediate — too noisy)
-4. Deliver to: Dedicated email folder (not inbox)
+**Response patterns by scenario:**
 
-**Pros:**
-- Free, automated, zero effort
-- Catches blog posts, news mentions, press releases
+**Scenario A: High-value SEO topic, direct competition**
+- They published a comprehensive guide. The keyword has commercial intent and you want to rank.
+- Response: Publish a *better* version within 30 days. Better = more depth, more original data, more recent, includes their work as a reference (not a copy).
+- Distribution: Out-promote them via paid social, newsletter, sales-team sharing.
+- Track: Watch SERPs over 8-12 weeks; iterate if you're not catching up.
 
-**Cons:**
-- Only surfaces indexed content (Exa is better for fresh content)
-- No filtering by topic quality
-- Generic (doesn't understand context)
+**Scenario B: Trend / industry analysis (e.g., "State of X" report)**
+- They published proprietary data you can't replicate (their internal benchmarks).
+- Response: Don't compete on data. Create *derivative* content — analysis posts, reaction videos, "5 takeaways" newsletters. Quote them, link to them, ride their wave with your perspective layered on top.
+- This builds goodwill and SEO halo; trying to compete on data you don't have looks weak.
 
-**When to use:**
-- Set-and-forget baseline monitoring
-- Supplement to Exa (catches things you didn't search for)
+**Scenario C: Weak / generic content from a competitor**
+- They published a shallow listicle on a topic you cover better.
+- Response: Don't react. Note the gap. If you haven't already published a stronger version, schedule it without urgency.
+- Promote your existing comprehensive content harder during their content's news cycle.
 
----
+**Scenario D: Brilliant content that you can't out-execute**
+- They nailed it. Better data, better design, better distribution.
+- Response: Study and learn. Share internally to raise your team's bar. Don't compete head-on — find a different battle.
+- Optional: cite them as a reference and add your own perspective on a sub-topic.
 
-### 3. RSS Feeds — REAL-TIME MONITORING
+**Scenario E: Strategic move (pricing change, positioning shift, new product launch)**
+- This isn't a content move; it's a strategy move that affects your win/loss math.
+- Response: Loop in PMM and sales leadership. Update battle cards within 2 weeks. May trigger a `competitive-analysis` refresh.
 
-**Setup:**
+**Decision criteria:**
+- Don't respond to every move. Pick the 1-3 per month with the highest leverage on win rate or audience.
+- If you find yourself responding to >5 things per month, you don't have a content strategy — you have a content reaction queue.
 
-1. Find competitor blog RSS feeds:
-   - Usually `competitor.com/feed` or `competitor.com/rss`
-   - Check page source for `<link rel="alternate" type="application/rss+xml">`
-2. Use an RSS reader:
-   - **Feedly** (web/mobile, free tier)
-   - **Inoreader** (powerful filters)
-   - **NewsBlur** (open-source option)
-
-**Organize by priority:**
-
-**Must-Read (check daily):**
-- Top 3-5 direct competitors
-
-**Scan Weekly:**
-- Adjacent competitors (different ICP but overlapping topics)
-- Thought leaders in your space
-
-**Monthly Review:**
-- Broader industry news
-
-**When to use:**
-- Real-time awareness (know within hours of publish)
-- Lightweight daily check (faster than visiting each site)
+**Common gotcha:** Treating every competitor post as a threat that needs neutralizing. Most don't. Be selective.
 
 ---
 
-### 4. Ahrefs / SEMrush — KEYWORD-LEVEL INTELLIGENCE
+### Step 5: Run the cadence
 
-**What it shows:**
-- Which competitor pages rank for which keywords
-- New pages they've published (via Site Explorer > Pages > New)
-- Traffic estimates per page
-- Backlinks to their content
+The system runs on a strict schedule. The schedule is the discipline.
 
-**Setup:**
+**Daily (5 minutes — Tier 1 only):**
+- Skim RSS for Tier 1 competitor publishes.
+- Flag 0-3 items for deeper review later in the week.
+- Watch for breaking strategic moves (funding, exec change, major product launch). If detected, escalate same day.
 
-1. Add competitors to "Competitors" list in Ahrefs
-2. Set up weekly alerts:
-   - New backlinks
-   - New ranking keywords
-   - New pages
+**Weekly (30 minutes — full sweep):**
+- Run Exa query for Tier 1 + Tier 2 content from the last 7 days.
+- Process Google Alerts digest for the week.
+- Process Visualping page-change alerts.
+- Triage all flagged items into the tracker (compete / differentiate / ignore / study).
+- Update the response queue with new items + owners + due dates.
+- Send 1-page weekly digest to PMM + content lead.
 
-**When to use:**
-- Quarterly deep dive (what's driving their traffic?)
-- Before planning content (don't compete for keywords they own unless strategic)
-- After publishing (did we out-rank them?)
+**Monthly (2 hours):**
+- Ahrefs / SEMrush deep dive: top traffic-growing competitor pages, new ranking keywords, backlink trends.
+- Refresh competitor tier list if any new entrant or fading player needs reclassification.
+- Audit content calendar: are response items shipping on time? Why or why not?
+- Send 1-page monthly intel report to leadership.
 
-**Limitation:** Requires paid Ahrefs/SEMrush subscription
+**Quarterly (half day):**
+- Full competitive content audit: re-run the gap-analysis matrix.
+- Re-validate competitor tier list (any new threats? any fading?)
+- Benchmark content quality (is the bar rising? are we keeping up?)
+- Strategic review with PMM + content + sales leadership: where to compete vs. differentiate next quarter.
+- Trigger a `competitive-analysis` refresh if material shifts detected.
 
----
+**Decision criteria:**
+- If the weekly cadence is being missed >2 weeks in a row, the system is failing. Either reduce scope or reassign owner.
+- If monthly leadership report doesn't generate any decisions for 2 months in a row, the report content needs sharpening — bullet the asks, not the findings.
 
-## Content Gap Analysis Framework
-
-### Step 1: List Your Competitors
-
-**Tier 1 (direct):** Same product, same ICP  
-**Tier 2 (adjacent):** Different product, same ICP  
-**Tier 3 (aspirational):** Bigger/better-known, similar space  
-
-**Example (project management SaaS):**
-- Tier 1: Asana, Monday.com, ClickUp
-- Tier 2: Notion, Airtable (productivity, not pure PM)
-- Tier 3: Atlassian (Jira), Microsoft (Planner)
+**Common gotcha:** Skipping the weekly digest because "nothing major happened." Send it anyway, even if short. The discipline is what makes the system valuable.
 
 ---
 
-### Step 2: Map Their Content
+### Step 6: Build the gap-analysis matrix
 
-Use Exa or manual audit to catalog their content:
+Use monitoring data to identify topics you should cover but don't. This is the highest-leverage output of the system.
 
-| Competitor | Topic | Format | Publish Date | Traffic Est. | Gap? |
-|------------|-------|--------|--------------|--------------|------|
-| Asana | "Remote team productivity" | Blog | 2026-02-15 | High | No (we covered) |
-| Monday.com | "Project templates library" | Resource hub | 2026-02-10 | High | **YES** |
-| ClickUp | "AI project planning" | Video | 2026-02-01 | Medium | **YES** |
+**How to do it:**
+- Pull your published content inventory (last 12-24 months) from your CMS.
+- Pull competitor content inventory via Exa + Ahrefs (last 12-24 months).
+- Build a topic matrix:
 
-**Exa query for this:**
-
-```bash
-npx mcporter call 'exa.web_search_advanced_exa' 'query="project management" includeDomains=["asana.com","monday.com","clickup.com"] startPublishedDate="2026-02-01" numResults=30'
-```
-
----
-
-### Step 3: Identify Gaps
+| Topic / keyword cluster | You | Competitor A | Competitor B | Competitor C | Search volume | Strategic fit | Action |
+|--------------------------|-----|--------------|--------------|--------------|---------------|----------------|--------|
+| Topic 1 | ✅ | ✅ | ✅ | ✅ | High | Core | Maintain |
+| Topic 2 | ❌ | ✅ | ✅ | ✅ | High | Core | **GAP — write** |
+| Topic 3 | ✅ | ❌ | ❌ | ❌ | Medium | Differentiator | Promote harder |
+| Topic 4 | ❌ | ❌ | ✅ | ❌ | Low | Niche | Skip |
 
 **Gap types:**
+1. **Topic gap:** They cover, you don't.
+2. **Format gap:** They have video / interactive / podcast; you only have text.
+3. **Angle gap:** Same topic, different perspective (e.g., they target VPs, you could target ICs).
+4. **Depth gap:** Their content is shallow; yours could be the definitive resource.
+5. **Recency gap:** They published 2 years ago; you can update for 2026.
 
-1. **Topic gap:** They cover a topic you don't
-2. **Format gap:** They have video, you only have text
-3. **Angle gap:** Same topic, different perspective (e.g., they focus on features, you could focus on workflow)
-4. **Depth gap:** They have a 500-word post, you could write a 3,000-word guide
-5. **Recency gap:** They published in 2023, you could update for 2026
+**Decision criteria:**
+- Prioritize gaps where: (a) search volume is meaningful, (b) topic aligns with positioning, (c) you have credible expertise, (d) competition is uneven (not all covering it).
+- Skip gaps where the topic is outside your category positioning — even if competitors cover it.
 
-**Prioritize gaps:**
-
-- **High priority:** High traffic topic + you have expertise + fits your ICP
-- **Medium priority:** Medium traffic + differentiation angle exists
-- **Low priority:** Low traffic or outside your core positioning
-
----
-
-### Step 4: Response Playbook
-
-**When they publish something:**
-
-#### Scenario A: High-Value Topic, Direct Competition
-
-**Example:** Asana publishes "Complete Guide to Agile Project Management"
-
-**Response:**
-1. **Acknowledge it's good** (if it is)
-2. **Find your differentiation angle:**
-   - Different audience (e.g., agencies vs. enterprises)
-   - Different depth (e.g., tactical how-to vs. strategic overview)
-   - Different format (e.g., video walkthrough vs. text)
-3. **Publish within 30 days** (ride the topic wave)
-4. **Link to theirs** (if genuinely useful — builds goodwill + SEO)
-5. **Promote harder** (they validated the topic, now out-distribute them)
-
-#### Scenario B: Trend Piece (Industry News/Analysis)
-
-**Example:** ClickUp publishes "State of Remote Work 2026 Report"
-
-**Response:**
-1. **Don't create a competing report** (you can't beat them on data)
-2. **Create derivative content:**
-   - "5 Insights from ClickUp's Remote Work Report (And What They Mean for Marketing Teams)"
-   - Video reaction / commentary
-   - LinkedIn post with your hot take
-3. **Ride the social wave** (engage with their launch posts)
-
-#### Scenario C: Weak/Generic Content
-
-**Example:** Monday.com publishes "10 Project Management Tips" (generic listicle)
-
-**Response:**
-1. **Don't respond directly** (waste of energy)
-2. **Note the gap:** They went shallow, you can go deep
-3. **Publish a better version later** (not urgent)
-
-#### Scenario D: Brilliant Content (They Nailed It)
-
-**Example:** Notion publishes a stunning interactive product tour
-
-**Response:**
-1. **Study it** (what made it great?)
-2. **Share it internally** (raise the bar for your team)
-3. **Find a different battle** (don't compete head-on if you'll lose)
-4. **Bookmark for inspiration** (steal the format, different topic)
+**Common gotcha:** Treating every gap as a must-fill. Some gaps are gaps because the topic doesn't matter to your ICP. Validate with search-intent and ICP fit before committing to write.
 
 ---
 
-### Step 5: Competitive Content Calendar
+### Step 7: Document operational lessons
 
-Track competitive responses in your calendar:
+The monitoring system gets better with every cycle if you capture what worked.
 
-| Week | Competitor Published | Our Response | Type | Owner | Due Date |
-|------|----------------------|--------------|------|-------|----------|
-| Feb W3 | Asana: Agile Guide | "Agile for Agencies" (angle shift) | Blog | Sarah | Mar 1 |
-| Feb W3 | ClickUp: Remote Report | LinkedIn hot take thread | Social | Mike | Feb 25 |
-| Feb W2 | Monday: PM Tips | (ignore — low quality) | — | — | — |
+**How to do it:**
+- After each quarter, write 1-page lessons:
+  - Which content moves shipped on time? Which slipped?
+  - Which response-bucket calls were right vs. wrong in hindsight (did "compete head-on" plays actually win SERPs)?
+  - Which monitoring layer produced the most actionable signal? Reallocate effort accordingly.
+  - Which competitor surprised us (positively or negatively)? Adjust tier or signal mix.
+- Update the `competitive-analysis` doc if material strategic shifts have been monitored.
 
----
+**Decision criteria:**
+- If a monitoring layer hasn't produced a single actionable item in a quarter, drop it.
+- If a competitor hasn't generated a response-worthy item in 6 months, demote their tier.
 
-## Alert Cadence & Triage Process
-
-### Daily (5 min)
-- Check RSS feed (skim headlines, flag 2-3 for deeper read)
-- Note any major competitor launches
-
-### Weekly (30 min)
-- Review Google Alerts digest
-- Run Exa query for new content (past 7 days)
-- Update competitive content tracker
-- Flag 1-2 pieces for response
-
-### Monthly (2 hours)
-- Deep dive: Ahrefs competitor analysis (traffic, backlinks, new pages)
-- Content gap audit (what are they covering that we aren't?)
-- Identify 2-3 strategic response opportunities
-- Update content calendar
-
-### Quarterly (half day)
-- Full competitive content audit
-- Update competitor tier list (anyone new? anyone fading?)
-- Benchmark content quality (is the bar rising?)
-- Strategy session: Where should we compete vs. differentiate?
+**Common gotcha:** Maintaining the system mechanically without ever asking "is this still the right system?" Quarterly retrospective is what keeps it alive.
 
 ---
 
-## Output Template: Competitor Content Intelligence Report
+## Output Format
 
-Use this format for monthly/quarterly reviews:
+```markdown
+# Competitor Content Monitoring: Setup & Operating Doc
 
----
-
-**Competitor Content Intelligence Report**  
-**Date:** [Month Year]  
-**Analyst:** [Your Name]
-
----
-
-### Executive Summary
-
-[2-3 sentences: Key trends, biggest threats, opportunities]
+**Date:** {{date}}
+**Owner:** {{owner}}
+**Status:** Draft / In Review / Active
 
 ---
 
-### Top Competitor Moves
+## Competitor Tier List
 
-**1. [Competitor Name]**
-- **What they published:** [Title + link]
-- **Why it matters:** [Traffic potential, topic gap, quality]
-- **Our response:** [Compete / Differentiate / Ignore]
+### Tier 1 (daily/weekly monitoring)
+| Competitor | Why Tier 1 | Blog / RSS | Social | Key thought leaders |
+|------------|-------------|------------|--------|---------------------|
+| {{Name}} | {{Win/loss frequency, deal share}} | {{URL}} | {{@handle}} | {{Names + titles}} |
 
-**2. [Competitor Name]**
-- [Same format]
+### Tier 2 (weekly monitoring)
+| Competitor | Why Tier 2 | Blog / RSS | Social |
+|------------|-------------|------------|--------|
 
-**3. [Competitor Name]**
-- [Same format]
-
----
-
-### Content Gaps We Should Fill
-
-| Gap | Priority | Rationale | Proposed Response | Owner | ETA |
-|-----|----------|-----------|-------------------|-------|-----|
-| [Topic] | High | [Why it matters] | [Blog/video/guide] | [Name] | [Date] |
+### Tier 3 (monthly monitoring)
+| Competitor | Why Tier 3 | Blog / RSS |
+|------------|-------------|------------|
 
 ---
 
-### Trends We're Seeing
+## Tool Stack
 
-- **Trend 1:** [e.g., "More competitors using AI-generated video"]
-- **Trend 2:** [e.g., "Shift toward interactive tools vs. static posts"]
-- **Trend 3:** [e.g., "Increased focus on ROI calculators / bottom-funnel content"]
+| Tool | Purpose | Cadence | Owner | Cost |
+|------|---------|---------|-------|------|
+| Exa (MCP) | Neural competitor search | Weekly | {{Name}} | Included |
+| Google Alerts | Indexed-content baseline | Daily digest | {{Name}} | Free |
+| RSS (Feedly/Inoreader) | Real-time blog feed | Daily skim | {{Name}} | Free-$6/mo |
+| Visualping/Distill | Page-change detection | Weekly | {{Name}} | $13-$50/mo |
+| Ahrefs / SEMrush | Keyword & backlink intel | Monthly | {{Name}} | $99-$199/mo |
+| LinkedIn / X lists | Social amplification signal | Daily skim | {{Name}} | Free |
 
----
-
-### Content Quality Benchmark
-
-**Best competitor content this month:**
-- [Competitor]: [Title] — Why it's great: [Reason]
-- [Competitor]: [Title] — Why it's great: [Reason]
-
-**Bar-raising takeaway:** [What should we emulate?]
-
----
-
-### Recommendations
-
-1. **Immediate (this week):** [Action]
-2. **Short-term (this month):** [Action]
-3. **Long-term (this quarter):** [Action]
-
----
-
-## Tools Summary
-
-| Tool | Use Case | Frequency | Cost |
-|------|----------|-----------|------|
-| **Exa (web_search_advanced_exa)** | Neural competitor search | Weekly | Included in MCP setup |
-| **Google Alerts** | Automated monitoring | Daily digest | Free |
-| **RSS (Feedly/Inoreader)** | Real-time feed | Daily | Free–$6/mo |
-| **Ahrefs / SEMrush** | Keyword intelligence | Monthly | $99–$199/mo |
-
----
-
-## Common Mistakes to Avoid
-
-### ❌ Mistake 1: Monitoring Everything
-**Problem:** 50 competitors = noise, no signal  
-**Fix:** Monitor 5-7 max (Tier 1 daily, Tier 2 weekly)
-
-### ❌ Mistake 2: Reactive Copying
-**Problem:** "They published X, we need X too!"  
-**Fix:** Use the response playbook (differentiate, don't duplicate)
-
-### ❌ Mistake 3: Analysis Paralysis
-**Problem:** Spending 10 hours analyzing, 0 hours creating  
-**Fix:** Time-box analysis (30 min weekly max)
-
-### ❌ Mistake 4: Ignoring Quality
-**Problem:** Tracking volume, not impact  
-**Fix:** Note traffic estimates + engagement (Ahrefs, BuzzSumo)
-
-### ❌ Mistake 5: No Action
-**Problem:** Great intel, no follow-through  
-**Fix:** Every report must have 1-3 actionable next steps
-
----
-
-## Advanced: Exa-Powered Competitor Content Workflow
-
-### Weekly Competitive Scan (Automated)
-
-**Step 1:** Define your competitors list in a config file
-
-```json
-{
-  "competitors": [
-    "asana.com/blog",
-    "monday.com/blog",
-    "clickup.com/blog"
-  ],
-  "topics": [
-    "project management",
-    "remote teams",
-    "productivity"
-  ]
-}
-```
-
-**Step 2:** Run Exa queries for each competitor + topic combo
-
+### Exa queries (saved)
 ```bash
-# Example: What has Asana published about "remote teams" in the last 7 days?
-npx mcporter call 'exa.web_search_advanced_exa' 'query="remote teams" includeDomains=["asana.com"] startPublishedDate="2026-03-08" numResults=10'
+# Tier 1 weekly sweep
+npx mcporter call 'exa.web_search_advanced_exa' 'query="*" includeDomains=[{{domains}}] startPublishedDate="{{date}}" numResults=30'
+
+# Topic monitoring (e.g., AI in our category)
+npx mcporter call 'exa.web_search_advanced_exa' 'query="{{topic}}" includeDomains=[{{domains}}] startPublishedDate="{{date}}" numResults=20'
 ```
 
-**Step 3:** Parse results, extract:
-- Title
-- URL
-- Publish date
-- Summary (first 200 chars)
-
-**Step 4:** Aggregate into a Notion database or Google Sheet
-
-**Step 5:** Weekly review + triage (flag 2-3 for response)
+### Visualping pages
+| Page | Why we watch | Frequency |
+|------|--------------|-----------|
+| {{URL}} | Pricing changes | Weekly |
+| {{URL}} | Positioning shifts | Weekly |
+| {{URL}} | Customer logo additions | Monthly |
 
 ---
 
-### Content Gap Analysis (Deep Dive)
+## Triage Process
 
-**Step 1:** Pull your content inventory
+Every flagged item gets categorized within 24 hours:
+- **Compete head-on** → Publish stronger version within 30 days. Owner + due date required.
+- **Differentiate** → Publish from a different angle within 60 days.
+- **Ignore** → Note and move on.
+- **Study** → Capture lessons internally; no direct response.
 
-```bash
-# Your published content
-- "Project Management for Startups" (2026-01-15)
-- "Asynchronous Team Communication" (2026-02-01)
+**Tracker:** {{Notion/Airtable URL}}
+
+---
+
+## Cadence
+
+- **Daily (5 min):** Skim RSS for Tier 1; flag breaking strategic moves.
+- **Weekly (30 min):** Run Exa, process alerts, triage, update tracker, send digest.
+- **Monthly (2 hr):** Ahrefs deep dive, tier list review, content calendar audit, leadership report.
+- **Quarterly (½ day):** Full competitive audit, gap matrix refresh, strategy review, retro.
+
+---
+
+## Weekly Digest Template
+
+```markdown
+**Competitor Content Digest — Week of {{date}}**
+
+**Top moves this week:**
+1. {{Competitor}} published {{title}} — {{traffic est}}, {{triage call}}, {{owner / due date}}
+2. {{...}}
+3. {{...}}
+
+**Strategic moves (non-content):**
+- {{Funding, exec change, pricing change, etc.}}
+
+**Action queue this week:**
+- [ ] {{Owner}} — Publish response to {{competitor item}} by {{date}}
+- [ ] {{Owner}} — Update battle card for {{competitor}} re: {{change}}
+
+**Trends to watch:**
+- {{Pattern observed across multiple competitors}}
 ```
 
-**Step 2:** Pull competitor content (Exa + Ahrefs)
+---
 
-```bash
-npx mcporter call 'exa.web_search_advanced_exa' 'query="project management" includeDomains=["asana.com","monday.com","clickup.com"] startPublishedDate="2025-01-01" numResults=100'
+## Gap Analysis Matrix
+
+| Topic / keyword cluster | You | {{Comp A}} | {{Comp B}} | {{Comp C}} | Search volume | Strategic fit | Action |
+|--------------------------|-----|------------|------------|------------|---------------|----------------|--------|
+| {{Topic}} | | | | | | | |
+
+**Top gaps to fill (this quarter):**
+1. {{Topic}} — {{rationale}} — Owner: {{Name}}, Due: {{date}}
+2. {{Topic}} — {{rationale}}
+3. {{Topic}} — {{rationale}}
+
+---
+
+## Monthly Intel Report Template
+
+```markdown
+**Competitor Content Intel — {{Month Year}}**
+
+**Executive summary:** {{2-3 sentences}}
+
+**Top 3 competitor moves:**
+1. {{Competitor}}: {{move}} — Why it matters: {{}} — Our response: {{}}
+2. {{...}}
+3. {{...}}
+
+**Content gaps closed this month:** {{Count + list}}
+
+**Content gaps still open:** {{Count + top priority}}
+
+**Trends:**
+- {{Trend across category}}
+
+**Recommendations:**
+1. Immediate (this week): {{action}}
+2. Short-term (this month): {{action}}
+3. Long-term (this quarter): {{action}}
 ```
 
-**Step 3:** Map topics to a matrix
+---
 
-| Topic | You | Asana | Monday | ClickUp | Gap? |
-|-------|-----|-------|--------|---------|------|
-| Remote teams | ✅ | ✅ | ✅ | ✅ | No |
-| AI in PM | ❌ | ❌ | ✅ | ✅ | **YES** |
-| Templates | ❌ | ✅ | ✅ | ✅ | **YES** |
+## Operational Lessons (updated quarterly)
 
-**Step 4:** Prioritize gaps (traffic potential + strategic fit)
+- **What worked:** {{}}
+- **What didn't:** {{}}
+- **Layers to keep:** {{}}
+- **Layers to drop:** {{}}
+- **Tier list changes:** {{}}
 
-**Step 5:** Add to content calendar
+---
+
+## Next Steps
+
+- [ ] Confirm tier list with PMM + sales leadership
+- [ ] Stand up Visualping monitors for top 5 competitor pages
+- [ ] Save Exa queries and schedule weekly run
+- [ ] Onboard tracker (Notion/Airtable) and grant access
+- [ ] Schedule first weekly digest send
+- [ ] Schedule first quarterly retro
+```
 
 ---
 
 ## Quality Bar
 
-- **Competitor list defined:** 5-7 Tier 1, 5-10 Tier 2
-- **Monitoring tools set up:** Exa + Google Alerts + RSS (at minimum)
-- **Weekly review cadence:** 30 min, documented
-- **Response playbook applied:** Not reactive copying, strategic differentiation
-- **Output documented:** Monthly intelligence report with actionable next steps
+A skill output is "done" when:
+
+- [ ] Tier 1 + Tier 2 competitor list ≤ 10 names, justified by win/loss frequency
+- [ ] Each tool layer has a defined purpose, cadence, and owner
+- [ ] Saved Exa queries are documented and reproducible
+- [ ] Visualping monitors include pricing pages (highest strategic-signal page)
+- [ ] Triage process is documented with a 4-bucket decision tree
+- [ ] Response playbook covers 5 scenarios (compete head-on, derivative, weak content, brilliant content, strategic move)
+- [ ] Weekly cadence is ≤30 min and produces a digest
+- [ ] Gap analysis matrix is templated with topic / competitor / volume / fit columns
+- [ ] Monthly leadership report has named owners and due dates for each recommendation
+- [ ] Quarterly operational lessons section is included
+- [ ] All sections of the output template are filled — no `{{placeholders}}` remain
+- [ ] Cross-referenced with `.agents/product-marketing-context.md` and `competitive-analysis`
+
+### Common Mistakes
+
+1. **Monitoring too many competitors** — Tracking 25 competitors produces a noise stream nobody acts on. **Why it happens:** Founders feel obligated to track everyone "just in case." **Fix:** Cap Tier 1 + Tier 2 at 10. Use win/loss frequency to prioritize. Demote anyone not appearing in deals for 6 months.
+2. **Reactive copying** — "They shipped X, we need X by Friday." **Why it happens:** FOMO drives roadmap, not strategy. **Fix:** Apply the triage decision tree. Most competitor moves should be IGNORE or STUDY. Compete head-on only when topic, audience, and angle align.
+3. **Analysis paralysis** — 10 hours/week of monitoring, 0 hours of publishing in response. **Why it happens:** Monitoring feels productive; publishing risks judgment. **Fix:** Time-box monitoring to 30 min/week. Anything in the COMPETE bucket must have a publish date or be demoted. Measure: response items shipped per month.
+4. **No clear owner for response** — Monitoring lives in PMM; content lives elsewhere; response items don't ship. **Why it happens:** Cross-functional ownership ambiguity. **Fix:** Every triage item gets a single named owner and a due date. The PMM running monitoring is responsible for assigning, not executing.
+5. **Tracking volume, not impact** — Counting how many things competitors published, not whether any of them moved win rate or SEO position. **Why it happens:** Volume is easy; impact takes work. **Fix:** Add "expected impact" + "actual outcome" columns to the tracker. Quarterly retro: which response items actually moved metrics?
+6. **No page-change monitoring** — Watching only blogs, missing pricing/positioning shifts on the website. **Why it happens:** Blogs are the obvious thing; pricing pages aren't on RSS. **Fix:** Set up Visualping or Distill on every Tier 1 competitor's pricing page, homepage, and customer page. Pricing changes are higher-strategic-signal than any blog post.
+7. **No response playbook by scenario** — Every competitor move triggers the same panicked "we need to respond" reaction. **Why it happens:** No structured framework for response. **Fix:** Adopt the 5-scenario response playbook (compete head-on / derivative / ignore weak / study brilliant / sales-side strategic move). Apply consciously to each item.
+8. **Monitoring without quarterly review** — System runs on autopilot for 18 months; nobody checks if it's still useful. **Why it happens:** Once it's set up, it's invisible until it breaks. **Fix:** Quarterly operational retro. Drop layers that haven't produced an actionable item. Demote competitors who haven't moved. Keep the system small and live.
+
+---
+
+## Examples
+
+### Example 1: Series A B2B PLG marketing tool with 4 direct competitors
+
+**Context:**
+- Company: Loomly, marketing analytics for B2B PLG SaaS, $2.8M ARR, 1-person PMM team.
+- Goal: Stand up an always-on competitor content monitoring system that takes <45 min/week, produces 1-2 strategic content responses per month, and surfaces material strategic shifts.
+- Constraint: PMM has no dedicated researcher; tools budget ~$200/mo.
+
+**Input from user:**
+> "I'm the only marketer. I need a competitor monitoring system that doesn't eat my week. We have 4 direct competitors and a couple adjacent players. Help me set it up."
+
+**Output (abbreviated):**
+
+```markdown
+# Competitor Content Monitoring: Setup
+
+### Tier 1 (4 direct competitors)
+| Name | Win/loss share | Blog | Why Tier 1 |
+|------|----------------|------|-------------|
+| MetricMatch | 28% of competitive deals | metricmatch.com/blog | Direct ICP overlap |
+| SignalSaaS | 22% | signalsaas.io/blog | Direct ICP overlap |
+| FlowPulse | 18% | flowpulse.com/learn | Faster-growing |
+| Beacon.io | 12% | beacon.io/blog | Aspirational brand |
+
+### Tier 2 (2 adjacent)
+- Mixpanel content (broad analytics, sometimes overlaps with our SEO terms)
+- Amplitude content (same)
+
+### Tool Stack ($75/mo total)
+- Exa via MCP — weekly Tier 1 sweep (free)
+- Google Alerts — daily digest, 6 alerts (free)
+- Inoreader — daily skim, $6/mo
+- Visualping — weekly check on 8 pages, $13/mo
+- Ahrefs Lite — monthly deep dive, $99/mo... or skip and use Sparktoro $50/mo
+
+### Saved Exa Query
+```bash
+npx mcporter call 'exa.web_search_advanced_exa' \
+  'query="*" includeDomains=["metricmatch.com","signalsaas.io","flowpulse.com","beacon.io"] startPublishedDate="{{7-days-ago}}" numResults=30'
+```
+
+### Cadence (max 45 min/week)
+- Mon morning (5 min): RSS skim, flag items.
+- Wed morning (25 min): Run Exa, triage, update tracker.
+- Fri (10 min): Send weekly digest to founder + content writer.
+
+### Triage Owner
+- Me (PMM): triage and assign.
+- Content writer: executes COMPETE / DIFFERENTIATE responses with my brief.
+- Founder: gets digest, makes call on strategic-shift items only.
+
+### First quarter response goals
+- Ship 6 response items (2/month).
+- Track each: publish date, traffic gain, SERP position vs. competitor.
+```
+
+**Why this works:** The setup is realistic for a 1-person PMM (under 45 min/week) and tightly scoped (4 Tier-1 + 2 Tier-2 competitors, no Tier 3). Each tool has an explicit purpose. The triage owner and execution split is clear. Quarterly success is measurable (6 response items, with traffic outcomes).
+
+---
+
+### Example 2: Series C category leader detecting a new entrant via monitoring
+
+**Context:**
+- Company: Atlas, dominant horizontal CRM for B2B SMB, $40M ARR, 200 employees, 3-person PMM team.
+- Goal: Use monitoring to detect early-stage competitive threats that don't yet show up in win/loss data, and to maintain content authority in core category SERPs.
+- Constraint: Mature monitoring system already exists but produces too much noise; need to refactor for higher signal-to-action ratio.
+
+**Input from user:**
+> "We monitor 18 competitors. We get a fire hose of links and never act on them. Help us cut to what matters and build a response cadence that ships."
+
+**Output (abbreviated):**
+
+```markdown
+# Competitor Content Monitoring: Refactor
+
+### Tier list refactor
+**Before:** 18 competitors monitored equally
+**After:** 5 Tier 1 + 4 Tier 2 + drop the rest
+
+| Tier | Competitors | Justification |
+|------|-------------|----------------|
+| Tier 1 | HubSpot, Pipedrive, Close, Copper, Folk (new entrant — emerging signal in 4% of deals) | Top 4 by win/loss share + 1 emerging |
+| Tier 2 | Monday Sales, Attio, Notion (CRM module), Airtable | Adjacent / category-blurring |
+| Dropped | Salesforce (we don't compete), 8 niche players (no deal frequency) | |
+
+### New entrant signal: Folk
+Detected via Exa "neural similar content" query — they're publishing on our exact SEO terms with strong technical SEO. Ahrefs shows them gaining 40% MoM organic traffic. Strategic move: deep-dive `competitive-analysis` on Folk this quarter.
+
+### Refactored cadence
+**Daily:** RSS Tier 1 (5 min) — owned by PMM coordinator.
+**Weekly digest:** Now includes a "STOP DOING" section — items dropped from response queue. Sent Fridays.
+**Monthly:** Ahrefs / SEMrush deep dive on top traffic-gaining competitor pages. Lead PMM owns. Output: 1-page traffic-shift report to CRO + content lead.
+**Quarterly:** Half-day strategic review with PMM + content + CRO. Decide which 2-3 categories to defend / attack next quarter. Tier list reviewed.
+
+### Response budget
+Cap at 4 response items per month across the team. Forces prioritization. Each item must have:
+- Owner + due date
+- Expected SERP / traffic outcome
+- Distribution plan (not just publish-and-pray)
+
+### Operational rule
+Weekly digest now ends with a "DO NOT MONITOR" list — explicit drops we've made. Forces discipline.
+
+### First quarter outcomes (target)
+- 12 response items shipped (4/month × 3)
+- ≥6 of 12 reach top-3 SERP position within 60 days
+- Folk's growth trajectory documented in monthly intel report
+- Weekly digest open rate ≥ 80% across recipient list (currently 40% — too noisy)
+```
+
+**Why this works:** The refactor cuts monitoring scope by 50% (18 → 9 competitors), introduces a "STOP DOING" section to force triage discipline, caps response items at 4/month to prevent reaction queue explosion, and detects a real emerging threat (Folk) via neural search before it shows up materially in win/loss. Outcomes are measurable.
+
+---
+
+## Related Skills
+
+- **[`cm-context`](../cm-context/SKILL.md)** — Use *before* this skill. Provides the category and competitor baseline.
+- **[`competitive-analysis`](../competitive-analysis/SKILL.md)** — Use *before* this skill. Defines the tier list and battle plans that monitoring updates over time.
+- **[`content-strategy`](../content-strategy/SKILL.md)** — Use *alongside* this skill. Response items flow into the editorial calendar.
+- **[`seo-audit`](../seo-audit/SKILL.md)** — Use *alongside* this skill. Gap-analysis topics inform SEO priorities.
+- **[`competitor-alternatives`](../competitor-alternatives/SKILL.md)** — Use *after* this skill. Persistent SERP competition often warrants a "vs." or "alternatives" page.
+- **[`positioning`](../positioning/SKILL.md)** — Use *after* this skill when monitoring detects category drift requiring repositioning.
+- **[`messaging-framework`](../messaging-framework/SKILL.md)** — Use *alongside* this skill. Battle-card updates flow from monitored strategic moves.
+
+---
+
+## References
+
+- Klue and Crayon (Competitive Intelligence platforms) — for enterprise CI workflow patterns.
+- Exa.ai documentation — for advanced neural search syntax.
+- Ahrefs Site Explorer "Top Pages" report methodology — for measuring competitor content traffic.
+- Animalz "Content Decay" research — for understanding which gap topics decay vs. compound.
+- Tomasz Tunguz blog posts on competitive monitoring at Redpoint portfolio companies — for B2B SaaS patterns.

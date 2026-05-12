@@ -2,12 +2,10 @@
 name: paid-ads
 description: Plan and optimize paid advertising campaigns (Google, Facebook, LinkedIn). Covers targeting, budgeting, campaign structure. Triggers - paid ads, PPC, Google Ads, Facebook Ads, LinkedIn Ads, paid campaigns.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
 ---
 
 # Paid Advertising Strategy
-
-## Role
 
 You are a performance marketing strategist for B2B SaaS. Your goal is to design paid advertising campaigns that acquire customers at a sustainable CAC. You think in terms of unit economics first, platforms second. You never launch a campaign without knowing the target CAC, the payback period, and the kill criteria.
 
@@ -573,6 +571,72 @@ A paid ads campaign plan is not complete until every item is checked:
 9. **Not tracking downstream metrics.** CPL means nothing if leads do not convert to customers. Track lead-to-opportunity and opportunity-to-customer rates by campaign.
 
 10. **Ignoring retargeting.** Retargeting is the highest-ROI paid channel for most SaaS companies. Only 2–5% of visitors convert on the first visit. Retarget the other 95%.
+
+---
+
+## Examples
+
+### Example 1: DataMint — $15K/Month LinkedIn + Google Mix for a Series A B2B Data Platform
+
+**Context:** DataMint is a $3M ARR Series A B2B data platform selling to RevOps teams at $20-200M ARR SaaS companies. ACV is $36K, payback target is 12 months, LTV is $108K. The team has $15K/month to spend on paid acquisition and zero historical performance data.
+
+**Inputs to budget calculation:**
+- Target CAC: $9,000 (LTV/CAC = 12, payback = 12 months at $3K MRR contribution after gross margin)
+- Required customers/month from paid: $15,000 / $9,000 = 1.67 → round to 2 customers/month
+- Funnel assumptions: 25% lead-to-SQL, 20% SQL-to-customer → need 40 leads/month → at $375/lead
+
+**Channel mix (rationale):**
+- LinkedIn Ads: $9,000/mo (60%) — ICP is highly title-targetable (RevOps Manager, Director of RevOps), expensive but precise
+- Google Search: $4,500/mo (30%) — bottom-funnel intent on "reverse ETL", "operational analytics", "Hightouch alternative"
+- Retargeting (Meta + Google Display): $1,500/mo (10%) — recapture the 95% who don't convert first visit
+
+**Campaign structure (LinkedIn):**
+- 1 ABM campaign — 200-account list, sponsored content + message ads, $4K/mo
+- 1 ICP campaign — title-based (RevOps Manager+, 50-500 employee SaaS), single-image and document ads, $3.5K/mo
+- 1 retargeting campaign — website visitors past 90 days, $1.5K/mo
+
+**Output excerpt — 90-day result:**
+```
+LinkedIn:    Spend $27K, Leads 52, SQLs 13, Customers 3   → CAC $9,000  ✅ on target
+Google:      Spend $13.5K, Leads 38, SQLs 11, Customers 3 → CAC $4,500  ✅ outperforming
+Retargeting: Spend $4.5K, Leads 18, SQLs 6, Customers 1   → CAC $4,500  ✅ outperforming
+TOTAL:       Spend $45K, Customers 7  → blended CAC $6,428  ✅ 29% under target
+```
+
+**Why this works:** The plan started from unit economics (CAC, payback, customers needed) and only then chose channels. LinkedIn was expensive per lead but high quality — exactly what a $36K ACV product needs. Google search captured warm bottom-funnel demand at half the LinkedIn CAC. The 10% retargeting allocation punched above its weight because the audience was pre-qualified.
+
+### Example 2: Loomly — Killing a $30K/Month Google Performance Max Campaign That Looked Profitable
+
+**Context:** Loomly is a $4M ARR product analytics tool with a self-serve PLG motion ($99/mo plan, no sales team). They were running a single Google Performance Max campaign at $30K/month spend showing a 3.2 ROAS in the Google Ads dashboard — and the founders were about to scale it to $60K.
+
+**Pre-scale audit findings (using kill/scale rules from this skill):**
+- Performance Max claimed 412 conversions/month at $73 CPA
+- But Stripe showed only 89 new paid signups in the same window — a 4.6x discrepancy
+- Cross-referencing UTMs: 247 of the "conversions" were existing customers logging in (PMax was bidding on brand search and counting brand traffic as conversion)
+- True new-customer CPA after stripping brand: $337
+- LTV at $99/mo, 14-month average tenure, 80% gross margin = $1,108. Target CAC at LTV:CAC of 3 = $369
+- Verdict: actual CAC ($337) was inside target — but only barely, and Google was claiming credit for users who would have converted anyway
+
+**Decision and restructure:**
+1. KILL the Performance Max campaign (week 1) — too much branded cannibalization
+2. LAUNCH a Google Search brand-defense campaign at $2K/mo to keep competitors off "Loomly" SERP
+3. LAUNCH a Google Search non-brand campaign at $8K/mo on bottom-funnel terms ("Mixpanel alternative", "product analytics for early-stage SaaS")
+4. LAUNCH a Meta retargeting campaign at $3K/mo on /pricing and /demo visitors
+5. RESERVE $17K/mo for testing — earmark for a LinkedIn experiment in Q2
+
+**Output excerpt — 60 days after restructure:**
+```
+PMax (killed):           $0      |  baseline removed
+Brand defense:           $2K     |  CAC $48   |  protected ~40 signups/mo
+Non-brand Search:        $8K     |  CAC $290  |  28 net-new customers
+Retargeting:             $3K     |  CAC $180  |  17 customers
+LinkedIn test (paused):  $5K     |  CAC $940  |  killed at Day 30 — no fit for $99 self-serve product
+Net spend:               $13K (down from $30K)
+Net-new paid signups:    61/mo (down from 89 attributed, but 89 included branded false-positives)
+True CAC:                $213 — improved 37%
+```
+
+**Why this works:** The team applied the discipline from this skill — verify platform-reported conversions against source-of-truth revenue, set kill criteria before launch, and don't scale a campaign whose ROAS is propped up by branded cannibalization. The LinkedIn test also got killed at Day 30 because $99 ARPU can't absorb LinkedIn CPLs. Cutting spend by 57% and improving CAC by 37% freed budget for higher-leverage bets.
 
 ---
 

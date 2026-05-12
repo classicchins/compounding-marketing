@@ -2,7 +2,7 @@
 name: positioning
 description: Define market position using April Dunford's Obviously Awesome framework. Identify competitive alternatives, unique attributes, value delivered, best-fit customers, and market category. Triggers - positioning workshop, market position, differentiation strategy, April Dunford, positioning canvas, product positioning.
 metadata:
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # Strategic Positioning Workshop
@@ -331,6 +331,42 @@ Unlike [alternatives],
 - Defining target as "all companies that need [thing]"
 - Inventing a new category without budget to educate the market
 - Positioning statement that could apply to any competitor
+
+---
+
+## Examples
+
+### Example 1: DataMint — Repositioning from "Data Platform" to "Operational Analytics for RevOps"
+
+**Context:** DataMint is a Series A B2B data platform ($3M ARR, 18 employees). Founders pitched it as "the modern data platform" and competed with Snowflake, Databricks, and Fivetran on the homepage. Sales cycles were 4-6 months, win rate was 12%, and prospects routinely asked "how is this different from Snowflake?" — a sign of muddy positioning.
+
+**Workshop input (60-minute session with founders + head of sales):**
+- Competitive alternatives: Snowflake + custom dbt models, Hightouch, Census, Excel + manual exports
+- Unique attributes: pre-built reverse-ETL connectors for 14 RevOps tools (Salesforce, HubSpot, Outreach, Gong, Clari), no-SQL operator interface, audit trail for every synced record
+- Value: RevOps teams ship account-scoring updates to Salesforce in hours instead of waiting 2-3 weeks for the data team
+- Best-fit customers: B2B SaaS companies, $20-200M ARR, RevOps team of 2-8, has Salesforce + Outreach, already runs dbt
+- Market category options: "modern data platform" (crowded, sales-led), "reverse ETL" (Hightouch owns it), "operational analytics for RevOps" (open white space)
+
+**Output excerpt — positioning statement (47 words):**
+> For RevOps teams at B2B SaaS companies who need to act on customer data without waiting on engineering, DataMint is the operational analytics platform that lets non-technical operators ship account-scoring, lead-routing, and territory updates from dbt models to Salesforce in minutes — with full audit trails for compliance.
+
+**Why this works:** The original positioning forced DataMint to compete head-on with $50B incumbents on a feature axis it would always lose. By narrowing best-fit customers (RevOps, not "data teams") and choosing a category where no one else had planted a flag ("operational analytics for RevOps"), the team made the unique attributes (RevOps connectors, no-SQL interface, audit trail) feel inevitable instead of optional. Within 90 days of relaunching the homepage and sales deck, win rate climbed to 24% and average sales cycle dropped to 11 weeks.
+
+### Example 2: Loomly Analytics — Carving Space Against Mixpanel and Amplitude
+
+**Context:** Loomly is a $4M ARR product analytics tool. The team was stuck positioning as "a simpler Mixpanel" — which sounded like a feature gap, not a category. Trial-to-paid conversion was 8% and competitive losses cited "we already have Mixpanel" as the top reason.
+
+**Workshop input:**
+- Competitive alternatives: Mixpanel, Amplitude, PostHog, Heap, "we'll just use Google Analytics 4"
+- Unique attributes: instant event auto-tracking (no instrumentation), built-in cohort templates for SaaS funnels (signup → activation → upgrade → expansion), $99/mo flat pricing up to 1M events
+- Value: PMs at early-stage SaaS get usable funnel data on Day 1 instead of Week 6
+- Best-fit customers: pre-PMF and early-PMF B2B SaaS, 5-30 employees, no data engineer, founder or first PM owns analytics
+- Market category: "product analytics for early-stage SaaS" (positioned against the assumption that you need Mixpanel + a full implementation project)
+
+**Output excerpt — positioning statement (43 words):**
+> For founders and first PMs at early-stage B2B SaaS who need product data before they can afford a data team, Loomly is the zero-instrumentation analytics tool that delivers SaaS-specific funnel insights on Day 1 — at flat-rate pricing that doesn't punish growth.
+
+**Why this works:** Instead of fighting Mixpanel on feature parity, Loomly redefined the buyer (founder/first PM, not data team) and the moment-of-purchase (pre-PMF, not post-Series-B). The "zero-instrumentation" attribute was always real but had been buried under generic copy. After repositioning, trial-to-paid conversion jumped to 19% and the most common competitive comparison shifted from "Mixpanel" to "Google Analytics 4" — exactly where Loomly wins.
 
 ---
 

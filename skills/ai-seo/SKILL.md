@@ -2,7 +2,7 @@
 name: ai-seo
 description: Optimize for AI search (ChatGPT, Perplexity, Google SGE). Covers AEO (Answer Engine Optimization) and GEO (Generative Engine Optimization). Triggers - AI search, AEO, GEO, ChatGPT SEO, AI optimization, answer engine optimization.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
 ---
 
 # AI Search Optimization (AEO/GEO)
@@ -473,7 +473,38 @@ The AI SEO optimization is complete when:
 
 ## Examples
 
-### Example: Restructuring a Blog Post for AI Extractability
+### Example 1: Loomly — B2B Analytics Tool Wins Citations in Perplexity
+
+**Context:** Loomly is a $4M ARR product analytics platform competing with Mixpanel and Amplitude. Organic traffic is flat at ~12K/month and trial signups from search are declining as users shift queries to ChatGPT and Perplexity ("what's the best Mixpanel alternative for early-stage SaaS?").
+
+**Audit findings (Week 1):**
+- Brand mentioned in 0/20 Perplexity test queries
+- robots.txt blocks GPTBot and ClaudeBot (legacy config)
+- Top-ranking blog posts buried answers 800-1,200 words deep
+- No FAQ schema on any page
+- Two unlinked Wikipedia mentions, one G2 profile, no Capterra presence
+
+**90-day AEO/GEO plan executed:**
+1. Updated robots.txt to explicitly allow GPTBot, ClaudeBot, PerplexityBot, Google-Extended (Day 1)
+2. Restructured top 12 blog posts with question H2s and bolded one-sentence answers in the first 100 words (Weeks 2-4)
+3. Added FAQPage schema to all comparison pages — "Mixpanel vs Loomly", "Amplitude alternatives" (Week 3)
+4. Published original benchmarks report ("2026 Product Analytics Pricing Benchmarks") with 47 data points scraped from public pricing pages — earned 14 citations and 3 journalist pickups (Week 6)
+5. Claimed Capterra and TrustRadius profiles, encouraged 23 customers to leave detailed reviews (Weeks 4-8)
+6. Added Loomly to 6 "best of" listicles via outreach to authors (Weeks 8-12)
+
+**Output excerpt (90-day measurement dashboard):**
+```
+Brand mentions in Perplexity test queries:  0/20  →  11/20  (+55pp)
+Brand mentions in ChatGPT test queries:     2/20  →   9/20  (+35pp)
+AI-Overview impressions (GSC):              ~0    →  4,200/mo
+Referral traffic from chat.openai.com:      0     →    180 visits/mo
+Referral traffic from perplexity.ai:        7     →    340 visits/mo
+Trial signups attributed to AI search:      0     →     22/mo
+```
+
+**Why this works:** Loomly attacked all three AEO/GEO levers in parallel — extractability (content restructure + schema), access (robots.txt + crawler verification), and authority (original research + third-party citations). The original research piece was the unlock — it gave LLMs a citable primary source and gave journalists a reason to mention Loomly by name. By Day 90, Perplexity citation rate matched parity with Mixpanel for "best Mixpanel alternative" queries.
+
+### Example 2: Restructuring a Blog Post for AI Extractability
 
 **Before (traditional SEO format):**
 ```markdown
@@ -501,7 +532,7 @@ creating an effective onboarding experience for your users...
 **Most SaaS products should aim for first value within 5 minutes of signup.** According to Mixpanel's 2024 Product Benchmarks report, the median time-to-first-key-action for top-quartile SaaS products is 3.2 minutes.
 ```
 
-### Example: robots.txt Configuration
+### Example 3: robots.txt Configuration
 
 ```
 # AI Search Crawlers - Allow access for AI search citation

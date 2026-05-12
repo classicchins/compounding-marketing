@@ -2,7 +2,7 @@
 name: seo-audit
 description: Comprehensive SEO audit covering technical, on-page, content, and off-page optimization. Identifies issues and prioritizes fixes by impact. Triggers - SEO audit, technical SEO, on-page SEO, SEO analysis, SEO optimization, site audit.
 metadata:
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # SEO Audit
@@ -442,9 +442,9 @@ perplexity_research "What content do top [industry] websites have?"
 
 ---
 
-## Audit Examples: Complete Walkthrough
+## Examples
 
-### Example Site: B2B SaaS Project Management Tool
+### Example 1: ProjectPlanner — Full SEO Audit of a B2B SaaS Project Management Tool
 
 **Site:** projectplanner.io (fictional example)
 
@@ -634,6 +634,44 @@ perplexity_research "What content do top [industry] websites have?"
 Every blog post should have:
 - 2-3 links to related blog posts (SEO)
 - 1-2 links to product/feature pages (conversion)
+
+---
+
+### Example 2: DataMint — 30-Day Quick-Win Audit on a Series A B2B Data Platform
+
+**Site:** datamint.io (fictional Series A B2B data platform, $3M ARR, 50 indexed pages)
+
+**Context:** DataMint hired a fractional SEO consultant after organic traffic dropped 40% over six months. The team had migrated to a new framework (Next.js → Remix) without preserving redirects or meta tags. Goal: identify the top 5 fixes that could recover lost traffic in 30 days.
+
+**Audit findings (severity-ranked):**
+
+| # | Issue | Severity | Evidence | Fix |
+|---|-------|----------|----------|-----|
+| 1 | **412 broken internal links from migration** | P0 | Screaming Frog crawl found 412 internal 404s (mostly /docs/* and /blog/*) | Bulk 301 redirect old slugs to new slugs |
+| 2 | **All blog posts lost meta titles and descriptions** | P0 | 87 blog posts now use the default site title; CTR collapsed in GSC from 4.2% to 1.1% | Re-add per-page meta from old CMS export |
+| 3 | **Duplicate H1 on every page** | P1 | New layout renders site name as H1 in addition to page title | Remove site-name H1 from layout, keep page title as only H1 |
+| 4 | **No canonical tags on paginated archive pages** | P1 | /blog?page=2 and /blog?page=3 each rank for "datamint blog" diluting authority | Add `rel="canonical"` pointing to /blog |
+| 5 | **Sitemap.xml stuck on old URL structure** | P2 | Sitemap still lists 240 URLs from pre-migration structure (now all 404) | Regenerate sitemap from current routes; resubmit in GSC |
+
+**Before/After Example: Meta Title Restoration**
+
+**Before (post-migration default):**
+- /blog/operational-analytics-vs-business-intelligence: "DataMint"
+- /blog/reverse-etl-explained: "DataMint"
+- /blog/dbt-for-revops-teams: "DataMint"
+
+**After (restored from CMS export):**
+- /blog/operational-analytics-vs-business-intelligence: "Operational Analytics vs. Business Intelligence: When to Use Which | DataMint"
+- /blog/reverse-etl-explained: "Reverse ETL Explained: How RevOps Teams Sync Warehouse Data to Salesforce | DataMint"
+- /blog/dbt-for-revops-teams: "dbt for RevOps Teams: A Practical Setup Guide | DataMint"
+
+**30-Day Outcome:**
+- Organic traffic: 8,200/mo → 14,800/mo (recovered 80% of pre-migration baseline)
+- Indexed pages: 50 → 312 (sitemap fix surfaced existing content to Google)
+- Average position for "reverse ETL for RevOps": 19 → 6
+- Trial signups from organic: 11/mo → 27/mo
+
+**Why this audit worked:** The consultant resisted the urge to write a 60-issue audit. By ranking the migration-driven failures P0 and ignoring everything else for 30 days, the team shipped fixes 1-3 in week one and saw GSC impressions recover within 14 days. A broader content + backlink audit was scheduled for Day 31 — but only after the bleeding stopped.
 
 ---
 
