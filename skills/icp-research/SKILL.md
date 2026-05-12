@@ -446,7 +446,7 @@ A skill output is "done" when:
 ```markdown
 # Plotline ICP — Primary
 
-## Cohort definition
+### Cohort definition
 Top 48 customers (top 20% of 240) scored on composite of:
 - ARR >$25K (50th percentile)
 - Tenure ≥14 months
@@ -454,23 +454,23 @@ Top 48 customers (top 20% of 240) scored on composite of:
 - NPS ≥8
 - 3+ active product surfaces in last 30 days
 
-## Firmographics
+### Firmographics
 - Employee count: 80-500 (sweet spot 120-300)
 - Stage: Series B-C (28 of 48), bootstrapped >$5M ARR (12 of 48)
 - Sub-vertical: Vertical SaaS (healthtech, fintech, edtech) — 32 of 48
 - Geography: US (38), Canada (5), UK (5)
 
-## Technographics (required + signal)
+### Technographics (required + signal)
 - REQUIRED: Segment OR Rudderstack OR custom event pipeline (we ingest events)
 - STRONG: Hightouch / Census (reverse ETL) — 22 of 48 customers run one
 - NEGATIVE: Amplitude or Heap as primary analytics (we lose 70% head-to-head)
 
-## Decision-maker
+### Decision-maker
 - Title: Head of Product (22), VP Product (14), Sr PM in PLG companies (12)
 - Reports to: CEO (26), CPO (16), CRO (6)
 - Buying authority: Solo for <$30K ACV, committee with eng leader above
 
-## Fit-score (deployed in Salesforce)
+### Fit-score (deployed in Salesforce)
 A-tier ≥75: 18% of inbound, 62% close rate
 B-tier 50-74: 41% of inbound, 28% close rate
 C-tier <50: auto-routed to self-serve trial, no SDR touch
@@ -495,41 +495,41 @@ C-tier <50: auto-routed to self-serve trial, no SDR touch
 ```markdown
 # Frame ICP — Hypothesis (V0.1, sample n=14)
 
-## Cohort definition
+### Cohort definition
 All 14 paying customers; no exclusions. Sample too small for "best" filtering.
 Hypothesis grade: directional, not statistical. Re-validate at n=40.
 
-## Pattern observations (with confidence flags)
+### Pattern observations (with confidence flags)
 
-### Strong patterns (≥10 of 14 share)
+**Strong patterns (≥10 of 14 share)**
 - Engineering team size: 15-60 (12/14 in this band)
 - GitHub-hosted (14/14) — required, gating
 - Has dedicated security/platform engineer role (11/14)
 - Post-Series A (10/14) — pre-A companies haven't felt the pain yet
 
-### Suggestive patterns (7-9 of 14 share)
+**Suggestive patterns (7-9 of 14 share)**
 - Ships >5 PRs per engineer per week (8/14, where we have telemetry)
 - Has had a recent prod incident traced to code review gap (9/14, from interviews)
 
-### Anti-patterns (where we lost or churned)
+**Anti-patterns (where we lost or churned)**
 - Teams <8 engineers — code review tooling is overkill (lost 6 deals)
 - Heavy GitLab users — our GitLab integration is weak (churned 2)
 - Agency/consultancy model — they don't review their own code (lost 4)
 
-## Recommended outbound filter (V0.1)
+### Recommended outbound filter (V0.1)
 - 15-60 engineers (LinkedIn job posts)
 - Has Series A-C funding in last 24 months
 - GitHub-hosted (confirm via public repos)
 - Has hired a platform/security engineer in last 12 months
 - Exclude: agencies, GitLab-first, <Series A
 
-## Sales discovery (qualifies live)
+### Sales discovery (qualifies live)
 1. "How many engineers are pushing code daily?" → size
 2. "GitHub or GitLab?" → tech fit
 3. "Walk me through your last prod incident — was code review involved?" → pain
 4. "Who owns code review process today?" → buyer ID
 
-## Revalidation trigger
+### Revalidation trigger
 At n=40 customers, run proper cohort analysis. Until then, treat this as a hypothesis to test, not truth.
 ```
 

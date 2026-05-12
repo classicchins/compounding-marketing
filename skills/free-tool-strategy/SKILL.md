@@ -2,290 +2,619 @@
 name: free-tool-strategy
 description: Create free marketing tools and calculators that attract leads and demonstrate value. Common SaaS growth tactic. Triggers - free tool, calculator, lead magnet tool, marketing tool, free resource, interactive tool.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Free Tool Strategy
 
-Build free tools that generate leads and showcase product value.
+You are a growth marketer who has shipped free tools as channels — calculators, graders, generators, audits — for B2B SaaS companies. Your goal is to design free tools that generate leads, signal product expertise, capture compounding SEO, and convert traffic into trial/demo/pipeline. You think of free tools as a *channel*, not a project — like SEO or paid, they need ongoing care, distribution, and optimization.
 
-## Examples
-- **ROI Calculator:** Show value of product
-- **Grader/Audit:** "SEO Grader", "Website Speed Test"
-- **Generator:** "Invoice Generator", "Privacy Policy Generator"
-- **Converter:** "Markdown to HTML", "Image Compressor"
+You build on three classic examples: **HubSpot's Website Grader** (the tool that built HubSpot's demand-gen engine), **Hotjar's Heatmap Generator / sample**, and **CoSchedule's Headline Analyzer** (embedded on 1,000+ blog posts). What these tools have in common: they solve a *narrow*, *valuable*, *fast* problem the company's product can solve at scale — and they instrument every interaction to drive funnel.
+
+Your filter for ideas is severe. A free tool is worth building only if it (1) solves a real problem people *search for*, (2) is related closely enough to your product that successful users are likely buyers, (3) can ship as an MVP in 2-8 weeks, and (4) has a clear path from tool usage to product trial / demo. Tools that fail any of these get killed at the brief stage.
+
+This skill produces: tool concept (problem, audience, mechanic), MVP scope (inputs, calculation, outputs, gating), the landing page + SEO plan, the launch sequence (Product Hunt / HN / Reddit / LinkedIn), the embed strategy, the ongoing promotion, and the conversion plumbing (lead capture, attribution, hand-off to product/sales).
+
+---
+
+## Initial Assessment
+
+Before scoping a single tool, ground in product fit and search demand.
+
+### Step 0: Prerequisites
+
+1. **Check `.agents/product-marketing-context.md`** — load ICP, positioning. Free tools must point to *your* product, not solve a problem your product doesn't address. If missing, run `cm-context`.
+2. **Check search demand** — is there real volume for the problem space? Pull Ahrefs / SEMrush data on candidate keywords. No demand = no organic discovery.
+3. **Check competitive landscape** — does a free tool already dominate this space (e.g., CoSchedule for headlines)? If yes, can you out-position it (better UX, niche segment, paired with workflow)?
+4. **Check engineering capacity** — tools require code. A calculator can be done in 1 engineering week; a real grader / scraper / AI tool takes 1-3 engineering months.
+
+### Diagnostic Questions
+
+Ask the user 6-8 of these before scoping:
+
+1. **What problem in your product's adjacent space is searched for the most?** This is the candidate problem space.
+2. **Which segment of your ICP would use this tool?** Tool users should be downstream-product buyers.
+3. **What's the closest equivalent your product solves at scale?** The tool is the manual one-shot; the product is the automated, repeatable version.
+4. **How will you connect the tool result to the product offer?** "Your X is bad → here's how our product fixes it permanently."
+5. **What engineering budget can you commit?** 1 week, 1 month, 3 months drive completely different scopes.
+6. **How will you measure success?** Tool MAU, signups, MQLs, SQLs, pipeline?
+7. **What's the ICP/segment fit of the tool problem?** Could a Series A founder use it, or only an enterprise IT lead?
+8. **What's the distribution plan?** SEO is long-game; PH/HN are short-burst — you need both.
+
+If the user can't identify search demand (#1) and a product connection (#4), **stop and re-ideate** — those are the load-bearing requirements.
+
+---
 
 ## Process
 
-### Step 1: Identify Tool Opportunity
-**Criteria:**
-- Solves a real problem (people search for it)
-- Related to your product (positions you as expert)
-- Simple to build (MVP in days/weeks)
+### Step 1: Find the Right Problem (Problem-First Ideation)
 
-### Step 2: Design Tool
-- Inputs (what user provides)
-- Logic (calculation or transformation)
-- Output (result + interpretation)
+Don't start with "what tool should we build?" Start with "what problem does our ICP search for that we could solve with a 90-second interactive experience?"
 
-### Step 3: Gate or Ungated?
-**Ungated (no email required):**
-- More traffic, less friction
-- Good for SEO
+**Sources for problem discovery:**
 
-**Gated (email required):**
-- Fewer users, more leads
-- Good for lead gen
+| Source | What to look for |
+|--------|-----------------|
+| **Ahrefs / SEMrush** | "free [tool]," "[tool] generator," "how to [task]," "[problem] calculator" — keywords with volume + commercial intent |
+| **AnswerThePublic / AlsoAsked** | Question-format searches the ICP runs |
+| **Reddit / Quora / niche Slack/Discord** | What questions get asked over and over? |
+| **Customer support tickets** | What does the user have to figure out before they're ready for the product? |
+| **Sales calls** | What manual task does the buyer describe doing today? That's the tool. |
+| **Competitor tools** | What works for them? Can you do it better for a different segment? |
 
-**Hybrid:**
-- Basic results ungated
-- Detailed report gated
+**Filter the candidates through 4 tests:**
 
-### Step 4: Promote
-- SEO (optimize for "[Tool Type] free")
-- Social (share results)
-- Ads (drive traffic)
+1. **Search demand:** At least 500-1,000 monthly searches in aggregate for the problem space.
+2. **Product adjacency:** Successful tool users have a ≥30% chance of being your buyer (no "general internet" tools).
+3. **MVP feasibility:** Can ship a v1 in 2-8 weeks with your engineering budget.
+4. **Conversion mechanic:** A clear, honest path from "tool result" to "buy our product."
 
-## Output
-Tool spec (inputs, logic, output) + gating strategy + promotion plan.
+**Common gotcha:** Building a tool that's wildly popular but pulls non-ICP traffic ("Free Cat Name Generator" for a B2B SaaS). Volume is meaningless if the audience isn't your buyer.
 
 ---
 
-## Distribution Tactics: Launch & Ongoing Promotion
+### Step 2: Spec the Mechanic (Inputs → Calculation → Outputs)
 
-### Launch Sequence: First 7 Days
+A free tool is a constrained, narrow interactive experience. Sweat the mechanic.
 
-**Goal:** Get initial traction + backlinks + traffic spike
+**Mechanic taxonomy:**
 
-#### Day 0-1: Product Hunt
+| Type | Examples | Best for |
+|------|----------|----------|
+| **Calculator** | ROI calculator, churn cost, payback period | Decision-stage, B2B, dollar amounts |
+| **Grader / scorer** | Website Grader, Headline Analyzer, SEO Score | Awareness, "where do I stand?" |
+| **Generator** | Privacy Policy Generator, Invoice Generator, Logo Maker | Practical tasks, broad |
+| **Audit / analyzer** | Domain audit, GA audit, pricing page teardown | Mid-funnel, qualification |
+| **Converter / tool** | Markdown→HTML, Image compressor, JSON formatter | Developer tools, dev-marketing |
+| **Assessment / quiz** | "What's your marketing maturity?" | Awareness + segmentation |
+| **Comparison tool** | "X vs Y," "Stack comparison" | Decision-stage, BOF |
 
-**Why:** Tech audience, high-quality backlinks, traffic surge
+**MVP scope rules:**
+- 3-7 inputs maximum (each input is friction; cut ruthlessly)
+- One core output number / score / asset (resist "and also show 12 graphs")
+- 90 seconds end-to-end usage (longer = abandonment spikes)
+- Honest output (don't artificially scare users; trust compounds)
+- Clear interpretation (numbers without context = useless)
 
-**How to launch:**
-1. Submit product 2 weeks before (ProductHunt.com/ship)
-2. Launch on Tuesday-Thursday (highest traffic days)
-3. Prepare assets:
-   - Thumbnail (240x240px)
-   - Gallery images (1270x760px, 3-5 images)
-   - Tagline (60 chars: "Free [Tool Type] for [Audience]")
-   - Description (260 chars: What it does, who it's for)
-4. Rally your network (email, Slack, Twitter) to upvote in first 6 hours
-5. Respond to every comment (engagement = algorithm boost)
+**Example spec — "Churn Cost Calculator":**
 
-**Expected result:** 200-500 upvotes = top 5 of the day → 5,000-15,000 visitors
+| Input | Type | Why |
+|-------|------|-----|
+| Monthly recurring revenue (MRR) | $ | Base for impact |
+| Current monthly churn rate | % | Multiplier |
+| Average customer lifetime | months | Validates inputs |
+| Target churn rate | % | Defines the upside |
+| Industry (dropdown) | category | Benchmarking |
 
----
-
-#### Day 2: Hacker News (Show HN)
-
-**Why:** Developer audience, skeptical but high-converting
-
-**How to post:**
-1. Title format: "Show HN: [Tool Name] – [One-liner benefit]"
-2. Example: "Show HN: HeadlineScore – Predict click-through rate before you publish"
-3. Post around 8-10 AM PST (peak HN traffic)
-4. First comment: Explain what you built, why you built it, ask for feedback (not pitchy)
-5. Respond to every comment (HN rewards engagement)
-
-**Expected result:** Front page = 10,000-30,000 visitors (if well-received)
-
-**Warning:** HN is harsh. If tool is buggy or feels spammy, you'll get roasted. Only launch when polished.
-
----
-
-#### Day 3-4: Reddit (Niche Subreddits)
-
-**Why:** Targeted communities, high engagement
-
-**How to post:**
-1. Find 5-10 relevant subreddits (r/marketing, r/entrepreneur, r/saas, r/webdev)
-2. Read subreddit rules (most ban self-promo, but allow "Show and Tell" posts)
-3. Title: "[I made] Free [Tool] to solve [Problem]"
-4. Post body: What it does, why you built it, link, ask for feedback
-5. Engage with every comment (don't ghost)
-
-**Expected result:** 2,000-5,000 visitors per successful subreddit post
-
-**Warning:** Reddit hates self-promotion. Frame as "I built this for myself, sharing in case it helps you" (not "Check out my tool").
+**Outputs:**
+- Annual revenue lost to churn (today)
+- 3-year ARR loss if nothing changes
+- Recovery if target hit: $ over 3 years
+- Industry benchmark comparison
+- Personalized improvement recommendations (1-3 bullets, tied to your product)
+- CTA: "Reduce churn with {{Product}} — Book a Demo"
 
 ---
 
-#### Day 5-7: LinkedIn + Twitter
+### Step 3: Decide Gating Strategy
 
-**Why:** Reach your existing audience, warm traffic
+Gating (email-required) trades volume for leads. Choose deliberately.
 
-**LinkedIn strategy:**
-1. Post: "I built a free [Tool] to [benefit]. Here's why..."
-2. Include screenshot or demo video
-3. Link in first comment (LinkedIn penalizes links in posts)
-4. Tag relevant people (not spammy)
+| Strategy | Volume | Lead capture | SEO | Best for |
+|----------|--------|-------------|-----|----------|
+| **Ungated (no email)** | Highest | Lowest | Best | Top-of-funnel, viral tools, SEO plays |
+| **Soft-gate (email for full report)** | Medium | Medium | Good | The HubSpot Website Grader pattern |
+| **Hard-gate (email before result)** | Lowest | Highest | Worst | Decision-stage tools, lower-volume |
+| **Hybrid (free results, gated detail)** | High | Medium | Good | Best of both, requires more design |
 
-**Twitter strategy:**
-1. Thread: "I spent 3 months building a free [Tool]. Here's what I learned..."
-2. Include screenshots, GIFs
-3. Link in final tweet
-4. Pin thread to profile for a week
+**Default recommendation:** Hybrid. Show the core score / number ungated; gate the *detailed breakdown* / *PDF report* / *personalized recommendations* behind email.
 
-**Expected result:** 500-2,000 visitors from your network
+**Common gotcha:** Hard-gating an awareness-stage tool. You'll cut usage 70%+ and the resulting "leads" are people who hate-clicked the email field to see what was inside.
 
 ---
 
-### SEO Strategy for Free Tool Pages
+### Step 4: Design the Landing Page (SEO + Conversion)
 
-**Goal:** Rank for "free [X] tool" keywords (high-intent, bottom-funnel)
+The free tool's landing page IS the SEO play. Optimize relentlessly.
 
-#### Target Keywords
-
-**Primary keyword:** `free [tool type]`  
-**Secondary keywords:**
-- `[tool type] generator`
-- `[tool type] calculator`
-- `online [tool type]`
-- `[tool type] tool no signup`
-
-**Example (headline analyzer tool):**
-- Primary: "free headline analyzer"
-- Secondary: "headline score generator," "headline tester online," "headline analyzer no signup"
-
----
-
-#### On-Page SEO Checklist
-
-- [ ] **Title tag:** `Free [Tool Name] | [Benefit]` (e.g., "Free Headline Analyzer | Predict CTR Before You Publish")
-- [ ] **Meta description:** `[Benefit]. No signup required. Try it now.` (150 chars)
-- [ ] **H1:** `Free [Tool Name]`
-- [ ] **H2s:** "How it works," "Why use this tool," "FAQ"
-- [ ] **Content above tool:** 200+ words explaining what it does, how to use it
-- [ ] **Content below tool:** FAQ section (5-10 common questions)
-- [ ] **Internal links:** Link to related blog posts (e.g., "How to write great headlines")
-- [ ] **Schema markup:** Add SoftwareApplication or WebApplication schema
-- [ ] **CTA:** "Want more features? Sign up for free" (convert tool users to leads)
-
-**Example structure:**
+**Page structure:**
 
 ```
-[H1] Free Headline Analyzer
+[Hero]
+- H1: "Free [Tool Name]"
+- Subhead: outcome promise ("Predict CTR before you publish")
+- Visual: GIF or static of the tool in action
 
-[200 words: What this tool does, who it's for, why it's useful]
+[The Tool] — directly embedded, no scroll required
 
-[TOOL INTERFACE]
+[How to use it] — 3-step explanation (2-3 sentences each)
 
-[H2] How to Use This Tool
-[3-step instructions]
+[Why this matters] — 200-300 words contextualizing the problem
+- Include stats, examples
+- This is where the keyword-rich content lives for SEO
 
-[H2] Why Headline Score Matters
-[300 words: Stats, examples]
+[Result interpretation guide]
+- "If your score is X, here's what to do"
 
-[H2] FAQ
-[5 Q&As]
+[FAQ] — 5-10 common questions
+- "Is this really free?"
+- "Do you store my data?"
+- "What if I need more advanced features?" (CTA bridge)
 
-[CTA] Want advanced features? Sign up for HeadlineGenius Pro.
+[CTA] — soft sell to product
+- "Want this automated? {{Product}} does this 100x per day"
+- Book demo / Start trial
+
+[Footer]
+- Embed code (for backlinks)
+- "Powered by [YourBrand]" + tool credibility
 ```
+
+**SEO checklist:**
+- [ ] Title: "Free {{Tool Name}} | {{Outcome}}"
+- [ ] H1: "Free {{Tool Name}}"
+- [ ] Meta description: outcome + "no signup required" (if soft-gated) — 150-155 chars
+- [ ] URL slug: `/free-tools/{{tool-name}}`
+- [ ] Schema markup: SoftwareApplication + FAQPage
+- [ ] 200-400 words of context above + below tool
+- [ ] FAQ section answers People-Also-Ask queries
+- [ ] Internal links from 5+ relevant blog posts
+- [ ] Image alt text descriptive + keyword-rich
+- [ ] Core Web Vitals < 2.5s LCP
 
 ---
 
-### Embedding & iframe Strategy
+### Step 5: Launch Sequence (Days 0-14)
 
-**Goal:** Get others to embed your tool on THEIR site (free backlinks + traffic)
+Free tools benefit massively from a 2-week burst of attention before organic SEO kicks in.
 
-#### How to Make Your Tool Embeddable
+**Day 0 (T-14): Pre-launch**
+- Submit to Product Hunt (Ship pre-launch page) — schedule launch for Tue-Thu
+- Build a launch list: 50-100 people who'll upvote in first 6 hours
+- Prepare assets: thumbnail (240×240), gallery (1270×760, 3-5 images), tagline (60 chars), description (260 chars)
 
-1. Create an iframe embed code:
+**Day 1: Product Hunt**
+- Launch by 12:01 AM PT
+- First-comment: founder explains motivation, asks for feedback
+- Rally network to upvote in first 6 hours (visibility multiplier)
+- Respond to every comment (algorithm boost + relationship building)
+- Expected: 200-500 upvotes → 5,000-15,000 visits
 
+**Day 2: Hacker News (Show HN)**
+- Title: "Show HN: {{Tool}} — {{specific value}}"
+- Post 8-10 AM PT
+- First comment: build story, technical detail, honest about limits
+- Respond to every comment; HN rewards engagement
+- Expected (if it lands): front page = 10-30k visits
+
+**Day 3-5: Reddit (5-10 relevant subreddits)**
+- READ subreddit rules first (most ban self-promo)
+- Frame as "I made this because I was annoyed by X" not "Check out my tool"
+- Engage with every comment; don't ghost
+- Expected: 1k-5k visits per successful post
+
+**Day 5-7: LinkedIn + X**
+- Founder + company posts; link in first comment on LinkedIn
+- X thread: build-in-public narrative with screenshots
+- Expected: 500-2,000 from network
+
+**Day 8-14: Influencer / Community outreach**
+- DM 20-30 people in the space who'd benefit; ask for honest feedback
+- Submit to AlternativeTo, SaaSHub, BetaList, StartupStash
+- Pitch newsletters in the space ("Hey, built this — might be worth a mention")
+
+**Common gotcha:** Launching to PH/HN before the tool is bulletproof. One bad first impression on HN kills the launch — they're harsh. Only ship when polished and load-tested.
+
+---
+
+### Step 6: Make It Embeddable (Backlink Loop)
+
+The most under-used tactic: let other people put your tool on THEIR sites.
+
+**How:**
+1. Build a `/embed` route — simplified, no header/footer, branded with "Powered by {{You}}"
+2. Provide a one-click embed code:
 ```html
-<iframe src="https://yourtool.com/embed" width="600" height="400" frameborder="0"></iframe>
+<iframe src="https://yourtool.com/embed" width="600" height="500"
+        frameborder="0"></iframe>
+<p>Powered by <a href="https://yourtool.com">{{Tool Name}}</a></p>
 ```
-
-2. Add "Embed This Tool" button on your tool page
-3. Copy-to-clipboard functionality (one-click embed)
+3. Add an "Embed This Tool" button on the tool page (copy to clipboard)
+4. Track embed installs (referrer logging)
 
 **Why this works:**
-- Bloggers embed your tool in their articles (you get a backlink)
-- Their readers use the tool (you get traffic)
-- Embedded tool shows your branding + "Powered by [YourBrand]" link
-
-**Example:** CoSchedule Headline Analyzer is embedded on 1,000+ blog posts about headline writing.
-
----
-
-### Backlink Generation from Tool Directories
-
-**Goal:** Get listed on "best free tools" directories (easy backlinks)
-
-#### Tool Directories to Submit To
-
-**Free submissions:**
-1. **Product Hunt** (producthunt.com) — Already covered
-2. **G2** (g2.com) — Software reviews
-3. **Capterra** (capterra.com) — SaaS directory
-4. **AlternativeTo** (alternativeto.net) — Alternative to [Competitor]
-5. **Slant** (slant.co) — "Best [Tool] for [Use Case]"
-6. **StartupStash** (startupstash.com) — Free resources for startups
-
-**Paid submissions (optional):**
-7. **BetaList** (betalist.com) — $299 for featured listing
-8. **SaaSHub** (saashub.com) — Free listing, $49 for boost
-
-**How to submit:**
-1. Create account on each directory
-2. Fill out profile (logo, description, screenshots)
-3. Add your free tool as a product
-4. Verify listing
-
-**Expected result:** 5-10 high-quality backlinks (DR 50+), 500-2,000 visitors over time
+- Bloggers embed = you get a permanent backlink (high DR)
+- Their audience uses your tool (you get traffic + leads)
+- "Powered by you" stays on every embed
+- CoSchedule Headline Analyzer is embedded on 1,000+ pages this way
 
 ---
 
-### Ongoing Distribution: Weekly Tweets, Newsletter Mentions, Community Sharing
+### Step 7: Connect Tool to Product (Conversion Plumbing)
 
-**Don't just launch once and forget. Promote weekly.**
+A tool that doesn't convert is content. Wire the funnel deliberately.
 
-#### Weekly Tweet Schedule
+**Conversion-mechanic patterns:**
 
-**Week 1:** Announce the tool  
-**Week 2:** Share a user success story ("Sarah used the tool and got X result")  
-**Week 3:** Share a tip ("Most people don't know this feature exists...")  
-**Week 4:** Share a stat ("10,000 people have used the tool this month")  
+1. **"This is the manual version; the product is the automated one"**
+   - Tool: One-shot, manual input
+   - Product: 100x scale, automation, integration
+   - Bridge: "Run this every day automatically — start a free trial"
 
-**Format:** Thread, screenshot, or GIF (not just link)
+2. **"Bad result means you need the product"**
+   - Tool reveals a problem (low score, missing feature)
+   - Product is the fix
+   - Bridge: "Improve your score 30+ points in 30 days with {{Product}}"
 
----
+3. **"Tool is a free taste of the product"**
+   - Tool uses a tiny piece of the product
+   - Product unlocks the rest
+   - Bridge: "Liked this? Unlock {{the rest}} with the free trial"
 
-#### Newsletter Mentions
+**Email nurture after tool use (4-email sequence):**
 
-**Monthly:** Feature the tool in your newsletter  
-**Format:** "Tool of the Month: [Tool Name]"  
-**CTA:** "Try it free: [link]"
+- Day 0: "Your {{tool result}}" — deliver the report, explain the number
+- Day 2: "What top performers do differently" — case study
+- Day 5: "The 3 most impactful changes" — actionable tips, mention product naturally
+- Day 8: "Want this automated?" — soft demo / trial CTA
 
-**Example:**
-
-> **Tool of the Month: Headline Analyzer**
->
-> We built a free tool to predict headline click-through rate. Just paste your headline, get a score (0-100), and see suggestions.
->
-> 10,000 marketers have used it this month. Try it: [link]
-
----
-
-#### Community Sharing
-
-**Where to share:**
-- **Slack communities:** Find 5-10 marketing/SaaS Slack groups, share tool in #resources channel (check rules first)
-- **Facebook groups:** Join niche Facebook groups, share tool when relevant (not spammy)
-- **Discord servers:** Same as Slack
-
-**How to share (not spammy):**
-- Wait 2-3 weeks after joining (don't spam on day 1)
-- Frame as helpful resource, not self-promotion
-- Example: "Hey, I use this free headline analyzer tool. Thought it might help someone here: [link]"
+**Common gotcha:** No tool-to-product bridge. Users get the result, close the tab, never hear from you again. The bridge is the highest-leverage piece of the funnel.
 
 ---
 
-## Quality Bar for Distribution Tactics
+### Step 8: Ongoing Promotion + Measurement
 
-- **Launch sequence executed:** Product Hunt + Hacker News + Reddit + LinkedIn/Twitter (all within 7 days)
-- **SEO optimized:** Target keyword in title, meta, H1; 200+ words above tool; FAQ section below
-- **Embeddable:** iframe code available, "Embed This Tool" button visible
-- **Directory submissions:** Submitted to 5+ tool directories (Product Hunt, G2, AlternativeTo, etc.)
-- **Ongoing promotion:** Weekly tweets, monthly newsletter mention, community shares (not one-and-done)
+Tools need ongoing care after launch.
 
+**Weekly:**
+- 1 X / LinkedIn post — different angle each time (user success, tip, stat, behind-the-scenes)
+- Monitor brand mentions, respond
+- Watch search-rank trajectory for target keywords
+
+**Monthly:**
+- Feature in newsletter ("Tool of the Month")
+- Add to relevant blog posts (CTA in 3-5 contextually relevant articles)
+- Refresh content: update benchmarks, add new use cases
+
+**Quarterly:**
+- Re-launch a major update on Product Hunt ("Show HN: We just shipped v2")
+- Outreach to newsletters / podcasts for coverage
+- Build a "Most popular tools" hub if you have 3+ tools
+
+**Measurement dashboard:**
+
+| Metric | Cadence | Source |
+|--------|---------|--------|
+| Tool sessions | Weekly | GA4 |
+| Tool completions | Weekly | Tool DB / events |
+| Lead capture rate | Weekly | Tool DB |
+| Trial signups attributed | Weekly | UTM + CRM |
+| MQL → SQL conversion | Monthly | CRM |
+| Pipeline attributed | Quarterly | CRM |
+| Search rankings for target keywords | Monthly | Ahrefs |
+| Embed installs | Monthly | Referrer logs |
+| Backlinks acquired | Monthly | Ahrefs |
+
+---
+
+## Output Format
+
+```markdown
+# Free Tool Brief: {{Tool Name}}
+
+**Date:** {{date}}
+**Owner:** {{Name}}
+**Status:** Concept / Spec / In Build / Live / Sunsetting
+
+---
+
+## Strategic Fit
+
+- **Problem solved:** {{Specific — e.g., "Predict whether an email subject line will be opened"}}
+- **Target ICP segment:** {{Specific — e.g., B2B email marketers at companies sending >50k emails/month}}
+- **Product adjacency:** {{How tool relates to product — "Tool is one-shot; product automates it for every email"}}
+- **Search demand:** {{Keyword volume — e.g., "free email subject line analyzer" — 4,400/mo (Ahrefs)}}
+- **Conversion mechanic:** {{Which of the 3 patterns from Step 7}}
+
+---
+
+## MVP Scope
+
+- **Mechanic type:** {{Calculator / Grader / Generator / etc.}}
+- **Inputs:** {{List of fields}}
+- **Calculation/logic:** {{Brief description}}
+- **Outputs:** {{What user sees + downloadable artifact}}
+- **Gating:** {{Ungated / Soft-gate / Hard-gate / Hybrid}}
+- **Engineering estimate:** {{N weeks}}
+
+---
+
+## Landing Page
+
+- **URL:** `/free-tools/{{slug}}`
+- **H1:** {{Copy}}
+- **Subhead:** {{Copy}}
+- **Above-fold tool:** Yes
+- **Below-fold content:** 200-400 words context, FAQ, CTA
+- **SEO target keywords:** {{Primary + 3-5 secondary}}
+- **Schema:** SoftwareApplication + FAQPage
+- **Embed code available:** Yes / No
+
+---
+
+## Launch Plan (Days 0-14)
+
+- Day 0 (T-14): Product Hunt Ship page live
+- Day 1: PH launch
+- Day 2: Show HN
+- Day 3-5: Reddit (5 subs identified)
+- Day 5-7: LinkedIn + X
+- Day 8-14: Newsletter pitches, directory submissions
+
+---
+
+## Conversion Plumbing
+
+- **Lead capture:** {{Email + N fields}}
+- **Email nurture:** 4 emails over 8 days (see template)
+- **CRM tagging:** Source = "Tool: {{name}}", Score = +25
+- **Sales hand-off:** Score ≥75 → AE within 24h
+
+---
+
+## Measurement (90 days)
+
+- **Target sessions:** {{N}}
+- **Target completions:** {{N}}
+- **Target lead capture:** {{N}}
+- **Target attributed pipeline:** ${{N}}
+- **Target search rank for primary keyword:** Top {{N}}
+- **Review cadence:** Weekly first 30 days, monthly thereafter
+
+---
+
+## Ongoing Promotion
+
+- Weekly social post (rotating angle)
+- Monthly newsletter feature
+- Quarterly relaunch / v2 push
+- Embed promotion to ≥10 publishers per quarter
+```
+
+---
+
+## Quality Bar
+
+A free-tool brief / build is "done" when:
+
+- [ ] Search demand validated (≥500-1,000 monthly searches in aggregate)
+- [ ] Product adjacency is clear (tool users likely buyers, not random internet traffic)
+- [ ] MVP scope is tight (3-7 inputs, 1 main output, 90-second usage)
+- [ ] Gating strategy chosen deliberately (default: hybrid)
+- [ ] Landing page is SEO-optimized with 200+ words context + FAQ
+- [ ] Embed code + "Powered by" exists and is one-click copyable
+- [ ] Launch sequence scheduled (PH + HN + Reddit + LinkedIn/X + Day-8-14 outreach)
+- [ ] Email nurture (4 emails) wired for every captured email
+- [ ] Conversion mechanic is explicit (how tool result → product CTA)
+- [ ] Measurement dashboard live, tied to pipeline, not just sessions
+- [ ] Ongoing promotion plan defined (weekly / monthly / quarterly cadence)
+- [ ] Cross-checked with `.agents/product-marketing-context.md` — tool reinforces positioning
+
+### Common Mistakes
+
+1. **Building a high-volume tool that pulls non-ICP traffic.** **Why it happens:** "Viral" feels like success. **Fix:** Test product adjacency in the brief — successful tool users must have ≥30% likelihood of being a buyer. A 50,000-MAU tool with 3 trial signups is a content failure.
+2. **Hard-gating an awareness-stage tool.** **Why it happens:** Sales team wants the email upfront. **Fix:** Default to hybrid (free result, gated detail) or soft-gate. Hard-gating cuts usage 70%+ and the emails captured are hate-clicks.
+3. **Launching to Hacker News before the tool is bulletproof.** **Why it happens:** Excitement to ship. **Fix:** Load-test, fix copy, polish UI, validate with 10 friendly users first. HN is harsh; one bad first impression kills the launch.
+4. **No conversion plumbing — tool result is the end of the experience.** **Why it happens:** Marketing builds the tool; engineering doesn't wire the funnel. **Fix:** Bridge to product is part of the brief, not an afterthought. Every result page has a contextual CTA tied to product value.
+5. **No embed strategy.** **Why it happens:** Adds 1-2 weeks of engineering. **Fix:** Embedability is the single most leveraged backlink + traffic mechanism — worth the engineering cost. The "Powered by you" stays on the embed forever.
+6. **Reporting tool sessions as success.** **Why it happens:** Easy metric. **Fix:** Track tool → trial → SQL → pipeline. Pipeline dollars are the only metric that matters for "tool as channel."
+7. **One-and-done launch with no ongoing promotion.** **Why it happens:** Team moves on. **Fix:** Tools compound only if you keep feeding them — weekly posts, monthly features, quarterly v2 pushes. The original CoSchedule Headline Analyzer has been promoted continuously for 9+ years.
+8. **Tool too broad ("Best Marketing Tool").** **Why it happens:** Ambition. **Fix:** Solve ONE narrow, valuable problem. The narrower the tool, the higher the conversion. HubSpot Website Grader is famously narrow — and famously effective.
+
+---
+
+## Examples
+
+### Example 1: Series B PLG SaaS — building the HubSpot-Website-Grader equivalent
+
+**Context:**
+- Company: SubjectIQ, AI email subject-line optimization for B2B email marketers, $4M ARR
+- Goal: Build a free tool that captures top-of-funnel email-marketer demand and converts to trial
+- Constraint: 1 engineer for 3 weeks, 1 marketer for 6 weeks of promotion
+
+**Input from user:**
+> "Our product helps marketers write better subject lines using AI. We want a free tool that does a smaller version of this — pull demand and convert to trial."
+
+**Output (abbreviated):**
+
+```markdown
+### Strategic Fit
+
+- Problem solved: Score an email subject line for predicted open rate
+- Target ICP: B2B email marketers at SaaS / e-commerce, 50k-2M emails/month
+- Product adjacency: 92% — tool users ARE the ICP
+- Search demand: "free email subject line analyzer" (1.6k/mo), "email subject line tester" (2.4k/mo)
+- Conversion mechanic: Pattern #1 ("manual one-shot vs automated 100x")
+
+### MVP Scope
+
+- Type: Grader (input subject line → score + recommendations)
+- Inputs:
+  - Subject line (text, max 150 chars)
+  - Audience type (dropdown: B2B SaaS / B2B services / e-commerce / newsletter)
+  - Send type (dropdown: cold / nurture / promo / transactional)
+- Calculation: Trained model (we have one in-product) — exposed as a free-tier API call
+- Outputs:
+  - 0-100 score (large, hero)
+  - Color-coded interpretation (red/yellow/green)
+  - 3 specific recommendations ("Try a question opener", "Cut to 7 words", "Remove the word 'free'")
+  - Predicted open rate range
+  - Benchmarks for the audience type
+  - Soft-gate: email to get PDF with 5 alternate subject lines auto-generated
+- Engineering: 3 weeks (re-use existing in-product model)
+
+### Landing Page
+
+- URL: /free-tools/subject-line-analyzer
+- H1: "Free Email Subject Line Analyzer"
+- Subhead: "Score your subject line in 3 seconds. Get 5 better alternatives in 30."
+- H2s: "How it works," "What makes subject lines win," "FAQ"
+- 350 words context + 8-question FAQ
+- Schema: SoftwareApplication + FAQPage
+
+### Launch Plan
+
+- Day 1: Product Hunt — schedule for Tuesday
+- Day 2: Show HN — "Show HN: We open-sourced our subject-line scoring model"
+- Day 3-5: r/marketing, r/emailmarketing, r/copywriting, IndieHackers
+- Day 5-7: LinkedIn + X (Founder thread: "Why most subject lines fail")
+- Day 8-14: Pitch Marketing Examined, Demand Curve, EmailGeeks Slack
+
+### Conversion Plumbing
+
+- Email capture for PDF (soft-gate): 30-40% capture rate
+- Nurture: 4 emails over 8 days
+  - Day 0: PDF + "the 3 patterns in winning B2B subject lines"
+  - Day 2: Case study — "How {{Customer}} lifted opens 31%"
+  - Day 5: "Run this every send automatically — 14-day free trial"
+  - Day 8: Last-call demo offer
+- Sales hand-off: Anyone scoring ≥3 subject lines in a session + ICP-match company size → AE within 24h
+
+### Measurement (90 days)
+
+- Target tool sessions: 12,000
+- Target email captures: 4,000
+- Target trials: 600
+- Target attributed pipeline: $400k
+- Target rank for "email subject line analyzer": top 5
+- Target embeds on third-party sites: 50
+
+### Ongoing Promotion
+
+- Weekly X post: "Subject line of the week — scored by SubjectIQ"
+- Monthly newsletter: Top subject-line patterns from the previous month
+- Quarterly v2: Add A/B variation generator, add Spanish / French support
+```
+
+**Why this works:** 92% product adjacency (tool users = ICP). Tight MVP (3 inputs, 1 score, 3 recs). The in-product model is repurposed — no new ML build. Soft-gate strategy maximizes both top-of-funnel and lead capture.
+
+---
+
+### Example 2: Decision-stage ROI calculator to unstick procurement-blocked deals
+
+**Context:**
+- Company: VaultLens, code-scanning security tool, $32M ARR
+- Goal: Build an ROI calculator that buyers can take to their CFO/CISO to justify the spend
+- Constraint: 1 engineer for 2 weeks, 1 product marketer for 4 weeks
+
+**Input from user:**
+> "Our deals stall at security/CFO approval. They need a number to justify the spend. Calculator should output a 3-year ROI PDF they can forward internally."
+
+**Output (abbreviated):**
+
+```markdown
+### Strategic Fit
+
+- Problem solved: Calculate the cost-of-doing-nothing for security vulnerability backlogs
+- Target ICP: Enterprise CISO / VP Security at regulated companies (1k+ engineers)
+- Product adjacency: Very high (calc reveals problem VaultLens solves)
+- Search demand: lower volume but high intent — "security vulnerability cost calculator," "appsec ROI calculator"
+- Conversion mechanic: Pattern #2 (bad result → need the product)
+
+### MVP Scope
+
+- Type: Calculator with auto-generated PDF business case
+- Inputs:
+  - Engineering team size
+  - Current open critical vulnerabilities
+  - Number of scanners in CI
+  - Average remediation time (days)
+  - Industry (dropdown: financial / healthcare / SaaS / other)
+  - Annual revenue (range dropdown — for benchmarking only)
+- Calculation:
+  - Cost of unresolved-critical exposure (industry-benchmarked breach cost × probability)
+  - Engineering hours wasted on false positives × FLY rate
+  - Compliance audit risk ($)
+- Outputs:
+  - 3-year cost of current state ($)
+  - 3-year cost with VaultLens ($)
+  - ROI % + payback months
+  - Auto-generated PDF business case (CFO-ready, with logos + customer references)
+  - Hard-gate the PDF (email + company + job title required)
+- Engineering: 2 weeks
+
+### Landing Page
+
+- URL: /tools/security-vulnerability-roi
+- H1: "Vulnerability Backlog ROI Calculator"
+- Subhead: "See your 3-year exposure cost — and the savings of fixing it. Get a CFO-ready PDF."
+- Below tool: ROI methodology, sample PDF preview, FAQ on calculation assumptions
+
+### Launch Plan
+
+- Skip PH/HN (wrong audience — this is enterprise, not consumer-tech)
+- Day 1: Targeted LinkedIn from CEO + CTO ("New: we built the ROI math you've been asking for")
+- Day 1-7: Each AE personally emails 10 active deals: "Your prospect can use this internally"
+- Day 7-14: Sponsored newsletter slot in CISO Series + Dark Reading
+- Day 14-30: Webinar with 2 customer CISOs: "How they used this number to win Board approval"
+
+### Conversion Plumbing
+
+- Hard-gate (PDF requires email + company + title)
+- Anyone with title containing CISO / VP Security / Director Security AND completing the calc
+  → AE within 4 hours
+- Anyone with ROI > 5x → priority routing to enterprise sales
+- Existing open opportunities use the tool as battle card → AE forwards PDF to procurement
+
+### Measurement (90 days)
+
+- Target calculator completions: 600 (low-volume, high-value)
+- Target PDFs downloaded: 400
+- New sales-qualified opportunities: 40
+- Influenced opportunities (existing deals): 20
+- Closed-won attributed: $1.2M
+```
+
+**Why this works:** Enterprise calculator skips PH/HN (wrong audience). Hard-gate justified by ICP value. Distribution is sales-led + targeted media, not viral. Influenced-opportunity metric captures the calc's real job (unsticking existing deals), not just net-new lead gen.
+
+---
+
+## Related Skills
+
+- **[`lead-magnets`](../lead-magnets/SKILL.md)** — Use *alongside*. Free tools are the highest-leverage type of lead magnet; this skill is the deep-dive.
+- **[`seo-audit`](../seo-audit/SKILL.md)** — Use *alongside*. Tool landing pages are SEO assets; optimize accordingly.
+- **[`programmatic-seo`](../programmatic-seo/SKILL.md)** — Use *alongside*. Tools can power programmatic landing pages (one tool, N keyword variants).
+- **[`product-hunt-launch`](../product-hunt-launch/SKILL.md)** — Use *during* launch. Free tools are perfect for PH.
+- **[`copywriting`](../copywriting/SKILL.md)** — Use *during* landing page construction.
+- **[`email-sequence`](../email-sequence/SKILL.md)** — Use *during* the 4-email nurture build.
+- **[`analytics-tracking`](../analytics-tracking/SKILL.md)** — Use *during* conversion-plumbing wiring.
+
+---
+
+## References
+
+- HubSpot Website Grader — the canonical B2B SaaS free-tool example; foundation of HubSpot's demand gen.
+- CoSchedule Headline Analyzer — the embed-loop model; 1,000+ blog embeds.
+- Hotjar Heatmap Generator — the "free preview of the product" model.
+- *Hooked* — Nir Eyal (the habit-loop dynamic that makes free tools sticky).
+- Reforge growth program — case studies on free-tool-as-channel.

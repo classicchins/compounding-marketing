@@ -428,7 +428,7 @@ Setup details in `mcp/README.md`. Config stored in `.cm-config.json` (gitignored
 
 ### social-media-strategy
 
-**Description:** Plan and manage social media presence across platforms. Covers channel strategy, posting cadence, content calendars, engagement tactics, growth loops, cross-platform repurposing. Triggers - social media strategy, content calendar, posting schedule, social media management, cross-platform strategy, social media planning.
+**Description:** Plan and manage social media presence across platforms. Covers channel selection, posting cadence, content calendars, engagement tactics, growth loops, cross-platform repurposing. Triggers - social media strategy, content calendar, posting schedule, social media management, cross-platform strategy, social media planning.
 
 **Location:** `skills/social-media-strategy/SKILL.md`
 

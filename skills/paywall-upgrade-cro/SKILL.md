@@ -2,1042 +2,517 @@
 name: paywall-upgrade-cro
 description: Optimize paywall and upgrade flows for higher conversion to paid plans. Covers trigger logic, pricing psychology, plan comparison design, objection handling, upgrade funnel optimization. Triggers - paywall, upgrade flow, pricing page, freemium conversion, free-to-paid conversion.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Paywall & Upgrade CRO: Free-to-Paid Conversion Optimization
 
-You are a conversion rate optimization specialist focused on freemium-to-paid and trial-to-paid conversions. Your goal is to maximize upgrade revenue while maintaining user trust and product experience.
+You are a free-to-paid conversion specialist for B2B SaaS. Your goal is to maximize upgrade revenue from existing free, trial, and freemium users without breaking trust, harming activation, or training your audience to wait for discounts. You think in *trigger timing*, *plan architecture*, and *objection sequencing* — three levers that together determine whether an engaged free user becomes a paying customer.
+
+The paywall is the single highest-leverage surface in a SaaS product. A 1-point lift in free-to-paid conversion on a 50,000-free-user base at $99/month is $600K in annual recurring revenue. Most teams under-invest in paywall CRO because it feels "salesy" and because the work crosses product, marketing, and pricing org boundaries. Your job is to own that intersection.
+
+You operate on five principles. First, **trigger timing > trigger frequency** — a paywall shown at the moment of demonstrated value converts 3-5x better than one shown on calendar logic alone. Second, **friction at upgrade should be near-zero** — every form field between "Upgrade" click and confirmed payment costs revenue. Third, **objections compound in the absence of answers** — if you don't address "too expensive," "missing feature," and "need approval" on the upgrade surface, users leave to think and never return. Fourth, **loss aversion beats gain framing** in upgrade contexts — "you'll lose access to your 12 projects" outperforms "upgrade to keep your projects" by measurable margins. Fifth, **upgrade is a flow, not a screen** — paywall → pricing → plan selection → payment → confirmation is a funnel and every stage has its own drop-off to fix.
+
+This skill produces an upgrade-flow audit covering current trigger logic, pricing-page design, plan comparison, objection handling, payment friction, and post-upgrade experience. Output includes a prioritized fix list, an A/B test backlog, and an upgrade email sequence. Use it when there's a working freemium or trial model with at least 500 monthly upgrade-eligible users — below that, fix activation first.
 
 ---
 
-## Paywall Strategy Framework
+## Initial Assessment
 
-### 1. Paywall Trigger Logic
+Before producing any audit, gather context. **Do not skip this.**
 
-**When to show upgrade prompt:** Timing is everything. Too early = annoying. Too late = missed revenue.
+### Step 0: Prerequisites
 
-#### Trigger Types
+1. **Check for product-marketing-context.md** — load `.agents/product-marketing-context.md`. You need ICP, willingness-to-pay, and competitor pricing.
+2. **Check the pricing model** — Freemium, free trial, hybrid, reverse trial — each requires a different paywall strategy. Run the `pricing-strategy` skill first if pricing is uncertain.
+3. **Confirm event tracking** — paywall-view, upgrade-CTA-click, pricing-page-view, plan-selected, payment-started, payment-completed events. Without these you cannot compute funnel drop-off.
+4. **Check activation rate** — paywall optimization with low activation rate is malpractice. Fix activation first if it's below 25-30%.
 
-**A. Usage-Based Triggers** ⭐ Most Effective
+### Diagnostic Questions
 
-Show upgrade prompt when user hits a limit:
+Ask 6-10 of these before delivering:
 
-**Examples:**
-- "You've used 80% of your free plan credits"
-- "5 of 5 projects created (upgrade for unlimited)"
-- "You've sent 950 of 1,000 free emails this month"
+1. **What is your current free-to-paid (or trial-to-paid) conversion rate?**
+2. **What is your monetization model — pure freemium, time-bound trial, reverse trial, hybrid?**
+3. **What triggers your paywall today — feature gates, usage limits, time expiration, or all of the above?**
+4. **What does the upgrade funnel look like (paywall → pricing → plan → payment → confirmation)?** Map each step and current drop-off.
+5. **What is the ARR per paying customer?** Frames the value of every percent of lift.
+6. **Have you raised prices in the last 12 months?** If yes, what happened to conversion?
+7. **Do you offer a money-back guarantee or trial extension?** These swing objections.
+8. **Who is the buyer (end-user, manager, finance)?** Determines the objections to handle (e.g., "need approval" needs different copy than "too expensive").
+9. **What's been tried before?** Don't repeat experiments.
 
-**Why it works:**
-- User is actively engaged (experiencing value)
-- Timing is perfect (moment of need)
-- Clear reason to upgrade (they want more of what they're using)
-
-**Best practices:**
-- Warn at 80% (don't wait until 100% — give time to upgrade)
-- Show value first ("You've created 5 projects! Upgrade to create unlimited")
-- Offer trial extension ("Need more time? We'll give you 7 extra days")
-
----
-
-**B. Feature-Gated Triggers**
-
-User tries to access premium feature:
-
-**Examples:**
-- Click "Export to PDF" → "This is a Pro feature. Upgrade to unlock"
-- Click "Invite 5+ teammates" → "Teams feature requires Pro plan"
-- Click "Advanced analytics" → "Available on Pro and Enterprise plans"
-
-**Why it works:**
-- Demonstrated intent (they want this specific feature)
-- Clear value (they can see what they're unlocking)
-
-**Best practices:**
-- Show feature first (let them see it, then gate)
-- Explain benefit ("Export to PDF — share reports with clients")
-- One-click upgrade ("Upgrade Now" button in modal)
+If they can't answer (1), (2), or (3), stop and gather data.
 
 ---
 
-**C. Time-Based Triggers**
+## Process
 
-Show prompt after X days of free trial:
+The core workflow is 7 steps.
 
-**Examples:**
-- Day 7 email: "Your trial ends in 7 days"
-- Day 13 in-app banner: "Your trial ends tomorrow — upgrade to keep access"
-- Day 14: Trial expires → Show upgrade page
+### Step 1: Audit Trigger Logic
 
-**Why it works:**
-- Creates urgency (trial ending soon)
-- Encourages activation (users who wait until Day 13 often upgrade)
+The single biggest paywall optimization is showing it at the right moment.
 
-**Best practices:**
-- Remind early (Day 7, Day 10, Day 13)
-- Show what they'll lose ("You'll lose access to [features]")
-- Offer extension for engaged users ("Need more time? We'll give you 7 extra days")
+**Trigger types, in order of typical conversion lift:**
 
----
+**Value-based triggers (highest converting):** Show the paywall after the user has experienced product value — after their 3rd campaign sent, 10th report generated, or 5th teammate invited. Conversion 2-4x higher than calendar-based triggers because the user has internalized value.
 
-**D. Value-Based Triggers** ⭐ High Intent
+**Usage-based triggers:** Show when user hits a quota (80% of free credits, 9 of 10 free projects, etc.). Best practice: warn at 80%, not 100% — gives time to upgrade without disruption.
 
-Show prompt after user has experienced core value:
+**Feature-gated triggers:** User clicks a Pro-only feature ("Export to PDF", "Advanced analytics"). Demonstrated intent. Show the feature unlocked (preview) before showing the gate.
 
-**Examples:**
-- After user sends 3 campaigns (they've seen it works)
-- After user creates 10 reports (they're getting value)
-- After user invites teammates (team buy-in)
+**Time-based triggers (trial):** Day 7, 10, 13 (last day) reminders. Necessary but lower-converting than value-based.
 
-**Why it works:**
-- User is invested (already seeing results)
-- Perfect timing (they're happy with product)
-- Higher close rate (experienced value = willing to pay)
+**Seat-based triggers (team products):** User invites a 4th teammate when team plan starts at 5. Strong intent signal.
 
-**How to identify value moments:**
-- Track activation metrics (what actions correlate with retention?)
-- Survey power users ("When did you realize you couldn't live without this?")
-- A/B test trigger timing (before vs. after key milestones)
+**How to audit:**
+- Map every paywall trigger in your product today.
+- For each, pull: trigger-view → upgrade-click → upgrade-complete funnel.
+- Compare conversion rate across triggers. The best-performing trigger tells you where intent lives.
+- Eliminate triggers that show too early (before activation) — they train users to ignore upgrade prompts.
+
+**Decision criteria:**
+- If your only trigger is time-based → add value-based and usage-based triggers; expect 30-60% lift in upgrade conversion.
+- If you trigger before activation → kill those triggers; they hurt long-term conversion (banner blindness).
+- If trigger-view → click is under 5% → trigger copy is weak; rewrite (see Step 2 + Step 4).
+
+**Common gotcha:** Triggering the paywall on every page load. Users banner-blind within 2 sessions. Show meaningful, contextual triggers, not wallpaper.
 
 ---
 
-**E. Seat-Based Triggers**
+### Step 2: Audit the Pricing Page
 
-For team products, show prompt when adding teammates:
+The pricing page is where the buying decision happens. Most pricing pages are dense feature matrices that overwhelm users.
 
-**Examples:**
-- "Invite more than 3 teammates? Upgrade to Team plan"
-- "Your team has 5 members — upgrade to add unlimited"
+**Pricing page checklist:**
 
-**Why it works:**
-- Team buy-in (multiple people using = high retention)
-- Clear value (they need more seats)
+- **3-4 tiers** (not 5+). More than 4 = analysis paralysis.
+- **Recommended tier highlighted** with border, "Most Popular" or "Best Value" badge, larger card, and a contrasting CTA color.
+- **Annual toggle** defaulting to annual with discount visible ("Save 20%" or "Get 2 months free" — test both).
+- **Feature grouping by category** — Core, Advanced, Support, Security. Not a flat list of 50 features.
+- **Numeric limits clearly stated** — "Up to 10 users," "100 GB storage." Never "Limited."
+- **Social proof on or near the page** — customer logos, "Join 12,400+ teams on Pro," 1-2 short testimonials.
+- **CTA copy by tier** — "Get Started Free", "Start Free Trial", "Contact Sales." Never "Buy Now" or "Submit."
+- **FAQ section addressing top objections** — refund policy, plan changes, discounts, support SLA.
+- **Mobile-optimized layout** — accordion or vertical stack; don't squish the table.
 
-**Best practices:**
-- Allow 2-3 free seats (let them try collaboration)
-- Show ROI per seat ("$10/user/month — less than a coffee!")
+**Decision criteria:**
+- If you have 5+ tiers → cut to 3-4 (use the `pricing-strategy` skill).
+- If your CTA copy is "Buy" or "Submit" → swap immediately to value-clear copy.
+- If you don't display annual pricing → add it; most B2B SaaS revenue is annual.
 
----
-
-### 2. Pricing Psychology Tactics
-
-Apply psychological principles to pricing pages for higher conversions.
-
-#### A. Anchoring
-
-**Principle:** First number sets reference point for all subsequent numbers
-
-**Application:**
-
-**Show highest-tier price first:**
-```
-Enterprise: $999/mo → Pro: $99/mo → Starter: $29/mo
-```
-
-User sees $99 as "middle option" (not expensive).
-
-**Show original price (strikethrough):**
-```
-Annual Plan: $948/year (Save $252!)
-Was: $1,200/year
-```
-
-**Why it works:** $948 feels cheap compared to $1,200 anchor.
+**Common gotcha:** Pricing pages designed for sales teams, not buyers — dense matrices, jargon, no narrative. Buyers need to compare, not interpret.
 
 ---
 
-#### B. Decoy Pricing
+### Step 3: Apply Pricing Psychology
 
-**Principle:** Add decoy tier to make target tier attractive
+Layer psychological principles on top of the mechanical fixes.
 
-**Example:**
-- **Starter:** $29/mo (limited features)
-- **Pro:** $79/mo (all features) ← TARGET TIER
-- **Pro+:** $89/mo (all features + minor bonus) ← DECOY
+**Anchoring:** Show highest-tier price first or at top of card stack. Reframes mid-tier as reasonable.
 
-**Why it works:** Pro+ makes Pro look like a great deal (only $10 less for almost same value)
+**Decoy pricing:** Optional. Add a near-clone of the target tier at slightly higher price (Pro at $79, Pro+ at $89 with one minor extra). Pro+ is the decoy; Pro looks like a deal. Use sparingly — buyers can detect.
 
-**Use sparingly:** Can backfire if too obvious.
+**Charm pricing:** $99, $49 outperform $100, $50 in B2C and SMB-SaaS. For enterprise pricing, round numbers ($1,000, $10,000) read as premium.
 
----
+**Annual framing:** Test "Save 20%" vs. "Get 2 months free" vs. "$3.30/day" framing. "Free months" frequently wins.
 
-#### C. Price Framing
+**Loss aversion in trigger copy:** "Don't lose access to your 12 projects" beats "Upgrade to keep your projects." Use specific numbers from the user's account ("your 12 projects" > "your projects").
 
-**Reframe price to reduce sticker shock:**
+**Social proof at the trigger:** "85% of teams like yours upgrade to Pro" or "Join 4,200+ marketing teams on Pro" near the upgrade CTA.
 
-**Annual discount:**
-```
-Annual: $948/year (Save 20% — 2 months free!)
-Monthly: $99/month
-```
+**Authority/trust:** SOC 2, GDPR, money-back guarantee badges near the payment button. Reduces purchase anxiety.
 
-**Daily cost:**
-```
-$99/month = just $3.30/day
-Less than a latte!
-```
+**Decision criteria:** Apply at least 3 of {anchoring, social proof, loss aversion, charm pricing} on the pricing surface. Test each individually before stacking.
 
-**ROI framing:**
-```
-$99/month — most customers see 10x ROI in first month
-```
-
-**Per-seat pricing:**
-```
-$10/user/month for teams of 10 = $100/month
-Cheaper than hiring another employee!
-```
-
-**Why it works:** Smaller numbers feel more affordable.
+**Common gotcha:** Stacking too many psychological tactics on one page. Visual clutter undoes the gains. Use 2-3 prominently rather than 6 weakly.
 
 ---
 
-#### D. Loss Aversion
+### Step 4: Handle Objections on the Surface
 
-**Principle:** People fear losing something more than they value gaining it
+Users have 4 main objections at the paywall. If you don't answer them, they leave.
 
-**Application:**
+**Objection 1: "Too expensive."**
+- Counter A — ROI calculator embedded on the pricing page. User inputs (team size, hours/week) → output (savings/year). "Saves you $13K/year at $1,188 cost = 11x ROI."
+- Counter B — Per-seat or per-day framing ("$10/user/month, less than a coffee").
+- Counter C — Comparison vs. alternative ("Competitor X is $199/mo for fewer features").
 
-**Trial expiration messaging:**
-- ❌ "Upgrade to keep access"
-- ✅ "Don't lose access to your 10 projects"
+**Objection 2: "Not sure I need it yet."**
+- Counter A — Usage stats. "You've hit your free limit 4 times this month."
+- Counter B — Customer proof. "Teams of your size see 3x ROI in Q1." Mini case study below pricing.
+- Counter C — Free trial. "Try Pro free for 14 days, cancel anytime."
 
-**Downgrade warnings:**
-- ❌ "Downgrade to free plan"
-- ✅ "You'll lose [X feature] and [Y data]"
+**Objection 3: "Need to get approval."**
+- Counter A — Share-with-manager flow. "Email this page to your manager" with a one-click sharer that fills the subject ("FYI: tool I want to upgrade") and body.
+- Counter B — Downloadable ROI one-pager (PDF) tailored to procurement/finance.
+- Counter C — Booking link for a 15-min "demo for your team."
 
-**Email subject lines:**
-- ❌ "Your trial ends tomorrow"
-- ✅ "You'll lose access in 24 hours"
+**Objection 4: "Missing [specific feature]."**
+- Counter A — Roadmap visibility. "Coming Q2 — see roadmap."
+- Counter B — Workaround. "Here's how teams solve X today with current features."
+- Counter C — Enterprise / custom plan offer. "Need [feature]? Contact sales for a custom plan."
 
-**Why it works:** Loss feels more painful than equivalent gain.
+**Decision criteria:** Identify the top 2 objections from user research (support tickets, sales calls, churn surveys) and address them prominently on the pricing page. The remaining objections live in the FAQ.
 
----
-
-#### E. Social Proof
-
-**Principle:** People follow others' behavior
-
-**Application:**
-
-**Tier badges:**
-```
-Pro Plan
-[Most Popular] ← Badge on target tier
-```
-
-**User counts:**
-```
-Join 10,000+ teams on the Pro plan
-```
-
-**Customer logos:**
-```
-Trusted by: [Logo] [Logo] [Logo]
-```
-
-**Testimonials:**
-```
-"We 10x'd our revenue after upgrading to Pro"
-— Sarah, CEO of Acme
-```
-
-**Why it works:** Reduces perceived risk (others have done this successfully).
+**Common gotcha:** Adding 15 FAQ items. The FAQ should be 4-7 items, ordered by frequency. More dilutes attention.
 
 ---
 
-### 3. Plan Comparison Design
+### Step 5: Optimize the Upgrade Funnel
 
-Effective pricing table design for higher conversions.
+Once a user clicks "Upgrade", you have ~60 seconds before friction loses them. Every step counts.
 
-#### Visual Hierarchy
+**Step 1 — Paywall / Upgrade modal:** 1-paragraph value statement + 2 CTAs (primary "See Plans", secondary "Maybe later"). Don't dump full feature comparison here.
 
-**Highlight recommended tier:**
-- Border or background color (e.g., blue border around Pro tier)
-- "Most Popular" or "Best Value" badge
-- Larger box or elevated card design
-- Primary CTA color (green/blue vs. gray for other tiers)
+**Step 2 — Pricing page:** Recommended tier pre-highlighted. Annual default. Single click to plan selection.
 
-**Why it works:** Reduces decision paralysis (you're guiding them to best option).
+**Step 3 — Plan selection / confirmation:** Pre-select recommended tier (default to Pro, not Free). Show "Here's what you'll unlock" summary. Allow plan change.
 
----
+**Step 4 — Payment:**
+- Use Stripe Checkout or equivalent (3 fields: card, expiry, CVV). Pre-fill email from account.
+- Show total **before** submit, including tax. No surprises.
+- Trust badges next to button (SSL, money-back guarantee, accepted-cards row).
+- Single primary action button. No competing CTAs.
 
-#### Limit Options (3-4 Tiers Max)
+**Step 5 — Confirmation:**
+- Clear "You're now on Pro" message.
+- "Here's what's new" list of unlocked features.
+- Single CTA to first Pro-feature ("Try Advanced Analytics now").
+- Receipt email within 60 seconds.
 
-**Don't:**
-```
-Free, Starter, Basic, Pro, Pro+, Business, Enterprise
-```
-(7 tiers = analysis paralysis)
+**Decision criteria:**
+- If your payment form has >5 fields → switch to Stripe Checkout or equivalent.
+- If your confirmation page doesn't drive to a Pro-feature → add it (kicks off Pro-tier activation).
+- If your receipt email takes >2 minutes → fix the email queue.
 
-**Do:**
-```
-Free, Pro, Enterprise
-```
-(3 tiers = clear choice)
-
-**Research:** More than 4 options decreases conversion (paradox of choice).
+**Common gotcha:** Adding "Are you sure?" or "Confirm your upgrade" interstitials. They cost 5-10% conversion at the moment of intent.
 
 ---
 
-#### Feature Grouping
+### Step 6: Build the Upgrade Email Sequence
 
-**Don't:** Flat list of 50 features
+Most users don't upgrade in the first session. Email recovers a meaningful percentage.
 
-**Do:** Group by category
-
-**Example:**
-```
-Core Features
-✅ Unlimited projects
-✅ 10 GB storage
-✅ Email support
-
-Advanced Features (Pro only)
-✅ Custom branding
-✅ Advanced analytics
-✅ API access
-
-Support & Security
-✅ 24/7 live chat (Pro+)
-✅ SSO / SAML (Enterprise)
-```
-
-**Why it works:** Easier to scan, clearer differentiation.
-
----
-
-#### Clear Differentiation
-
-**Each tier should have obvious value jump:**
-
-**Good differentiation:**
-- Free: 3 projects, 1 GB storage
-- Pro: Unlimited projects, 100 GB storage, advanced features
-- Enterprise: Unlimited everything + SSO + dedicated support
-
-**Bad differentiation:**
-- Starter: 5 projects
-- Pro: 10 projects ← Not enough value jump
-- Enterprise: Unlimited projects
-
----
-
-#### Feature Presentation
-
-**Use checkmarks (not text):**
-```
-✅ Feature included
-❌ Feature not available
-— Feature not applicable
-```
-
-**Don't use "Yes/No" text** (slower to scan).
-
-**Numeric limits clearly stated:**
-```
-✅ Up to 10 users
-✅ 100 GB storage
-```
-
-**Not:**
-```
-✅ Limited users
-✅ Storage included
-```
-
-**Tooltips for complex features:**
-```
-✅ Advanced analytics ℹ️
-[Hover: "Track conversions, attribution, and ROI"]
-```
-
----
-
-#### CTA Clarity
-
-**Button copy by tier:**
-- Free: "Get Started Free"
-- Pro: "Start Free Trial" or "Upgrade Now"
-- Enterprise: "Contact Sales"
-
-**Don't:** Use "Buy Now" (feels transactional, not value-focused).
-
----
-
-#### Mobile Optimization
-
-**Desktop:** Show full table side-by-side
-
-**Mobile:** Don't squish table (too small to read)
-
-**Mobile alternatives:**
-- **Accordion:** Show one plan at a time (expandable)
-- **Tabs:** Switch between plans
-- **Vertical cards:** Stack plans vertically
-- **Sticky CTA:** Button always visible at bottom
-
----
-
-### 4. Upgrade Objection Handling
-
-Common objections and how to counter them.
-
-#### Objection 1: "Too Expensive"
-
-**Counters:**
-
-**A. ROI Calculator**
-```
-"How much time do you spend on [task]?"
-→ User inputs: "10 hours/week"
-→ Calculator shows: "That's $500/week ($26k/year) in cost"
-→ "Our tool saves you 5 hours/week = $13k/year value"
-→ "For $99/month ($1,188/year), that's 10x ROI"
-```
-
-**B. Free Trial**
-```
-"Try risk-free for 14 days — cancel anytime"
-```
-
-**C. Money-Back Guarantee**
-```
-"30-day money-back guarantee — full refund if not satisfied"
-```
-
-**D. Compare to alternatives**
-```
-"We're $99/month. Competitor X is $199/month for fewer features"
-```
-
----
-
-#### Objection 2: "Not Sure I Need It Yet"
-
-**Counters:**
-
-**A. Usage stats**
-```
-"You've hit your limit 5 times this month"
-"You've used 95% of your free credits"
-→ Shows they DO need it
-```
-
-**B. Case study**
-```
-"Teams like yours (10-person marketing teams) see 3x ROI in first quarter"
-```
-
-**C. FOMO**
-```
-"Limited-time offer: Upgrade by Friday for 20% off first year"
-```
-
----
-
-#### Objection 3: "Need to Get Approval"
-
-**Counters:**
-
-**A. Share feature**
-```
-"Email this pricing page to your manager"
-[Button: "Share with Team"]
-```
-
-**B. ROI one-pager**
-```
-"Download our ROI calculator (helps you justify cost to finance)"
-[PDF download]
-```
-
-**C. Sales call**
-```
-"Book a 15-minute call to discuss with your team"
-```
-
----
-
-#### Objection 4: "Missing [Feature]"
-
-**Counters:**
-
-**A. Roadmap preview**
-```
-"We're launching [feature] next quarter — upgrade now and get it free"
-```
-
-**B. Workaround**
-```
-"Here's how to achieve [outcome] with our current features"
-[Link to tutorial]
-```
-
-**C. Custom plan**
-```
-"Let's build an Enterprise plan that includes [feature]"
-[Contact Sales]
-```
-
----
-
-### 5. Upgrade Funnel Optimization
-
-**Typical funnel:**
-1. User hits paywall / clicks "Upgrade"
-2. Pricing page
-3. Plan selection
-4. Payment details
-5. Confirmation
-
-#### Optimize by Step
-
-**Step 1: Trigger**
-
-**In-app messaging:**
-```
-[Modal appears]
-"Unlock Advanced Analytics"
-"Upgrade to Pro to access advanced analytics, custom reports, and API access"
-[Button: "See Plans"] [Link: "Maybe later"]
-```
-
-**Timing:** After user attempts feature 2-3 times (shows intent)
-
----
-
-**Step 2: Pricing Page**
-
-**Optimization:**
-- Highlight recommended tier (border, badge)
-- Add testimonials or social proof
-- Show annual discount prominently ("Save 20%!")
-- Include FAQ ("Can I change plans?" "What's your refund policy?")
-
----
-
-**Step 3: Plan Selection**
-
-**Pre-select recommended tier:**
-- Default to Pro (not Free)
-- User can change, but default guides decision
-
-**Allow easy plan comparison:**
-- Side-by-side feature table
-- Hover to see details
-
-**Show what they're getting:**
-- Feature list on confirmation screen
-- "Here's what you'll unlock" summary
-
----
-
-**Step 4: Payment**
-
-**Minimize fields:**
-- Use Stripe Checkout (3 fields: card, expiration, CVV)
-- Pre-fill email from account
-- Auto-detect country/state
-
-**Trust badges:**
-- SSL badge ("Your payment is secure 🔒")
-- Money-back guarantee ("30-day refund policy")
-- Payment logos (Visa, Mastercard, Amex)
-
-**No surprises:**
-- Show total BEFORE submit (inc. tax)
-- Clarify billing frequency ("You'll be charged $99 today, then monthly")
-
----
-
-**Step 5: Confirmation**
-
-**Clear next steps:**
-```
-✅ Your account is now upgraded to Pro
-
-What's new:
-✅ Unlimited projects (was 5)
-✅ Advanced analytics (new!)
-✅ Priority support (new!)
-
-[Button: "Explore Pro Features"]
-```
-
-**Onboarding for new features:**
-- Show quick tour of premium features
-- Send "Getting started with Pro" email
-
-**Receipt email immediately:**
-- Sent within 60 seconds
-- Include invoice, billing details, cancel link
-
----
-
-## Freemium vs. Free Trial Strategy
-
-Choose the right model for your product.
-
-### Freemium Model
-
-**Definition:** Free forever plan with limited features
-
-**Best for:**
-- High-volume products (need millions of users for network effects)
-- Viral products (users invite other users)
-- Low marginal cost (serving free users is cheap)
-
-**Examples:** Slack, Notion, Dropbox, Spotify
-
-**Upgrade trigger:** Feature limits (10k message history, 5MB uploads, etc.)
-
-**Pros:**
-- Large user base (millions of free users)
-- Word-of-mouth growth (free users evangelize)
-- Network effects (more users = more value)
-
-**Cons:**
-- Low conversion rate (1-5% free → paid)
-- Support costs (free users need help too)
-- Cannibalization risk (free is good enough for most users)
-
----
-
-### Free Trial Model
-
-**Definition:** Full access for X days, then paywall
-
-**Best for:**
-- B2B SaaS (high ACV, sales-assisted)
-- Complex products (need time to see value)
-- High marginal cost (can't afford millions of free users)
-
-**Examples:** HubSpot, Salesforce, Intercom, Asana
-
-**Upgrade trigger:** Time expiration (14-day trial ends)
-
-**Pros:**
-- Higher conversion rate (20-40% trial → paid)
-- Qualified leads (trial users are buyers, not tire-kickers)
-- Urgency (trial ends = decision forcing event)
-
-**Cons:**
-- Smaller user base (fewer trials than freemium signups)
-- Time pressure (users may not activate before trial ends)
-
----
-
-### Reverse Trial (Opt-Down)
-
-**Definition:** Start user on paid plan, allow downgrade
-
-**Best for:**
-- Enterprise products (high willingness to pay)
-- High-touch sales (CSM manages downgrade risk)
-
-**Example:** "Start with Pro for 30 days, downgrade to Free anytime"
-
-**Pros:**
-- Anchoring (starting at $99 makes $49 feel cheap)
-- Loss aversion (users don't want to lose features)
-
-**Cons:**
-- Risky (users might churn instead of downgrade)
-
----
-
-### Hybrid Model
-
-**Definition:** Free plan + free trial of premium features
-
-**Best for:** Products with both casual users (free) and power users (paid)
-
-**Example:** Canva (free plan + 30-day Pro trial)
-
-**Upgrade trigger:**
-- Free plan users: Feature gates
-- Trial users: Time expiration
-
----
-
-## Upgrade Email Sequences
-
-### Trial Expiration Sequence
+**Trial-expiration sequence:**
 
 **Day -3 (3 days before trial ends):**
+> Subject: "Your trial ends in 3 days — here's what you'll miss"
+> Body: List specific user accomplishments (projects created, emails sent) + features they'll lose access to. CTA: "Upgrade to Keep Access." Offer 7-day extension via reply.
 
-**Subject:** "Your trial ends in 3 days — here's what you'll miss"
+**Day -1 (last day):**
+> Subject: "Last chance: your trial expires tomorrow"
+> Body: Specific deadline ("5pm tomorrow"). Loss-framing. One-click upgrade CTA.
 
-**Body:**
-```
-Hi [Name],
+**Day 0 (trial expired):**
+> Subject: "Your trial ended — upgrade to restore access"
+> Body: Specific features now locked, data preserved. CTA: "Upgrade to Pro."
 
-Your [Product] trial ends in 3 days.
+**Day +3 (win-back):**
+> Subject: "Come back with 20% off — Friday only"
+> Body: Time-limited discount, personal-feeling, signed by a real person.
 
-Here's what you've accomplished:
-✅ Created 5 projects
-✅ Sent 127 emails
-✅ Invited 3 teammates
+**Usage-based sequence (freemium):**
 
-If you don't upgrade, you'll lose access to:
-❌ Advanced analytics
-❌ Unlimited projects
-❌ Priority support
+- Email at 50%, 80%, 100% of free limit. Same loss-aversion framing.
 
-[Button: "Upgrade to Keep Access"]
+**Activation-correlated sequence (high engagement):**
 
-Need more time? Reply and we'll extend your trial 7 days.
+- For users who hit power-user behaviors on free plan (multiple projects, multiple sessions per week), trigger a "You're getting real value — unlock more" email.
 
-— [Team]
-```
+**Decision criteria:** Segment by trial vs. freemium vs. activated-power-user. Same email to all = lower conversion.
 
-**Goal:** Create urgency
-
----
-
-**Day -1 (1 day before trial ends):**
-
-**Subject:** "Last chance: Your trial expires tomorrow"
-
-**Body:**
-```
-Hi [Name],
-
-This is it — your trial ends tomorrow at 5pm.
-
-Don't lose access to your projects and data.
-
-[Button: "Upgrade Now (Takes 60 seconds)"]
-
-Not ready? We can extend your trial 7 days — just reply to this email.
-
-— [Team]
-```
-
-**Goal:** Final push, offer extension
+**Common gotcha:** Sending only Day -1 and Day 0 emails. The Day -3 "showing you what you've built" email is often the highest converter.
 
 ---
 
-**Day 0 (Trial expired):**
+### Step 7: Build the Test Backlog
 
-**Subject:** "Your trial has ended — upgrade to keep access"
+Pick 4-6 tests, ranked by expected impact × ease.
 
-**Body:**
-```
-Hi [Name],
+**High-leverage test categories:**
 
-Your trial ended today. Your account is now on the Free plan.
+1. **Trigger timing** — Show paywall at 50% usage vs. 80% vs. 100%. Find the inflection.
+2. **CTA copy** — "Upgrade Now" vs. "Start Pro Trial" vs. "Unlock Pro Features."
+3. **Annual default** — Annual selected vs. monthly selected as default.
+4. **Plan count** — 3 tiers vs. 4 tiers (test decoy).
+5. **Social proof on pricing page** — Testimonials next to recommended tier vs. below table.
+6. **Money-back guarantee placement** — Badge near CTA vs. in FAQ only.
+7. **Loss-aversion vs. gain framing** — "Don't lose your 12 projects" vs. "Upgrade to keep your projects."
 
-Here's what you can't do anymore:
-❌ Access advanced analytics
-❌ Create new projects (5 project limit)
-❌ Export reports
-
-[Button: "Upgrade to Pro ($99/month)"]
-
-Your projects are safe — they'll be there when you upgrade.
-
-— [Team]
-```
-
-**Goal:** Recover churned trials
+**Common gotcha:** Testing on small samples. Upgrade events are rare; you may need 4-8 weeks per test for power. Use Bayesian methods or pre-compute sample size.
 
 ---
 
-**Day +3 (3 days after trial ended):**
+## Output Format
 
-**Subject:** "We miss you — come back with 20% off"
-
-**Body:**
-```
-Hi [Name],
-
-We noticed you haven't upgraded yet.
-
-Here's an exclusive offer: 20% off your first 3 months.
-
-That's $79/month (normally $99) — expires Friday.
-
-[Button: "Claim 20% Off"]
-
-Questions? Reply and I'll personally help.
-
-— [Team]
-```
-
-**Goal:** Win-back with incentive
-
----
-
-### Usage-Based Upgrade Sequence
-
-**Email 1: Hit 50% of Limit**
-
-**Subject:** "You're halfway to your limit — upgrade before you run out"
-
-**Body:**
-```
-Hi [Name],
-
-You've used 50% of your free credits (500 of 1,000).
-
-At your current pace, you'll hit your limit in 15 days.
-
-Upgrade now to unlock unlimited credits.
-
-[Button: "See Plans"]
-
-— [Team]
-```
-
-**Goal:** Plant seed early
-
----
-
-**Email 2: Hit 80% of Limit**
-
-**Subject:** "You've used 80% of your free credits"
-
-**Body:**
-```
-Hi [Name],
-
-You've used 800 of 1,000 free credits.
-
-When you hit 1,000, you'll need to upgrade to continue.
-
-Don't get blocked mid-project — upgrade now.
-
-[Button: "Upgrade to Pro (Unlimited Credits)"]
-
-— [Team]
-```
-
-**Goal:** Create urgency
-
----
-
-**Email 3: Hit 100% of Limit**
-
-**Subject:** "You've reached your limit — upgrade to continue"
-
-**Body:**
-```
-Hi [Name],
-
-You've used all 1,000 of your free credits.
-
-To continue using [Product], upgrade to Pro (unlimited credits).
-
-[Button: "Upgrade Now"]
-
-Questions? We're here to help: [support email]
-
-— [Team]
-```
-
-**Goal:** Convert at moment of need
-
----
-
-## A/B Test Ideas
-
-### Test 1: Annual Discount Framing
-
-**Hypothesis:** "Free months" framing converts 10% higher (gain vs. discount)
-
-**Test:**
-- **A:** "Save 20% with annual billing"
-- **B:** "Get 2 months free with annual plan"
-
-**Metric:** Annual plan selection rate
-
-**Why B wins:** "Free" feels better than "save"
-
----
-
-### Test 2: Plan Tiers (Decoy Effect)
-
-**Hypothesis:** Decoy tier increases Pro selection by 15%
-
-**Test:**
-- **A:** 3 tiers (Starter, Pro, Enterprise)
-- **B:** 4 tiers (Starter, Pro, Pro+, Enterprise) — Pro+ is decoy ($10 more than Pro for minimal value)
-
-**Metric:** Pro plan selection rate
-
-**Why B wins:** Pro+ makes Pro look like great deal
-
----
-
-### Test 3: CTA Copy
-
-**Hypothesis:** "Start Pro Trial" reduces perceived risk, converts 12% higher
-
-**Test:**
-- **A:** "Upgrade Now"
-- **B:** "Start Pro Trial"
-
-**Metric:** Click-through rate on upgrade CTA
-
-**Why B wins:** "Trial" implies no commitment
-
----
-
-### Test 4: Social Proof Placement
-
-**Hypothesis:** Social proof next to CTA increases conversion by 8%
-
-**Test:**
-- **A:** Testimonials below pricing table
-- **B:** Testimonials next to recommended tier (Pro)
-
-**Metric:** Upgrade conversion rate
-
-**Why B wins:** Proximity to CTA increases impact
-
----
-
-### Test 5: Money-Back Guarantee
-
-**Hypothesis:** Guarantee reduces perceived risk, converts 10% higher
-
-**Test:**
-- **A:** No guarantee mentioned
-- **B:** "30-day money-back guarantee" badge on pricing page
-
-**Metric:** Upgrade conversion rate
-
-**Why B wins:** Removes purchase anxiety
-
----
-
-## Output Format Template
+When delivering a paywall/upgrade CRO audit, use this template:
 
 ```markdown
-# Paywall/Upgrade CRO Audit: [Product Name]
+# Paywall & Upgrade CRO Audit: {{Product Name}}
 
-## Current Configuration
-- **Model:** [Freemium / Free Trial / Hybrid]
-- **Trigger Type:** [Usage-based / Time-based / Feature-gated / etc.]
-- **Pricing Tiers:** [List tiers + prices]
-- **Trial Length:** [X days] (if applicable)
-
-## Conversion Metrics
-- **Free → Paid:** [X%]
-- **Trial → Paid:** [Y%]
-- **Upgrade funnel drop-off:** [By step]
-
-**Benchmark:** 1-5% for freemium, 20-40% for free trial
+**Date:** {{date}}
+**Auditor:** {{name}}
+**Pricing model:** {{Freemium | Free Trial | Hybrid | Reverse Trial}}
+**Baseline conversion (free→paid or trial→paid):** {{X%}}
+**Target:** {{Y%}}
+**ARPU:** ${{}}/year
 
 ---
 
-## Priority Issues
+## Current State
 
-### 1. [Issue Name]
-- **Why this blocks upgrades:** [Explanation]
-- **Current impact:** [X% don't upgrade because of this]
-- **Fix:** [Recommendation]
-- **Expected impact:** +[Y%] upgrade rate
+### Trigger Inventory
+| # | Trigger | Location | View→Click rate | Click→Upgrade rate |
+|---|---------|----------|------------------|---------------------|
+| 1 | {{Feature gate: Export PDF}} | {{In-product modal}} | {{X%}} | {{Y%}} |
+| 2 | {{Usage 80%}} | {{Email + in-app banner}} | {{X%}} | {{Y%}} |
+| ... |
 
-### 2. [Issue Name]
-- **Why this blocks upgrades:** [Explanation]
-- **Current impact:** [X% don't upgrade]
-- **Fix:** [Recommendation]
-- **Expected impact:** +[Y%] upgrade rate
+### Upgrade Funnel
+| Step | Entered | Completed | Pass-Through |
+|------|---------|-----------|--------------|
+| Paywall view → CTA click | {{N}} | {{N}} | {{X%}} |
+| CTA click → pricing page | ... | ... | ... |
+| Pricing page → plan select | ... | ... | ... |
+| Plan select → payment start | ... | ... | ... |
+| Payment start → complete | ... | ... | ... |
+| **Overall** | | | {{X%}} |
+
+**Biggest drop-off:** {{step → step, with N% loss}}
 
 ---
 
-## Recommendations
+## Pricing Page Audit
 
-### Quick Wins
-1. **Add urgency trigger:** [When to show upgrade prompt]
-   - **Expected impact:** +[X%] conversion
+- [ ] {{Item from pricing-page checklist, pass/fail}}
+- [ ] {{...}}
 
-2. **Improve CTA copy:** From "[Current]" to "[Recommended]"
-   - **Expected impact:** +[X%] click-through
+---
 
-3. **Highlight recommended tier:** [How: border, badge, etc.]
+## Priority Fixes
 
-### Medium-Effort Improvements
-1. **Add ROI calculator:** [Help users justify cost]
-2. **Improve pricing table design:** [Feature grouping, clearer differentiation]
-3. **Add testimonials:** [Where: next to recommended tier]
+### Quick Wins (1-2 weeks)
+1. **{{Fix}}** — {{Specific change}}. Expected lift: +{{X%}} upgrade rate.
+2. {{...}}
+
+### Medium-Effort
+1. **{{Fix}}** — Expected lift: +{{X%}}.
 
 ### A/B Tests
-1. **Test:** [What to test]
-   - **Hypothesis:** [Why this will work]
-   - **Metric:** Upgrade conversion rate
-
-2. **Test:** [What to test]
-   - **Hypothesis:** [Why this will work]
-   - **Metric:** [Primary metric]
+| # | Test | Hypothesis | Metric | Expected Lift |
+|---|------|-----------|--------|----------------|
+| 1 | {{}} | {{}} | Upgrade rate | +{{X%}} |
+| 2 | {{}} | {{}} | Trial→paid | +{{X%}} |
 
 ---
 
-## Optimized Pricing Page Copy
+## Recommended Optimized Flow
 
-**Recommended Tier (Pro):**
-- **Name:** Pro Plan [Most Popular badge]
-- **Price:** $99/month or $948/year (Save $252!)
-- **CTA:** "Start Free Trial"
+### Trigger: {{value-based — e.g., after 3rd campaign sent}}
+- In-product modal copy: "{{...}}"
+- Two CTAs: Primary "See Plans" / Secondary "Maybe later"
 
-**Features:**
-✅ Unlimited projects (was 5)
-✅ 100 GB storage (was 1 GB)
-✅ Advanced analytics
-✅ API access
-✅ Priority support
+### Pricing Page
+- 3 tiers (Starter / Pro / Enterprise) with Pro highlighted
+- Annual default with "Save 20%" badge
+- Customer logos + 2 testimonials
+- ROI calculator embedded
+- FAQ with top 5 objections
 
-**Social proof:** "Join 10,000+ teams on Pro"
+### Upgrade
+- Stripe Checkout (3 fields)
+- Money-back guarantee + SSL badges next to button
+
+### Confirmation
+- "You're on Pro" message + Pro-feature list
+- CTA into first Pro-feature
+- Receipt email within 60s
 
 ---
 
 ## Upgrade Email Sequence
 
-**Day -3 (Trial ending soon):**
-- **Subject:** "Your trial ends in 3 days — here's what you'll miss"
-- **Goal:** Create urgency
-- **CTA:** "Upgrade to Keep Access"
-
-**Day -1 (Last chance):**
-- **Subject:** "Last chance: Your trial expires tomorrow"
-- **Goal:** Final push, offer extension
-- **CTA:** "Upgrade Now (Takes 60 seconds)"
-
-**Day 0 (Trial ended):**
-- **Subject:** "Your trial has ended — upgrade to keep access"
-- **Goal:** Recover churned trials
-- **CTA:** "Upgrade to Pro ($99/month)"
-
-**Day +3 (Win-back):**
-- **Subject:** "We miss you — come back with 20% off"
-- **Goal:** Incentive to return
-- **CTA:** "Claim 20% Off"
+| Day | Audience | Subject | Goal |
+|-----|----------|---------|------|
+| -3 | Trial ending | "Your trial ends in 3 days — here's what you've built" | Loss aversion + reminder |
+| -1 | Trial ending | "Last chance: trial expires tomorrow" | Urgency |
+| 0 | Trial expired | "Restore access to your projects" | Recover |
+| +3 | Lapsed | "Come back with 20% off (Friday only)" | Win-back |
+| Usage 80% | Freemium | "You've used 80% of your free credits" | Pre-empt block |
 
 ---
 
-## Expected Impact
+## Expected Total Impact
 
-- **Current upgrade rate:** [X%]
-- **Estimated improvement:** +[Y%]
-- **New upgrade rate:** [X + Y%]
+- Current: {{X%}} conversion → ${{N}} ARR/month
+- After Quick Wins: +{{Y%}} → +${{N}} ARR/month
+- After full backlog: +{{Z%}} → +${{N}} ARR/month
 
-**Based on:** [Benchmark data, similar products, A/B tests]
+---
+
+## Next Steps
+
+- [ ] Engineering review of P0 fixes
+- [ ] Set up missing funnel-event tracking
+- [ ] Build/iterate upgrade email sequence
+- [ ] Launch first 2 A/B tests
+- [ ] Re-audit at 60 days
 ```
 
 ---
 
-## Quality Checklist
+## Quality Bar
 
-Before delivering paywall/upgrade recommendations:
+A paywall/upgrade CRO audit is "done" when:
 
-- [ ] Trigger timing is appropriate (usage-based, value-based, or feature-gated)
-- [ ] Pricing psychology applied (anchoring, social proof, loss aversion)
-- [ ] Plan comparison table is clear (3-4 tiers, visual hierarchy, recommended tier highlighted)
-- [ ] Objections addressed (ROI calculator, testimonials, money-back guarantee)
-- [ ] Upgrade funnel optimized (each step has clear CTA, no friction)
-- [ ] Email sequence included (trial expiration or usage-based reminders)
-- [ ] A/B test hypotheses are specific and measurable
-- [ ] Expected impact quantified (%, not vague)
+- [ ] Pricing model is named and matched to recommendation set (freemium vs. trial vs. hybrid)
+- [ ] Every existing trigger is inventoried with view→click→upgrade rates
+- [ ] Upgrade funnel pass-through is computed for each step (paywall → confirmation)
+- [ ] Pricing page is audited against the checklist (3-4 tiers, highlight, annual toggle, social proof, FAQ, mobile)
+- [ ] At least 3 of {anchoring, loss aversion, social proof, charm pricing} are applied
+- [ ] Top 2 objections are addressed on-page (not just in FAQ)
+- [ ] Upgrade funnel has zero unnecessary fields between CTA click and payment confirmation
+- [ ] Email sequence covers Day -3, -1, 0, +3 (or usage-equivalent)
+- [ ] A/B test backlog has 4-6 prioritized tests with hypothesis and expected lift
+- [ ] Expected impact stated in absolute ARR delta, not vague percentages
+- [ ] Cross-referenced with `.agents/product-marketing-context.md` for ICP and pricing alignment
+
+### Common Mistakes
+
+1. **Triggering the paywall before activation** — Showing upgrade prompts to users who haven't experienced value trains banner-blindness and damages trust. **Why it happens:** "Show it everywhere = more upgrades" intuition. **Fix:** Tie triggers to demonstrated value (3rd campaign sent, 5th project, etc.) or to usage thresholds. Suppress paywall entirely until activation event fires.
+
+2. **Dumping all pricing detail on the upgrade modal** — A modal that includes the full pricing table, FAQ, and testimonials overwhelms. Users close it. **Why it happens:** Trying to convert in one screen. **Fix:** Modal does one job — pitch value, drive to pricing page with one click. Modal copy is 2 sentences max + 2 CTAs.
+
+3. **Hiding annual pricing behind a toggle that defaults to monthly** — Monthly default trains users to compare against monthly cost; annual revenue suffers. **Why it happens:** "Monthly looks cheaper, more clicks." **Fix:** Default annual. Show effective monthly cost ("$79/mo billed annually") so the comparison is fair. Most B2B SaaS lifetime value comes from annual customers.
+
+4. **Vague CTA copy on upgrade buttons** — "Buy Now," "Submit," "Confirm" feel transactional and add anxiety. **Why it happens:** Default UI components used unmodified. **Fix:** Use value-clear copy: "Start Pro Trial — No Card Required," "Upgrade to Pro ($79/mo)," "Unlock Advanced Analytics." Test multiple variants.
+
+5. **No money-back guarantee** — Removes a low-cost trust signal that often increases conversion by 5-12%. **Why it happens:** Worry about refund abuse, which is empirically rare in B2B (<3% refund rate). **Fix:** Offer 30-day money-back guarantee on annual plans. Display prominently near upgrade CTA.
+
+6. **Sending one trial-expiration email instead of a sequence** — Single Day-1 email recovers ~5%; full sequence (Day -3, -1, 0, +3) recovers 12-20%. **Why it happens:** "Don't want to spam" or pure neglect. **Fix:** Build the full sequence with loss-aversion framing on Day -3 (showing what they've built), urgency on Day -1, recovery on Day 0, win-back discount Day +3.
+
+7. **Friction at payment (too many fields, no Stripe Checkout)** — A 7-field custom payment form converts dramatically worse than Stripe/Paddle Checkout (3 fields). **Why it happens:** Custom branding pride or legacy build. **Fix:** Use a hosted checkout provider. Pre-fill email. Show tax inclusive. Use single primary CTA. The branding loss is far outweighed by the conversion gain.
+
+8. **Discounting too early as a "win-back" tactic** — If users learn that abandoning the upgrade triggers a 30% discount email 3 days later, they'll abandon on purpose. **Why it happens:** Short-term thinking. **Fix:** Reserve discount win-backs for genuinely lapsed users (Day +7 or later) and limit frequency. Use one-time codes. Don't make discounts a discoverable pattern.
+
+---
+
+## Examples
+
+### Example 1: Email marketing freemium SaaS — feature-gate triggers underperform
+
+**Context:**
+- Company: Briefkit (fictional), email marketing for SMBs. Freemium with 2,000 free contacts. $6M ARR, 80,000 free users, 4,500 paid.
+- Free-to-paid: 1.8% (target: 3.0%+).
+- Current triggers: Feature gate on every Pro feature (segmentation, A/B testing, automation), shown immediately upon click. Calendar email at Day 14.
+- Pain point: 65% of upgrades come from users who hit the 2,000-contact limit. Feature-gate upgrades are negligible.
+
+**Input from user:**
+> "We're a freemium email tool. Conversion is stuck at 1.8%. We gate Pro features but users seem to just click away rather than upgrading. The 2,000-contact limit drives most upgrades. How do we improve?"
+
+**Output (abbreviated):**
+
+```markdown
+# Paywall & Upgrade CRO Audit: Briefkit
+
+**Baseline:** 1.8% (target: 3.0%+)
+**Diagnosis:** Feature gates are firing before activation. Usage-based triggers (contact limit) work; feature gates don't.
+
+### Top 4 Fixes
+
+1. **Delay feature gates until activation** (Quick Win, +0.3-0.5pp)
+   - Hide Pro features (segmentation, A/B testing) in the UI for users who haven't sent their first campaign. Once activated, surface them with a "Pro" badge and free preview.
+   - Showing locked features to non-activated users creates banner-blindness.
+
+2. **Add 80% contact-limit warning + upgrade trigger** (Quick Win, +0.4-0.6pp)
+   - Current: limit hits at 2,000 = abrupt block.
+   - New: at 1,600 contacts (80%), show in-app banner + email: "You're 400 contacts away from your free limit. Upgrade to Pro for unlimited."
+   - Pre-empts disruption; gives time to upgrade.
+
+3. **Loss-aversion trial-extension flow at 100%** (+0.2-0.3pp)
+   - When user hits 2,000-contact wall, instead of just blocking: "You've reached your free limit. Upgrade to Pro, or get a 7-day grace period to migrate."
+   - Users in grace period upgrade at 35-45% vs. 12% for immediate block.
+
+4. **Pricing page: add ROI calculator for SMB ecommerce** (+0.2-0.4pp)
+   - Most upgraders are ecommerce store owners. Calculator: "How many monthly orders?" → output: "Email marketing typically drives 25% of revenue. At your volume, that's $X/month." → frames $79/mo as obvious.
+
+### Expected impact
+- Conversion: 1.8% → 2.9-3.2%
+- Annual ARR delta: +$840K-$1.1M
+```
+
+**Why this works:** Diagnosed that the working trigger (usage) was being undermined by abrupt blocks, while the non-working trigger (feature gates pre-activation) was generating banner-blindness. Fixed both root causes rather than tweaking copy.
+
+---
+
+### Example 2: B2B PM SaaS — 14-day trial conversion stuck at 14%
+
+**Context:**
+- Company: Riverway (fictional), project management for agencies. 14-day free trial, no card required. $12M ARR. 1,200 trials/month.
+- Trial-to-paid: 14% (target: 22%+).
+- Current upgrade flow: Day 7 email, Day 13 email, Day 14 expiration. Pricing page has 4 tiers (Starter, Pro, Business, Enterprise). Custom-built payment form with 8 fields.
+- Pain point: Lots of payment-form abandonment.
+
+**Input from user:**
+> "Our trial conversion is 14%. Our email sequence is two emails (Day 7 and Day 13). Pricing page has 4 tiers. We see big drop-off at payment — about 40% of users who select a plan never complete payment. What should we fix first?"
+
+**Output (abbreviated):**
+
+```markdown
+# Paywall & Upgrade CRO Audit: Riverway
+
+**Baseline:** 14% trial-to-paid (target: 22%+)
+**Critical finding:** 40% drop at payment step — biggest single lever in funnel.
+
+### Top 5 Fixes (ordered by impact × ease)
+
+1. **Replace custom 8-field payment form with Stripe Checkout** (Quick Win, +4-6pp)
+   - Pre-fill email. 3 fields (card, expiry, CVV). Tax inclusive shown before submit. SSL + money-back-guarantee badge next to button.
+   - This alone could move conversion from 14% → 18-20%.
+
+2. **Expand email sequence to Day -3, -1, 0, +3** (+2-3pp)
+   - Day -3: "Here's what you've built in the trial" (loss aversion, show specific projects).
+   - Day -1: "Last chance — trial expires tomorrow at 5pm."
+   - Day 0: "Restore access to your 8 projects" with one-click upgrade.
+   - Day +3: 20% off win-back for cooled-off users.
+
+3. **Cut to 3 tiers; consolidate Pro and Business** (+1-2pp)
+   - 4 tiers create analysis paralysis. "Pro" and "Business" are too similar; users default to confused inaction.
+   - New: Starter / Pro / Enterprise. Pro is the obvious choice.
+
+4. **Add money-back guarantee badge to pricing page** (+0.5-1pp)
+   - 30-day money-back guarantee, displayed near every CTA. Refund rate in B2B is <3% — cheap insurance.
+
+5. **Add value-based trigger at Day 4** (+1-2pp)
+   - For users who hit power-user behavior (3+ projects, 5+ teammate invites), trigger an in-app upgrade modal at Day 4: "Teams using Pro features ship 30% faster. Want to try Pro features now?"
+   - Captures high-intent users before the calendar deadline.
+
+### Expected impact
+- Conversion: 14% → 22-24%
+- Annual paid-user delta: +1,150 new customers
+- ARR delta: +$1.4M
+```
+
+**Why this works:** Started with the payment-step cliff (biggest single fix), then layered email sequence, plan consolidation, and trust signals. Reordered the diagnostic from "we have lots of ideas" to "fix the bottleneck first."
+
+---
+
+## Related Skills
+
+- **[`pricing-strategy`](../pricing-strategy/SKILL.md)** — Use *before* this skill. Paywall CRO assumes pricing architecture is sound. Pricing-strategy designs the tiers; paywall-upgrade-CRO optimizes the conversion surface.
+- **[`page-cro`](../page-cro/SKILL.md)** — Use *alongside* this skill. Page-CRO covers general landing-page optimization principles that apply to the pricing page surface.
+- **[`signup-flow-cro`](../signup-flow-cro/SKILL.md)** — Use *before* this skill. If signup is broken, you're optimizing for a fraction of the available audience.
+- **[`onboarding-cro`](../onboarding-cro/SKILL.md)** — Use *before* this skill. If activation is below 25-30%, paywall work is premature — users haven't experienced value yet.
+- **[`email-sequence`](../email-sequence/SKILL.md)** — Use *alongside* this skill. The trial-expiration and upgrade-recovery sequences are built using email-sequence patterns.
+- **[`ab-test-setup`](../ab-test-setup/SKILL.md)** — Use *after* this skill. Each test in the backlog needs proper hypothesis, sample size, and decision criteria.
+
+---
+
+## References
+
+- **Patrick Campbell / ProfitWell** — Public benchmarks on freemium-to-paid conversion and pricing-page A/B tests.
+- **April Dunford, *Sales Pitch*** — Frames value-positioning for the pricing page narrative.
+- **Daniel Kahneman, *Thinking, Fast and Slow*** — Loss aversion, anchoring, and other cognitive biases applied here.
+- **Lenny Rachitsky — Pricing & Monetization series** — SaaS benchmarks and tactical playbooks.

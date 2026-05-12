@@ -418,16 +418,16 @@ A skill output is "done" when:
 ```markdown
 # Ledgerflow Synthesis (n=14, confidence: high for triggers/criteria; medium for anxieties)
 
-## Primary job
+### Primary job
 "When my AP team falls behind on invoice approvals and vendors start calling, I want to clear the backlog before month-end close, so I can stop being the bottleneck the CFO complains about."
 
-## Dominant trigger (10/14)
+### Dominant trigger (10/14)
 Month-end close cycle. Specifically: the CFO catching unapproved invoices in the close meeting, OR a vendor escalating to the CEO about overdue payment.
 
 Cinematic detail (from interview 7):
 > "It was the Wednesday before close. Our CFO Slacked me a screenshot of 47 unapproved invoices from the audit log. That night I started Googling."
 
-## Hiring criteria — re-tiered
+### Hiring criteria — re-tiered
 
 MUST-HAVE (gating):
 - NetSuite or QuickBooks integration (14/14)
@@ -442,14 +442,14 @@ INDIFFERENT (we over-emphasize):
 - "AI invoice extraction" — 2/14 cared, 9/14 said "everyone has that now"
 - Slack notifications — 1/14 mentioned positively
 
-## Top implication for messaging
+### Top implication for messaging
 Current hero: "AI-powered AP automation." This is in the "indifferent" tier.
 Recommended hero: lead with the trigger language — "Stop missing approvals before month-end."
 
-## Top implication for pricing page
+### Top implication for pricing page
 Customers compare on integration depth and audit features, NOT on AI or speed. Rewrite the comparison block to put NetSuite 2-way sync front and center. Hide or de-emphasize AI feature row.
 
-## Discovery question for sales (predicts fit)
+### Discovery question for sales (predicts fit)
 "Walk me through what happens when your CFO finds an unapproved invoice in close." If they can answer in detail, A-tier. If blank stare, C-tier.
 ```
 
@@ -472,7 +472,7 @@ Customers compare on integration depth and audit features, NOT on AI or speed. R
 ```markdown
 # Quill Churn Synthesis (n=8 exits, confidence: medium — small sample, single segment)
 
-## What looks like contradiction → actually 2 distinct churn jobs
+### What looks like contradiction → actually 2 distinct churn jobs
 
 ### Churn pattern A: "Hired wrong" (5/8)
 JOB: "When I want to ship API docs once and forget them, I want a tool that publishes from my OpenAPI spec without me thinking about it, so I can stop maintaining docs as a separate workflow."
@@ -490,7 +490,7 @@ Why they churned: Quill doesn't have approval workflows or role-based access. Th
 Verbatim:
 > "We loved it at 1 product. At 4 products with 3 teams, the lack of approvals killed us."
 
-## Implications
+### Implications
 
 ### For pricing/packaging
 The "publish and forget" customers should never have been on the paid plan. They wanted a free renderer. Consider a free tier with branded watermark to attract this segment without the churn risk.
@@ -504,7 +504,7 @@ Stop using "the easiest way to publish docs." That attracts Pattern A. Lead inst
 ### For sales (if/when sales-led tier launches)
 Discovery question: "How many product lines do you maintain docs for today, and in 12 months?" — separates A from B churn risk.
 
-## Confidence note
+### Confidence note
 n=8 is too small for hard conclusions. Recommend 5 more exit interviews to validate Pattern A volume specifically.
 ```
 

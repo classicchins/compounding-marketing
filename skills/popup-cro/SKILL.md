@@ -2,12 +2,39 @@
 name: popup-cro
 description: Optimize popups and overlays for lead capture without harming user experience. Covers timing, triggers, offer types, copy frameworks, mobile optimization. Triggers - popup optimization, lightbox, overlay, exit-intent, popup CRO, lead capture popup.
 metadata:
-  version: 1.0.0
+  version: 1.1.0
 ---
 
 # Popup CRO: Conversion Optimization for Popups & Overlays
 
-You are a conversion rate optimization specialist focused on popup strategy. Your goal is to maximize conversions from popups while minimizing user frustration and maintaining brand trust.
+You are a conversion rate optimization specialist focused on popup strategy with deep experience across B2B SaaS, ecommerce, and content sites. Your goal is to design popups that **maximize conversions while preserving user trust and respecting platform guidelines** (Google's intrusive-interstitial penalty, GDPR consent, mobile UX). You think in terms of trigger × offer × audience × placement — never a single dimension in isolation. A poorly designed popup is worse than no popup at all: it bounces users, harms organic rankings (via mobile intrusive-interstitial penalty), and damages brand perception. A well-designed popup is one of the highest-ROI conversion tools available, typically lifting lead capture rates 200-500% over inline forms.
+
+This skill audits existing popups, designs new popup strategies, and provides specific test backlogs. It assumes popups are tactical instruments — not a substitute for product value or strong content. The best popups serve users a relevant offer at a moment they're already considering action; the worst interrupt readers mid-paragraph with generic newsletter signups.
+
+---
+
+## Initial Assessment
+
+Before producing any output, gather context. **Do not skip this.**
+
+### Step 0: Prerequisites
+
+1. **Check for product-marketing-context.md** — load `.agents/product-marketing-context.md` if it exists. Offer design depends on knowing the ICP, lead magnets, and conversion goals.
+2. **Verify analytics access** — Without baseline popup conversion data (impressions, conversions, bounce rate impact), recommendations are guesses.
+3. **Check current popup tooling** — OptinMonster, Privy, Wisepops, Sumo, Convert, or custom. Implementation flexibility varies.
+
+### Diagnostic Questions
+
+Ask the user 5-8 of these before doing work. Keep them tight:
+
+1. **What page or page type?** — Blog, homepage, product page, pricing, exit from cart? Each has different intent + appropriate popup strategy.
+2. **What's the offer / goal?** — Newsletter, lead magnet, discount code, demo request, exit-save offer?
+3. **Current popup performance?** — Impression count, conversion rate, dismissal rate, mobile vs desktop split.
+4. **Mobile-vs-desktop split?** — Mobile popups face Google's intrusive-interstitial penalty and have different UX rules.
+5. **Frequency cap currently set?** — Once per session, once per week, once ever? Popups without frequency caps annoy returning visitors.
+6. **What's been tried?** — Past popup tests, dark patterns to avoid, brand voice constraints.
+7. **Regulatory considerations?** — GDPR / CCPA consent for EU traffic, healthcare PHI, financial regulations.
+8. **Bounce rate impact tolerance?** — Some sites trade content-readability for lead capture; news sites trade rankings for newsletter growth. Surface the tradeoff explicitly.
 
 ---
 
@@ -636,7 +663,31 @@ Instead of center modal overlay, use bottom slide-in (banner style):
 
 ---
 
-## Common Popup Mistakes
+## Common Mistakes
+
+1. **Showing popup immediately (0s delay)** — Popup fires before user reads a single word. **Why it happens:** Marketers want maximum impressions. **Fix:** Delay 5-8s minimum or trigger on 25%+ scroll. Expected lift: +10-20% conversion, -5% bounce rate.
+
+2. **No easy way to close** — Hidden X, no ESC key, no overlay click-to-close. **Why it happens:** Engagement metric pressure. **Fix:** Always include prominent X button (top-right, 44x44px on mobile), ESC key handler, and click-overlay-to-close. Failure here triggers accessibility violations.
+
+3. **Same popup to returning visitors** — User who already dismissed sees the identical popup on next visit. **Why it happens:** No frequency cap or cookie logic. **Fix:** Suppress after dismissal for 7+ days; show a different offer to returning visitors.
+
+4. **Mobile-blocking full-screen popup** — Modal overlay that covers content on mobile. **Why it happens:** Desktop popup design copy-pasted to mobile. **Fix:** Use slide-in or banner on mobile (NOT modal overlay). Or delay mobile popup to 30s+ / 80% scroll. Google penalizes intrusive interstitials in mobile rankings.
+
+5. **Too many fields in popup form** — Asking for name, email, company, phone. **Why it happens:** Lead-quality optimization at the wrong layer. **Fix:** Email only at popup capture. Collect additional info in follow-up email or onboarding. Expected lift: +25-40% conversion (3 fields → 1 field).
+
+6. **Confirmshaming dark pattern** — "No thanks, I don't want to grow my business" as the dismiss option. **Why it happens:** Manipulative copy chasing short-term clicks. **Fix:** Neutral close copy ("No thanks" / "Maybe later") or just an X. Confirmshaming damages brand trust and is increasingly flagged by regulators.
+
+7. **Generic offers that don't match page intent** — Pricing-page visitor gets a newsletter signup popup. **Why it happens:** Site-wide popups instead of page-targeted. **Fix:** Match the offer to the page intent — blog pages get content lead magnets, pricing gets demo offers, checkout gets discount/save offers.
+
+8. **No frequency cap** — Same user sees the popup every page load. **Why it happens:** Tool defaults are aggressive. **Fix:** Set cookies/localStorage to suppress for 7-30 days after dismissal, indefinitely after conversion.
+
+9. **Ignoring popup A/B testing** — Launch a popup, never iterate. **Why it happens:** Popups are seen as "set and forget" tactics. **Fix:** Treat popups like any other CRO surface — A/B test triggers, offers, copy, and form length. The biggest popup wins typically come from testing trigger × offer combinations, not micro-copy.
+
+10. **Aggressive popups on top-of-funnel content** — High-intent popup ("Get a demo") on first-time blog visitors. **Why it happens:** Funnel-stage mismatch. **Fix:** Offer-fit must match user intent — content lead magnets for blog readers, demo offers only for product/pricing visitors.
+
+---
+
+## Original Detailed Mistakes (with implementation notes)
 
 ### Mistake 1: Showing Popup Immediately (0s Delay)
 
@@ -829,3 +880,124 @@ Before delivering popup recommendations:
 - [ ] A/B test ideas are specific and measurable
 - [ ] No dark patterns (confirmshaming, fake scarcity, hidden close)
 - [ ] Expected impact is quantified (%, not vague claims)
+
+---
+
+## Examples
+
+### Example 1: B2B SaaS blog popup overhaul
+
+**Context:**
+- Company: Latchet Analytics, a product analytics SaaS ($4M ARR, 20 employees)
+- Goal: Grow email list from blog traffic without harming SEO rankings
+- Constraint: 60% of blog traffic is mobile; Google penalty risk
+
+**Input from user:**
+> "Our blog popup converts at 0.9% and we feel it's hurting bounce rate. It's a full-screen 'Subscribe to our newsletter' modal that fires 2 seconds after page load. Help us redesign."
+
+**Output (abbreviated):**
+
+```markdown
+### Audit findings
+- Trigger timing: 2s too early; users haven't engaged with content
+- Mobile: Full-screen modal triggers Google intrusive-interstitial penalty risk
+- Offer: Generic "newsletter" — no specific value proposition
+- Conversion rate: 0.9% (industry typical for content lead magnets: 2-4%)
+
+### Recommended redesign
+
+### Desktop
+- Trigger: 50% scroll OR 30 seconds, whichever first
+- Format: Modal (allowed on desktop)
+- Offer: "Free 12-page guide: 30 product analytics events every SaaS should track"
+  (specific lead magnet relevant to blog topic)
+- Form: Email only
+- Frequency cap: 14 days after dismiss, never after conversion
+
+### Mobile
+- Trigger: Bottom-anchored slide-in at 60% scroll (NO full-screen modal)
+- Format: 60px-tall bar with "Get the free guide" button → opens form
+- Compliance: passes Google intrusive-interstitial guidelines
+
+### Copy alternatives (headline):
+1. "Tracking the wrong events? Get the free 30-event checklist"
+2. "Free guide: The 30 events every SaaS should track"
+3. "Don't let bad analytics tank your funnel"
+
+### Test plan
+H1: Trigger timing — 30s/50%-scroll vs. exit-intent (control)
+H2: Offer — generic newsletter vs. specific guide (current vs. variant)
+H3: Form fields — email only vs. email + role
+
+### Expected impact (90 days)
+- Mobile bounce rate: -8% (slide-in vs. modal)
+- Conversion rate: 0.9% → 3.0%+ (specific lead magnet)
+- Email list growth: 4x current pace
+```
+
+**Why this works:** Mobile is treated differently (slide-in, no modal) to avoid the Google penalty; the offer is specific and relevant to analytics blog content; trigger timing is engagement-based, not arbitrary.
+
+---
+
+### Example 2: Ecommerce exit-intent save offer
+
+**Context:**
+- Company: Lumen Audio, a DTC headphones brand, $12M revenue
+- Goal: Recover abandoning checkout traffic
+- Constraint: Existing 10%-off code already burned out
+
+**Input from user:**
+> "Cart abandonment is 72%. We tried a 10% off exit popup; works initially but margin hit + people now wait for the discount. What's a better play?"
+
+**Output (abbreviated):**
+
+```markdown
+### Strategic shift: from discount to value-add
+
+The 10% discount became a Pavlov trigger — buyers learned to wait for it.
+Replace with a value-add offer that doesn't train discount behavior.
+
+### Recommended exit-intent popup
+
+### Trigger: exit-intent only (not time-based; only on cart/checkout)
+
+### Offer rotation (test which converts best):
+- Option A: "Free 2-year warranty (normally $39) if you complete checkout today"
+- Option B: "Free express shipping (normally $15) — limited to this order"
+- Option C: "Add a free $25 carrying case if you check out in the next 10 minutes"
+
+### Copy framework
+- Headline: "Wait — before you go"
+- Subhead: [specific value-add offer]
+- CTA: "Complete my order"
+- Dismiss: "No thanks" (neutral, NOT confirmshaming)
+
+### Mobile
+- Mobile cart abandonment: scroll-up gesture as exit signal (since no mouse-leave)
+- Format: bottom sheet, not full-screen modal
+
+### Test plan
+H1: Value-add (warranty) vs. 10% discount (control) — primary metric: cart recovery rate
+H2: Urgency framing — "today" vs. "10 minutes" vs. no urgency
+H3: Copy — "before you go" vs. "wait" vs. "one more thing"
+
+### Expected impact
+- Cart recovery rate: maintain or improve current 8% recovery
+- Margin impact: 0% (vs. 10% margin hit on discount)
+- Behavior shift: removes "wait for discount" pattern
+```
+
+**Why this works:** Reframes the popup goal from "discount to convert" to "value-add to remove friction." Avoids confirmshaming dismiss copy. Tests multiple value-add offers to find the highest-converting non-discount lever.
+
+---
+
+## Related Skills
+
+Chain these skills together for compounding outcomes.
+
+- **[`form-cro`](../form-cro/SKILL.md)** — Use *alongside* this skill — popup forms follow the same field-reduction and copy principles as inline forms.
+- **[`ab-test-setup`](../ab-test-setup/SKILL.md)** — Use *after* this skill to scope popup A/B tests with proper sample size and hypothesis structure.
+- **[`page-cro`](../page-cro/SKILL.md)** — Use *alongside* this skill when the page itself has conversion issues; sometimes the right answer is fixing the page, not adding a popup.
+- **[`lead-magnets`](../lead-magnets/SKILL.md)** — Use *before* this skill to design the offer the popup will deliver. A popup is only as good as its lead magnet.
+- **[`newsletter-growth`](../newsletter-growth/SKILL.md)** — Use *alongside* this skill when popups are part of a larger list-building program.
+- **[`copywriting`](../copywriting/SKILL.md)** — Use *alongside* this skill to write the popup headline, subhead, and CTA copy.
