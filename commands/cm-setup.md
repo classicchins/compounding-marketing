@@ -1,148 +1,136 @@
 # /cm-setup — Per-Project Bootstrap
 
-Bootstrap Compounding Marketing into the current project. Run this **after** installing the plugin via `/plugin install compounding-marketing` (Claude Code marketplace) — this command is the safe, opt-in equivalent of the `npx compounding-marketing` wizard but runs entirely inside Claude Code.
+Safely wire Compounding Marketing into the current project.
 
 ## What It Does
 
-Walks the user through four decisions, then writes only what they approve:
+The in-Claude equivalent of `npx compounding-marketing`. Walks the user through the same decisions the wizard makes, writes only what they approve, and records every change in `.compounding-marketing-install.json` so `/cm-uninstall` can reverse it cleanly.
 
-1. **Install scope** — global (`~/.claude/plugins/compounding-marketing/`) vs project (`<cwd>/compounding-marketing/`) vs custom path.
-2. **Existing CLAUDE.md handling** — merge with idempotent markers / overwrite (with `.bak` backup) / skip.
-3. **Optional `.agents/product-marketing-context.md` skeleton** — create the foundational context doc that every other skill depends on.
-4. **Optional `.gitignore` entry** — add `compounding-marketing/` to `.gitignore` if the user does not plan to customize skills.
-
-## Why This Exists
-
-The plugin distributes via the Claude Code marketplace, which never modifies user files on install. This command is the explicit, user-driven step that sets up project-specific scaffolding. It mirrors the safety contract of the npx wizard: nothing is written without confirmation, and a manifest at `.compounding-marketing-install.json` tracks every change so the user can roll back later via `/cm-uninstall` (or `npx compounding-marketing --uninstall`).
+Use this **after** installing the plugin via `/plugin install compounding-marketing` (which never modifies user files).
 
 ## Process
 
-### Step 1: Confirm working directory and detect existing state
+### Step 1: Detect current state
 
-Detect:
-- Is the current directory a project (presence of `package.json`, `.git`, `Cargo.toml`, `Gemfile`, `pyproject.toml`, `go.mod`, etc.)?
-- Does `~/.claude/` exist (suggests Claude Code is installed)?
-- Does `CLAUDE.md` already exist at the project root?
-- Does `.agents/product-marketing-context.md` already exist?
-- Does a prior `.compounding-marketing-install.json` manifest exist?
+- Is cwd a project root? (`package.json`, `.git`, `Cargo.toml`, `Gemfile`, `pyproject.toml`, `go.mod`, `Makefile`, `src/`, `app/`)
+- Does `~/.claude/` exist?
+- Does `CLAUDE.md` exist at the project root? Does it already contain `<!-- COMPOUNDING-MARKETING-START -->`?
+- Does `.mcp.json` exist?
+- Does `.compounding-marketing-install.json` exist (prior install)?
 
-If a manifest exists, ask the user whether they want to **re-run setup** (idempotent update) or **uninstall first**.
+If a manifest exists, ask: **re-run** (idempotent — only adds missing pieces) or **uninstall first**.
 
-### Step 2: Ask the user where to install
-
-Present three options. Recommend **project** if cwd is a project directory, otherwise **global**.
+### Step 2: Pick install scope
 
 ```
-[1] Project — install into ./compounding-marketing/ (this directory only) [default if in a project]
-[2] Global  — install into ~/.claude/plugins/compounding-marketing/ (available everywhere)
+[1] Project — install into ./compounding-marketing/   [default if cwd is a project]
+[2] Global  — install into ~/.claude/plugins/compounding-marketing/
 [3] Custom  — install into a path you specify
 ```
 
-If global, additionally symlink commands into `~/.claude/commands/` and skills into `~/.claude/skills/`.
+Auto-default: `project` if cwd looks like a project, else `global` if `~/.claude/` exists, else `project`.
 
-### Step 3: Ask about CLAUDE.md handling
+### Step 3: Pick MCPs (optional)
 
-Only prompt if `CLAUDE.md` exists **and** does not already contain a `<!-- COMPOUNDING-MARKETING-START -->` marker block.
+Offer the two research MCPs. For each, prompt for an API key (Enter to skip and store the `${PERPLEXITY_API_KEY}` / `${EXA_API_KEY}` placeholder).
+
+- **Perplexity** — AI web research. Key: https://perplexity.ai/settings/api
+- **Exa** — Neural search + company intelligence. Key: https://dashboard.exa.ai
+
+Write the MCP config based on scope:
+- **Project:** write `.mcp.json` at project root (one `mcpServers.<name>` entry per MCP).
+- **Global:** do NOT touch `~/.claude.json` (it holds Claude Code's own state). Instead, print `claude mcp add --transport stdio --scope user --env KEY=… <name> -- npx -y <package>` for the user to run.
+
+API keys also persist in `.cm-config.json` (gitignored).
+
+### Step 4: Handle existing-file collisions
+
+For every file the wizard would write, check existence. Mergeable kinds (`CLAUDE.md`, `AGENTS.md`, `.gitignore`, `.mcp.json`) prompt three options; everything else prompts overwrite-with-bak / skip:
 
 ```
-[1] Merge with idempotent markers [Recommended] — appends a clearly-marked plugin block; future re-runs replace just that block.
-[2] Overwrite (with .bak backup)               — replaces the file; prior content saved as CLAUDE.md.bak.
-[3] Skip                                        — leaves CLAUDE.md untouched. The plugin still works but skill discovery is limited.
+[1] Merge with idempotent markers [Recommended] — append/replace just the plugin block.
+[2] Overwrite (with .bak backup)                — replace the file; original saved as <file>.bak.
+[3] Skip                                        — leave the file untouched.
 ```
 
-If the file already contains the marker block, just **update** the block in place (no prompt — it's idempotent).
+If `CLAUDE.md` already contains the marker block, **update in place** with no prompt — it's idempotent. On merge, always take a `.bak` first so `/cm-uninstall` can restore byte-identical.
 
-### Step 4: Optionally write `.agents/product-marketing-context.md` skeleton
+### Step 5: Persist manifest and report
 
-If `.agents/product-marketing-context.md` does not exist, ask: "Create the foundational product-marketing context doc now?" Default: yes.
+Write `.compounding-marketing-install.json` (project root for project/custom; `~/.claude/` for global) recording:
 
-If yes, write the skeleton from the `cm-context` skill template (do not run the full skill — just lay down the structured Markdown so the user can fill it in).
+| Field | Contents |
+|-------|----------|
+| `version`, `timestamp`, `scope`, `tool` | Run metadata. `tool` = `claude-code` here. |
+| `installRoot`, `commandsDir`, `skillsLinkDir`, `instructionsFile`, `mcpConfigFile` | Resolved paths. |
+| `createdFiles[]` | `{path, kind}` for every file written. |
+| `createdSymlinks[]` | `{path, target}` for every symlink. |
+| `modifiedFiles[]` | `{path, backupPath}` for every `.bak` taken. |
+| `appendedMarkers[]` | `{path}` for every file that got a marker block. |
+| `mcpEntries[]` | `{file, format, serverName}` for every MCP server added. |
 
-### Step 5: Optionally add `compounding-marketing/` to `.gitignore`
-
-Ask only if scope is project. Default: yes (most users do not customize skills and want the plugin dir gitignored).
-
-### Step 6: Persist the install manifest
-
-Write `.compounding-marketing-install.json` recording:
-- `version`, `timestamp`, `scope`, `tool: "claude-code"`
-- `installRoot`, `commandsDir`, `skillsLinkDir`, `instructionsFile`
-- `createdFiles[]`, `createdSymlinks[]`, `modifiedFiles[]` (each with `backupPath`), `appendedMarkers[]`
-
-For global installs: place the manifest at `~/.claude/.compounding-marketing-install.json`.
-
-### Step 7: Verify and report
-
-- Confirm all symlinks resolve (no broken targets).
-- Confirm CLAUDE.md contains the marker block.
-- Print a one-line "next step" pointing the user at `/cm-context` if they did not already create the context doc.
+Verify post-write: every symlink under `commandsDir` resolves; offer to remove broken ones.
 
 ## Output Format
 
 ```
-✓ Compounding Marketing installed
+✓ Setup complete
   Scope: project
   Install root: ./compounding-marketing/
-  Instructions file: ./CLAUDE.md (merged, marker block added)
-  Slash commands registered: 11 workflow + 61 skills = 72 total
+  Instructions: ./CLAUDE.md (merged)
+  Slash commands: 16 workflow + 61 skills as /cm-{name}
+  MCPs: perplexity, exa → ./.mcp.json
   Manifest: ./.compounding-marketing-install.json
 
-Next step: type /cm-context to create your product-marketing context doc.
-Roll back: /cm-uninstall or `npx compounding-marketing --uninstall`
+Next: /cm-context to create your product-marketing context doc.
+Roll back: /cm-uninstall
 ```
 
 ## Quality Bar
 
 - [ ] No file is written or modified without user confirmation (or an idempotent marker-block update).
-- [ ] Existing CLAUDE.md content is preserved (either via marker-block append or via `.bak` backup).
-- [ ] Manifest records every write, symlink, modification, and marker-block append.
-- [ ] Re-running this command does NOT duplicate marker blocks or symlinks.
-- [ ] Every reported success is verified (e.g., `fs.statSync` follows symlinks; broken links are flagged).
-- [ ] On any failure, partial state is documented so the user can recover.
+- [ ] Existing `CLAUDE.md` content is preserved (marker-block append with `.bak`, or `.bak` on overwrite).
+- [ ] Manifest records every write, symlink, modification, marker append, and MCP entry.
+- [ ] Re-running this command does NOT duplicate marker blocks, symlinks, or MCP entries.
+- [ ] Every reported success is verified — broken symlinks are flagged and offered for cleanup.
+- [ ] On failure, the manifest still reflects partial state so `/cm-uninstall` can clean up.
 
 ### Common Mistakes
 
-1. **Overwriting CLAUDE.md without prompting** — the cardinal sin. Always check for existing content and prompt for merge/overwrite/skip. Even with `--yes`, never overwrite without first creating a `.bak`.
-2. **Duplicating marker blocks on re-run** — happens when the marker-presence check is skipped. Always search for `<!-- COMPOUNDING-MARKETING-START -->` before appending.
-3. **Silently deleting user-customized symlinks** — the `cm-*.md` symlink cleanup must prompt. Users may have edited a symlink target.
-4. **Manifest path collisions** — if global and project installs both write `~/.claude/.compounding-marketing-install.json`, they clobber each other. Per-scope path resolution prevents this.
-5. **Not writing the manifest atomically** — if the wizard crashes mid-install with no manifest, there is no rollback path. Write the manifest as the LAST step, but track every action in memory before then.
+1. **Overwriting `CLAUDE.md` without prompting** — the cardinal sin. Even with `--yes`, never overwrite without first creating a `.bak`.
+2. **Duplicating marker blocks on re-run** — always search for `<!-- COMPOUNDING-MARKETING-START -->` before appending; update in place if present.
+3. **Silently deleting user-customized symlinks** — the `cm-*` cleanup must prompt. Users may have edited a symlink target.
+4. **Manifest path collisions** — global and project installs use different manifest paths so they don't clobber each other.
+5. **Editing `~/.claude.json` for global MCPs** — that file holds Claude Code's own state. For global scope, print `claude mcp add --scope user …` instead.
 
 ## Examples
 
 ### Example 1: Fresh project, no existing CLAUDE.md
 
-User invokes `/cm-setup` in a Next.js repo with no `CLAUDE.md`.
-
 ```
-[1] Project (./compounding-marketing/) [default]  ← user picks 1
-CLAUDE.md does not exist — creating with full skill catalog.
-.agents/product-marketing-context.md does not exist — create skeleton? [Y/n] y
+[1] Project (./compounding-marketing/) [default]   ← user picks 1
+Enable Perplexity? [Y/n] y    API key: pplx-…
+Enable Exa? [Y/n] y           API key: (Enter to skip)
 Add compounding-marketing/ to .gitignore? [Y/n] y
 
 ✓ Setup complete
-  Files created: 4 (CLAUDE.md, .gitignore, .agents/product-marketing-context.md, .compounding-marketing-install.json)
-  Symlinks created: 72
+  Files created: CLAUDE.md, .gitignore, .cm-config.json, .mcp.json, .compounding-marketing-install.json
+  Symlinks: 77 (.claude/commands/) + 61 (.claude/skills/)
 ```
 
 ### Example 2: Project already has a CLAUDE.md from another tool
 
-User invokes `/cm-setup` in a repo where `CLAUDE.md` already contains custom instructions for their team.
-
 ```
-[1] Project (./compounding-marketing/) [default]  ← user picks 1
 CLAUDE.md exists with custom content (no plugin markers found).
-How should I handle it?
-  [1] Merge with markers [Recommended]  ← user picks 1
-  [2] Overwrite (with .bak)
-  [3] Skip
-✓ Appended plugin block to CLAUDE.md (marker-wrapped)
+  [1] Merge with markers [Recommended]   ← user picks 1
+✓ Backed up CLAUDE.md → CLAUDE.md.bak
+✓ Appended plugin block to CLAUDE.md
 ```
 
-User's existing content is preserved verbatim above the marker block. Future re-runs replace only the block between markers.
+User's existing content is preserved verbatim above the marker block. Re-runs replace only the block between markers. `/cm-uninstall` restores from the `.bak` byte-identical.
 
 ## Related Skills
 
-- **[`cm-context`](../skills/cm-context/SKILL.md)** — Use *immediately after* `/cm-setup` to create the foundational `.agents/product-marketing-context.md` doc that every other skill depends on.
-- **[`cm-uninstall`](../commands/cm-uninstall.md)** — Roll back this install using the manifest. Restores `.bak` backups and strips the marker block.
-- **[`positioning`](../skills/positioning/SKILL.md)** — Run *after* `cm-context` to define the product's market position; many other skills depend on positioning being defined.
+- **[`cm-context`](../skills/cm-context/SKILL.md)** — Run *immediately after* `/cm-setup` to create the foundational `.agents/product-marketing-context.md` doc every other skill depends on.
+- **[`cm-uninstall`](./cm-uninstall.md)** — Roll back this install using the manifest.
+- **[`positioning`](../skills/positioning/SKILL.md)** — Run *after* `cm-context` to define market position; many downstream skills depend on it.

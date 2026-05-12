@@ -1,93 +1,109 @@
-# CLAUDE.md
+# CLAUDE.md — Compounding Marketing
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+The Compounding Marketing plugin: 61 marketing skills + 16 workflow commands for SaaS marketing, available to Claude Code, Claude Cowork, Cursor, Codex, ChatGPT, and Zed.
 
 ## What This Is
 
-Compounding Marketing is a cross-platform AI plugin (Claude Code, Claude Cowork, Cursor, Codex, ChatGPT, Zed) providing 61 marketing skills and 16 workflow commands for SaaS marketing. It is **not a traditional codebase** — it's a structured knowledge system where skills are SKILL.md files and workflows are command `.md` files.
+Compounding Marketing is a cross-platform AI plugin providing **61 marketing skills** and **16 workflow commands** for SaaS marketing — positioning, messaging, copy, CRO, SEO, GTM, lifecycle, growth.
 
-Philosophy: **Make each unit of marketing work easier than the last.** 80% research and planning, 20% execution. Core workflow: **Research → Position → Message → Execute → Compound.**
+It is **not a traditional codebase**. It's a structured knowledge system: skills are `SKILL.md` files, workflows are command `.md` files. The setup wizard (`bin/setup.js`) installs them into your AI tool of choice with safe, prompt-driven file writes.
+
+Philosophy: **Make each unit of marketing work easier than the last.** 80% research and planning, 20% execution. Core loop: **Research → Position → Message → Execute → Compound.**
+
+## Quick Reference
+
+| You want to… | Invoke it as | Notes |
+|---|---|---|
+| Use a single skill (e.g., write copy) | Natural language ("write landing page copy for…") **or** `/cm-{skill}` (e.g., `/cm-copywriting`) | All 61 skills are registered as slash commands. Natural language also works — the right skill is matched by trigger keywords. |
+| Run a multi-step workflow | `/cm-{workflow}` (e.g., `/cm-research`, `/cm-copy`, `/cm-launch`) | 16 workflows orchestrate multiple skills end-to-end. |
+| Establish project context (do this first) | `/cm-context` | Creates `.agents/product-marketing-context.md` — every other skill reads from this. |
+| Install / update / remove the plugin | `/cm-setup`, `/cm-uninstall`, or `npx compounding-marketing` | The npx wizard supports `--dry-run`, `--yes`, `--scope`, `--tool`. |
+
+> Slash commands use **`/cm-{name}`** (hyphen, not colon). The legacy colon-form is no longer supported.
 
 ## Repository Structure
 
 ```
-skills/           # 61 self-contained marketing skills (each is a SKILL.md with YAML frontmatter)
-commands/         # 16 workflow commands (cm-*.md files invoked via /cm-*)
-bin/setup.js      # npx setup wizard (interactive CLI using readline, no framework)
-scripts/          # generate-claude-md.js — regenerates this file's skills section from frontmatter
+skills/           # 61 self-contained marketing skills (each a SKILL.md with YAML frontmatter)
+commands/         # 16 workflow commands (cm-*.md, invoked as /cm-{name})
+bin/setup.js      # npx setup wizard — readline-only CLI, no external deps, ~1260 lines
+scripts/          # generate-claude-md.js (refreshes the Skills section below)
+                  # validate-skills.js  (enforces the 7-section skill structure)
 mcp/              # Pre-configured MCP servers (Perplexity, Exa) for research enhancement
 integrations/     # Optional tool integrations (Linear, GA4, etc.)
-.agents/          # Runtime directory for context docs and learnings
+.agents/          # Runtime: product-marketing-context.md + learnings/<category>.md
 ```
 
-## Key Commands
+There are no tests or builds. This is a content/knowledge repo. Use:
 
 ```bash
-# Run setup wizard
-npx compounding-marketing
-
-# Regenerate CLAUDE.md skills section from skill frontmatter
-node scripts/generate-claude-md.js
+npx compounding-marketing                    # interactive setup
+node scripts/validate-skills.js              # enforce skill structure
+node scripts/generate-claude-md.js           # regenerate the Skills section below
 ```
 
-There are no tests, linting, or build steps. This is a content/knowledge repo.
+## Workflow Commands by Category
 
-## How Skills Work
+All 16 workflows live in `commands/` and are invoked as `/cm-{name}`.
 
-Each skill lives in `skills/{skill-name}/SKILL.md` with:
-- **YAML frontmatter**: `name`, `description`, `metadata.version` — parsed by `generate-claude-md.js`
-- **Body**: Role prompt, step-by-step process, output format template, quality bar
-
-When a user requests marketing help, the correct skill should be loaded and executed per its process. Always check for `.agents/product-marketing-context.md` first — it's the shared context created by the `cm-context` skill.
-
-## How Workflow Commands Work
-
-Commands in `commands/cm-*.md` orchestrate multiple skills in sequence. They are invoked as `/cm-{name}` (e.g., `/cm-research`, `/cm-position`, `/cm-copy`).
-
-**Install / Lifecycle (v1.6.0)**: setup, uninstall
-**Project workflows**: research, position, copy, launch, compound, social, email
-**Planning & review (v1.5)**: sprint, retro, audit
-**Daily operations**: standup, daily, eod, weekly
+| Category | Commands | When |
+|---|---|---|
+| **Install / Lifecycle** | `/cm-setup`, `/cm-uninstall` | Bootstrap or remove the plugin in a project (safe, prompt-driven). |
+| **Project workflows** | `/cm-research`, `/cm-position`, `/cm-copy`, `/cm-launch`, `/cm-social`, `/cm-email`, `/cm-compound` | Multi-step projects (deep research, positioning, end-to-end copy, launch, social/email campaigns, post-project learning capture). |
+| **Sprint & review** | `/cm-sprint`, `/cm-retro`, `/cm-audit` | 2-week sprint planning, retrospective, quarterly marketing health check. |
+| **Daily ops** | `/cm-daily`, `/cm-standup`, `/cm-eod`, `/cm-weekly` | Morning orientation, async standup, end-of-day wrap, Friday review/plan. |
 
 ## Skill Categories
 
-| Category | Count | Key Skills |
-|----------|-------|------------|
-| Foundation | 5 | cm-context, positioning, messaging-framework, value-proposition, brand-voice |
-| Research | 7 | icp-research, customer-research, customer-interview, competitive-analysis, market-sizing |
-| Content & Copy | 8 | copywriting, copy-editing, content-strategy, case-study, social-content |
-| SEO & Discovery | 6 | seo-audit, ai-seo, programmatic-seo, site-architecture, schema-markup |
-| CRO | 7 | page-cro, signup-flow-cro, onboarding-cro, form-cro, pricing-strategy |
-| Outreach & Email | 6 | abm-strategy, cold-email, email-sequence, email-deliverability, marketing-automation |
+61 skills across 12 categories.
+
+| Category | Count | Sample skills |
+|---|---|---|
+| Foundation | 5 | cm-context, positioning, messaging-framework |
+| Research | 7 | icp-research, customer-research, competitive-analysis |
+| Content & Copy | 8 | copywriting, copy-editing, content-strategy |
+| SEO & Discovery | 6 | seo-audit, ai-seo, programmatic-seo |
+| CRO | 7 | page-cro, signup-flow-cro, pricing-strategy |
+| Outreach & Email | 6 | cold-email, email-sequence, email-deliverability |
 | Paid Acquisition | 3 | paid-ads, linkedin-ads, ad-creative |
-| Measurement | 4 | analytics-tracking, ab-test-setup, attribution-modeling, content-performance-scoring |
-| GTM & Launch | 5 | launch-strategy, gtm-strategy, channel-strategy, product-hunt-launch, press-pr |
-| Growth & Retention | 6 | referral-program, free-tool-strategy, churn-prevention, partnership-marketing, newsletter-growth |
+| Measurement | 4 | analytics-tracking, ab-test-setup, attribution-modeling |
+| GTM & Launch | 5 | launch-strategy, gtm-strategy, product-hunt-launch |
+| Growth & Retention | 6 | referral-program, churn-prevention, partnership-marketing |
 | Sales & RevOps | 3 | sales-enablement, revops, webinar-strategy |
 | Meta | 1 | marketing-ideas (140+ SaaS tactics) |
 
+The full alphabetical catalog is at the bottom of this file (auto-generated).
+
+## How to Use This Plugin
+
+1. **Foundation — `/cm-context`.** Always run first on a new project. Captures product, audience, positioning, competitors, brand voice into `.agents/product-marketing-context.md`. Every other skill reads it.
+2. **Position before tactics — `/cm-position`.** Run a Dunford-style positioning workshop before writing copy, planning channels, or building pages. Outputs feed `messaging-framework` and `value-proposition`.
+3. **Execute — per skill or via workflow.** For one-off work, invoke the skill directly ("write a case study for…" or `/cm-case-study`). For multi-step projects, use `/cm-copy`, `/cm-launch`, `/cm-research`, `/cm-social`, `/cm-email`.
+4. **Compound — `/cm-compound`.** After completing each project, capture what worked, what didn't, and reusable assets into `.agents/learnings/<category>.md`. Future projects start ahead.
+
 ## Adding a New Skill
 
-1. Create `skills/{skill-name}/SKILL.md` with YAML frontmatter (`name`, `description`, `metadata.version`)
-2. Follow the structure of existing skills: role prompt → process steps → output format → quality bar
-3. Run `node scripts/generate-claude-md.js` to update the skills index
-4. Update `AGENTS.md` and `README.md` skill counts and tables
+1. Create `skills/{skill-name}/SKILL.md` with YAML frontmatter (`name`, `description`, `metadata.version`).
+2. Follow `skills/_TEMPLATE.md` — the validated 7-section structure (Role / Initial Assessment / Process / Output Format / Quality Bar with ≥5 Common Mistakes / ≥2 Examples / ≥3 Related Skills).
+3. Run `node scripts/validate-skills.js` to verify structure, then `node scripts/generate-claude-md.js` to refresh the Skills index below.
+4. Update the skill counts and tables in `AGENTS.md` and `README.md` if the total changes.
 
 ## MCP Integration
 
-Skills can reference MCP tools when available:
-- **Perplexity**: `perplexity_search`, `perplexity_ask`, `perplexity_reason`, `perplexity_research`
-- **Exa**: `company_research_exa`, `people_search_exa`, `web_search_exa`, `deep_researcher_start/check`
+A few skills (research-heavy ones — `icp-research`, `competitive-analysis`, `market-sizing`, `competitor-content-monitoring`, `ai-seo`) benefit from real web search via MCP. Pre-configured servers:
 
-Setup details in `mcp/README.md`. Config stored in `.cm-config.json` (gitignored, contains API keys).
+- **Perplexity** — `perplexity_search`, `perplexity_ask`, `perplexity_reason`, `perplexity_research`.
+- **Exa** — `company_research_exa`, `people_search_exa`, `web_search_exa`, `deep_researcher_start/check`.
+
+Install via `/cm-setup` (it offers MCP wiring) or `npx compounding-marketing` (writes the right config file per tool: `.mcp.json`, `.cursor/mcp.json`, or `~/.codex/config.toml`). API keys are stored in `.cm-config.json` (gitignored).
 
 ## Important Conventions
 
-- The `cm-context` skill must always run first on a new project — it creates `.agents/product-marketing-context.md`
-- Learnings are stored in `.agents/learnings/{category}.md` by the `/cm-compound` workflow
-- The setup wizard (`bin/setup.js`) uses only Node.js `readline` (no external dependencies)
-- Cross-platform: `CLAUDE.md` for Claude Code, `AGENTS.md` for ChatGPT, `.cursor-plugin/plugin.json` for Cursor
-
+- **Run `/cm-context` first on every new project.** Skills are designed to read `.agents/product-marketing-context.md` and degrade gracefully when it's missing — but quality is much higher with it.
+- **Slash command syntax is `/cm-{name}` with a hyphen** (not the older colon-form).
+- **Learnings live in `.agents/learnings/{category}.md`.** Written by `/cm-compound`.
+- **Edits to `CLAUDE.md` / `AGENTS.md` are wrapped in `<!-- COMPOUNDING-MARKETING-START/END -->` markers.** Re-running setup is idempotent — never duplicates the block.
+- **No file write happens without confirmation.** The wizard prompts for every collision (merge / overwrite-with-`.bak` / skip). `--dry-run` previews everything; `--uninstall` reverses it.
 
 ## Skills (61)
 

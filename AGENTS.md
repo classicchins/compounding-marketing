@@ -1,164 +1,84 @@
 # Compounding Marketing — Agent Instructions
 
-This repository contains the **Compounding Marketing** plugin (v1.6.0). Compatible with Claude Code, Claude Cowork, ChatGPT, OpenAI Codex, Cursor, Zed, Windsurf, and any AI assistant that supports structured skills.
+Cross-platform marketing plugin (v1.6.0). **61 skills + 16 workflow commands** covering positioning, messaging, copy, CRO, SEO, GTM, lifecycle, and growth. Works with Claude Code/Cowork, ChatGPT, Codex, Cursor, Zed, Windsurf, and any AI assistant that reads structured skill files. Philosophy: **each unit of marketing work should make the next one easier.**
 
-## Overview
+## Install (per tool)
 
-61 marketing skills + 16 workflow commands covering positioning, messaging, copywriting, CRO, SEO, GTM, lifecycle, and growth. Built on the philosophy that **each unit of marketing work should make subsequent units easier**.
+| Tool | Command |
+|------|---------|
+| Claude Code / Cowork | `/plugin marketplace add classicchins/compounding-marketing` then `/plugin install compounding-marketing`, then `/cm-setup` |
+| Cursor | `npx compounding-marketing --tool=cursor` |
+| Codex (OpenAI) | `npx compounding-marketing --tool=codex --scope=global` |
+| ChatGPT (Custom GPT) | `npx compounding-marketing --tool=chatgpt` (prints paste-block + upload list) |
+| Zed | `npx compounding-marketing --tool=zed` |
+| Other | `npx compounding-marketing --tool=other` |
 
-## Installation (per tool)
+Flags: `--dry-run`, `--yes`, `--uninstall`, `--scope=global|project|custom`, `--target=<path>`. The wizard never modifies files without prompting (merge / overwrite-with-`.bak` / skip). See `README.md` for the full per-tool target table.
 
-The plugin **never modifies your files without confirmation** on any platform.
+## How skills work
 
-| Tool | Install command | Where it lands |
-|------|-----------------|----------------|
-| Claude Code / Cowork | `/plugin marketplace add classicchins/compounding-marketing` then `/plugin install compounding-marketing`. Run `/cm-setup` to wire into a project. | Marketplace: nothing in your dirs. `/cm-setup`: `./compounding-marketing/` + symlinks into `./.claude/commands/cm-*.md` and `./.claude/skills/<skill>/`. Project MCP config to `.mcp.json`. |
-| Cursor | `npx compounding-marketing --tool=cursor --scope=project` | `./compounding-marketing/` + generated `./.cursor/rules/cm-*.mdc` (with `description`/`globs`/`alwaysApply` frontmatter) + `AGENTS.md` (marker block) + `.cursor/mcp.json` if MCPs enabled |
-| Codex (OpenAI) | `npx compounding-marketing --tool=codex --scope=global` (or `--scope=project`) | Global: skill directories symlinked under `~/.agents/skills/<skill>/` ([Codex skills docs](https://developers.openai.com/codex/skills)). Project: under `./.agents/skills/<skill>/`. `AGENTS.md` is project-scoped. MCP config to `~/.codex/config.toml` (TOML format). |
-| ChatGPT (Custom GPT) | `npx compounding-marketing --tool=chatgpt --scope=project` | `./compounding-marketing/` + printed copy-paste block for Custom GPT Instructions; manually upload selected `skills/<name>/SKILL.md` files as Knowledge |
-| Zed | `npx compounding-marketing --tool=zed --scope=project` | `./compounding-marketing/` + `AGENTS.md` (Zed reads project-root `AGENTS.md` directly — no separate `.zed/` rules dir for this kind of guidance) |
-| Other | `npx compounding-marketing --tool=other` | Project files only; you wire up your tool manually |
+Each skill is `skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`, `metadata.version`) and a validated 7-section body:
 
-Useful flags: `--dry-run` (preview), `--yes` (CI), `--uninstall` (manifest-driven rollback that restores `.bak` backups), `--scope=global|project|custom`, `--target=<path>`.
+1. **Role prompt** (40-80 lines) — persona, philosophy, authority
+2. **Initial Assessment** — prerequisites + 5-10 diagnostic questions
+3. **Process** — 5-10 numbered steps (how-to / decision criteria / gotchas)
+4. **Output Format** — fenced markdown template
+5. **Quality Bar** — checklist + ≥5 Common Mistakes (mistake / why / fix)
+6. **Examples** — ≥2 worked B2B SaaS scenarios
+7. **Related Skills** — ≥3 cross-references
 
-## Philosophy
+When a user asks for marketing help, load the full `SKILL.md` and execute its Process step-by-step. **Always check `.agents/product-marketing-context.md` first** — it's the shared foundation created by `cm-context` and every other skill cross-references it.
 
-**80% research and planning, 20% execution.**
+## How to invoke skills and commands
 
-Traditional marketing accumulates chaos. Compounding marketing inverts this by:
-- Researching deeply before executing
-- Building reusable positioning and messaging foundations
-- Documenting learnings so they compound across projects
-- Keeping quality high so future work builds on solid ground
-
-## Skills Location
-
-All 61 skills are in `skills/` directory. Each skill is a self-contained `SKILL.md` file with the validated 7-section structure:
-- Role prompt
-- Initial Assessment (prerequisites + diagnostic questions)
-- Process (numbered steps with how-to / decision criteria / common gotchas)
-- Output Format (fenced markdown template)
-- Quality Bar with ≥5 Common Mistakes (mistake / why / fix)
-- Examples (≥2 worked B2B SaaS scenarios)
-- Related Skills (≥3 cross-references)
+- **Claude Code / Cowork** — `/cm-<name>` slash command or natural language. Commands and skills are symlinked into `.claude/commands/cm-*.md` and `.claude/skills/<skill>/` by `/cm-setup`.
+- **Cursor** — `@cm-<name>` mention, or just describe the task — the agent matches against `.cursor/rules/cm-*.mdc` descriptions (rules are "agent-requested").
+- **Codex** — describe the task in natural language. Codex matches trigger keywords against `~/.agents/skills/<name>/SKILL.md` description frontmatter (global) or `./.agents/skills/<name>/` (project).
+- **ChatGPT** — paste this `AGENTS.md` (or a slimmed version) into Custom GPT Instructions, then upload selected `skills/<name>/SKILL.md` files as Knowledge. Use trigger phrases from the skill descriptions.
+- **Zed** — Zed reads project-root `AGENTS.md` directly; describe the task and the assistant will invoke the right skill.
 
 ## Workflow
 
 **Research → Position → Message → Execute → Compound**
 
-1. **Foundation first** — Always check `skills/cm-context/SKILL.md` or `.agents/product-marketing-context.md`
-2. **Position before tactics** — Run positioning, messaging, value prop skills first
-3. **Research-heavy execution** — Use research skills to inform decisions
-4. **Compound learnings** — Document insights after completing work
+- **Foundation first.** Run `cm-context` (or read `.agents/product-marketing-context.md`) before any execution work. Then run positioning, messaging, value-prop skills.
+- **80% research, 20% execution.** Use research skills (`icp-research`, `customer-research`, `competitive-analysis`, `market-sizing`) to ground every tactical decision.
+- **Compound learnings.** After each project, run `/cm-compound` to write insights into `.agents/learnings/<category>.md` so future work builds on solid ground.
 
 ## Skill Categories (61 total)
 
-### Foundation (5 skills)
-cm-context | positioning | messaging-framework | value-proposition | brand-voice
+| Category | # | Example skills |
+|----------|---|----------------|
+| Foundation | 5 | cm-context, positioning, messaging-framework, value-proposition, brand-voice |
+| Research | 7 | icp-research, customer-research, customer-interview, competitive-analysis, market-sizing, competitor-content-monitoring, marketing-psychology |
+| Content & Copy | 8 | copywriting, copy-editing, content-strategy, case-study, social-content, social-media-strategy, video-marketing, lead-magnets |
+| SEO & Discovery | 6 | seo-audit, ai-seo, programmatic-seo, site-architecture, schema-markup, competitor-alternatives |
+| CRO | 7 | page-cro, signup-flow-cro, onboarding-cro, form-cro, popup-cro, paywall-upgrade-cro, pricing-strategy |
+| Outreach & Email | 6 | abm-strategy, cold-email, email-sequence, email-deliverability, marketing-automation, testimonial-collection |
+| Paid Acquisition | 3 | paid-ads, linkedin-ads, ad-creative |
+| Measurement | 4 | analytics-tracking, ab-test-setup, attribution-modeling, content-performance-scoring |
+| GTM & Launch | 5 | launch-strategy, gtm-strategy, channel-strategy, product-hunt-launch, press-pr |
+| Growth & Retention | 6 | referral-program, free-tool-strategy, churn-prevention, partnership-marketing, community-strategy, newsletter-growth |
+| Sales & RevOps | 3 | sales-enablement, revops, webinar-strategy |
+| Meta | 1 | marketing-ideas (140+ SaaS tactics) |
 
-### Research (7 skills)
-icp-research | customer-research | customer-interview | competitive-analysis | competitor-content-monitoring | market-sizing | marketing-psychology
-
-### Content & Copy (8 skills)
-copywriting | copy-editing | content-strategy | case-study | social-content | social-media-strategy | video-marketing | lead-magnets
-
-### SEO & Discovery (6 skills)
-seo-audit | ai-seo | programmatic-seo | site-architecture | schema-markup | competitor-alternatives
-
-### CRO (7 skills)
-page-cro | signup-flow-cro | onboarding-cro | form-cro | popup-cro | paywall-upgrade-cro | pricing-strategy
-
-### Outreach & Email (6 skills)
-abm-strategy | cold-email | email-sequence | email-deliverability | marketing-automation | testimonial-collection
-
-### Paid Acquisition (3 skills)
-paid-ads | linkedin-ads | ad-creative
-
-### Measurement & Testing (4 skills)
-analytics-tracking | ab-test-setup | attribution-modeling | content-performance-scoring
-
-### GTM & Launch (5 skills)
-launch-strategy | gtm-strategy | channel-strategy | product-hunt-launch | press-pr
-
-### Growth & Retention (6 skills)
-referral-program | free-tool-strategy | churn-prevention | partnership-marketing | community-strategy | newsletter-growth
-
-### Sales & RevOps (3 skills)
-sales-enablement | revops | webinar-strategy
-
-### Meta (1 skill)
-marketing-ideas
-
-## Usage
-
-When a user asks for marketing help:
-
-1. **Check for existing context** — Read `.agents/product-marketing-context.md` if it exists
-2. **Select the right skill** — Match the request to a skill from the categories above
-3. **Read the full SKILL.md** — Load `skills/{skill-name}/SKILL.md`
-4. **Follow the process** — Execute step-by-step as documented
-5. **Deliver according to output format** — Use the template provided in the skill
+All 61 skills live in `skills/<name>/SKILL.md`. Counts sum to 61.
 
 ## Workflow Commands (16 total)
 
-Commands are in `commands/` directory. Use `/cm-{command}` syntax (matching marketplace install).
+Invoke via `/cm-<name>`. Commands orchestrate multiple skills end-to-end.
 
-### Install / Lifecycle (v1.6.0)
-- `/cm-setup` — Opt-in per-project bootstrap (safe install with collision prompts)
-- `/cm-uninstall` — Manifest-driven rollback (restores `.bak` backups, strips marker blocks)
+| Group | Commands |
+|-------|----------|
+| Lifecycle | `/cm-setup`, `/cm-uninstall` |
+| Project | `/cm-research`, `/cm-position`, `/cm-copy`, `/cm-launch`, `/cm-social`, `/cm-email`, `/cm-compound` |
+| Sprint / Review | `/cm-sprint`, `/cm-retro`, `/cm-audit` |
+| Daily | `/cm-daily`, `/cm-standup`, `/cm-weekly`, `/cm-eod` |
 
-### Project Workflows
-- `/cm-research` — Deep market + customer research workflow
-- `/cm-position` — Full positioning workshop (Dunford framework)
-- `/cm-copy` — End-to-end copywriting with CRO review
-- `/cm-launch` — Launch planning and execution
-- `/cm-compound` — Document learnings to compound knowledge
-- `/cm-social` — Social media campaign planning
-- `/cm-email` — Email campaign setup end-to-end
-
-### Planning & Review (v1.5)
-- `/cm-sprint` — 2-week marketing sprint planning
-- `/cm-retro` — Campaign/sprint retrospective
-- `/cm-audit` — Quarterly marketing health check
-
-### Periodic Workflows
-- `/cm-daily` — Daily marketing review (10 min — what's live, performing, needs attention)
-- `/cm-standup` — Marketing standup (5 min — yesterday/today/blockers)
-- `/cm-weekly` — Weekly marketing review + planning (30-45 min — patterns, wins, plan ahead)
-- `/cm-eod` — End-of-day wrap (5-10 min — what shipped, what's pending, tomorrow's start)
-
-### Rhythm Recommendations
-| Time | Command | Purpose |
-|------|---------|---------|
-| Morning | `/cm-daily` | Orient, set the day's marketing priority |
-| Async sync | `/cm-standup` | Team accountability, surface blockers |
-| End of day | `/cm-eod` | Capture progress, prep tomorrow's start |
-| Friday | `/cm-weekly` | Review patterns, plan next week |
-| Sprint start | `/cm-sprint` | Plan a 2-week marketing sprint |
-| Sprint end | `/cm-retro` | Capture what worked, what didn't |
-| Quarterly | `/cm-audit` | Channels, funnel, priorities health check |
-| Post-project | `/cm-compound` | Document learnings for future use |
-
-## Cross-Platform Compatibility
-
-- **Claude Code / Claude Cowork** — Marketplace install (`/plugin marketplace add ... && /plugin install`), then `/cm-setup`. Reads `CLAUDE.md` automatically.
-- **Cursor** — `npx compounding-marketing --tool=cursor`. Generated `.cursor/rules/cm-*.mdc` files use Cursor's documented frontmatter (`description`, `globs`, `alwaysApply`).
-- **Codex (OpenAI)** — `npx compounding-marketing --tool=codex`. Skills surface as `~/.agents/skills/<skill>/SKILL.md` (global) or `./.agents/skills/<skill>/SKILL.md` (project), per [Codex skills docs](https://developers.openai.com/codex/skills). `AGENTS.md` is project-scoped.
-- **ChatGPT** — `npx compounding-marketing --tool=chatgpt`. Wizard prints copy-paste block for Custom GPT Instructions; selected skills upload as Knowledge.
-- **Zed** — `npx compounding-marketing --tool=zed`. Zed reads project-root `AGENTS.md` directly.
-- **Windsurf / OpenClaw** — Compatible with Claude Code project install.
+Use `/cm-daily` morning, `/cm-eod` end of day, `/cm-weekly` Friday, `/cm-sprint` to plan a 2-week block, `/cm-retro` to close it, `/cm-audit` quarterly, `/cm-compound` after every project.
 
 ## Quality Standards
 
-Every skill includes:
-- 40-80 line role prompt establishing authority and philosophy
-- Initial Assessment with prerequisites + 5-10 diagnostic questions
-- 5-10 numbered Process steps with how-to bullets, decision criteria, common gotchas
-- Output Format with fenced markdown template
-- Quality Bar checklist + ≥5 Common Mistakes (mistake / why / fix format)
-- ≥2 worked B2B SaaS examples (realistic scenarios, abbreviated outputs)
-- ≥3 Related Skills cross-references
-
-Enforced by `scripts/validate-skills.js`. Run `npm run validate` to check.
+Every skill ships with the 7-section structure above. Enforced by `scripts/validate-skills.js` — run `npm run validate` after edits. Minimums: ≥300 lines, ≥5 common mistakes, ≥2 worked examples, ≥3 related skills, all 7 sections present. Setup wizard always prompts before touching user files and tracks every write in `.compounding-marketing-install.json` so `--uninstall` reverses cleanly.
 
 This is not a prompt library. This is a marketing methodology.
