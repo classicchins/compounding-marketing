@@ -1,10 +1,25 @@
 # Compounding Marketing — Agent Instructions
 
-This repository contains the **Compounding Marketing** plugin. Compatible with Claude Code, ChatGPT, Cursor, Windsurf, and any AI assistant that supports structured skills.
+This repository contains the **Compounding Marketing** plugin (v1.2.0). Compatible with Claude Code, Claude Cowork, ChatGPT, OpenAI Codex, Cursor, Zed, Windsurf, and any AI assistant that supports structured skills.
 
 ## Overview
 
-50 marketing skills covering positioning, messaging, copywriting, CRO, SEO, and GTM. Built on the philosophy that **each unit of marketing work should make subsequent units easier**.
+61 marketing skills + 12 workflow commands covering positioning, messaging, copywriting, CRO, SEO, GTM, lifecycle, and growth. Built on the philosophy that **each unit of marketing work should make subsequent units easier**.
+
+## Installation (per tool)
+
+The plugin **never modifies your files without confirmation** on any platform.
+
+| Tool | Install command | Where it lands |
+|------|-----------------|----------------|
+| Claude Code / Cowork | `/plugin marketplace add classicchins/compounding-marketing` then `/plugin install compounding-marketing`. Run `/cm-setup` to wire into a project. | Marketplace: nothing in your dirs. `/cm-setup`: `./compounding-marketing/` + symlinks into `./.claude/commands/`. |
+| Cursor | `npx compounding-marketing --tool=cursor --scope=project` | `./compounding-marketing/` + `./.cursor/rules/cm-*.mdc` + `AGENTS.md` (marker block) |
+| Codex (OpenAI) | `npx compounding-marketing --tool=codex --scope=global` | `~/.codex/prompts/cm-*.md` + `~/.codex/AGENTS.md` (marker block) |
+| ChatGPT (Custom GPT) | `npx compounding-marketing --tool=chatgpt --scope=project` | `./compounding-marketing/` + printed copy-paste block for the GPT Instructions field; manually upload selected `skills/<name>/SKILL.md` files as Knowledge |
+| Zed | `npx compounding-marketing --tool=zed --scope=project` | `./compounding-marketing/` + `./.zed/` rules + `AGENTS.md` (marker block) |
+| Other | `npx compounding-marketing --tool=other` | Project files only; you wire up your tool manually |
+
+Useful flags: `--dry-run` (preview), `--yes` (CI), `--uninstall` (manifest-driven rollback that restores `.bak` backups), `--scope=global|project|custom`, `--target=<path>`.
 
 ## Philosophy
 
@@ -110,11 +125,12 @@ Commands are in `commands/` directory. Use `/cm:{command}` syntax.
 
 ## Cross-Platform Compatibility
 
-- **Claude Code** — Reads `CLAUDE.md` automatically
-- **ChatGPT** — Upload this file or reference skills manually
-- **Cursor** — Uses `.cursor-plugin/plugin.json`
-- **Windsurf** — Compatible with Claude Code structure
-- **OpenClaw** — Supports skills via `.agents/skills/` symlink
+- **Claude Code / Claude Cowork** — Marketplace install (`/plugin marketplace add ... && /plugin install`), then `/cm-setup`. Reads `CLAUDE.md` automatically.
+- **Cursor** — `npx compounding-marketing --tool=cursor`. Uses `.cursor-plugin/plugin.json` + `.cursor/rules/cm-*.mdc`.
+- **Codex (OpenAI)** — `npx compounding-marketing --tool=codex --scope=global`. Reads `~/.codex/AGENTS.md` and `~/.codex/prompts/`.
+- **ChatGPT** — `npx compounding-marketing --tool=chatgpt`. Wizard prints copy-paste block for Custom GPT Instructions; selected skills upload as Knowledge.
+- **Zed** — `npx compounding-marketing --tool=zed`. Reads `./.zed/` rules + `AGENTS.md`.
+- **Windsurf / OpenClaw** — Compatible with Claude Code project install.
 
 ## Quality Standards
 

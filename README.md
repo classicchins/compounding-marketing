@@ -4,7 +4,9 @@
 
 A Claude Code + ChatGPT plugin with 61 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
 
-**v1.4** — Added content performance scoring, competitor content monitoring, marketing automation skills, plus social media and email campaign workflow commands.
+**v1.2.0** — Marketplace-first install (Claude Code), safe `npx` wizard with `--dry-run` / `--uninstall` / per-tool target paths (Codex, Cursor, Zed, ChatGPT), and every one of the 61 skills brought up to gold-standard structure with a built-in validator.
+
+> **Installation never modifies your files without confirmation.** No silent overwrites. No postinstall hooks. Roll back any install with `npx compounding-marketing --uninstall`.
 
 ---
 
@@ -64,43 +66,73 @@ Each project should make the next project easier.
 
 ## Quick Start
 
-### Option 1: npx Setup (Recommended)
+### Option 1 — Claude Code marketplace (Recommended for Claude Code users)
+
+Inside Claude Code:
+
+```
+/plugin marketplace add classicchins/compounding-marketing
+/plugin install compounding-marketing
+```
+
+That's it — all 61 skills and 12 workflow commands become available immediately. Zero file writes to your project.
+
+When you're ready to wire the plugin into a specific project (with merged CLAUDE.md, optional `.gitignore`, and a `.compounding-marketing-install.json` manifest for safe rollback), run:
+
+```
+/cm-setup
+```
+
+Roll back any time with:
+
+```
+/cm-uninstall            # or
+npx compounding-marketing --uninstall
+```
+
+### Option 2 — npx wizard (Cursor, Codex, ChatGPT, Zed, others)
 
 ```bash
 npx compounding-marketing
 ```
 
-This interactive wizard will:
-- Configure your AI tool (Claude Code, Cursor, ChatGPT)
-- Set up MCP integrations (Perplexity, Exa)
-- Enable optional integrations (Linear, GA, etc.)
-- Create `.cm-config.json` with your settings
+The wizard walks you through three decisions:
 
-### Option 2: Manual Setup
+1. **Scope** — install into the current project (`./compounding-marketing/`), globally (`~/.claude/plugins/` or `~/.codex/`), or a custom path.
+2. **Tool** — `claude-code`, `claude-cowork`, `cursor`, `codex`, `chatgpt`, `zed`, or `other`.
+3. **For every existing file collision** — merge with idempotent markers, overwrite (auto-creates `.bak` backup), or skip.
 
-1. **Clone the repo:**
+Useful flags:
+
 ```bash
-git clone https://github.com/classicchins/compounding-marketing.git
-# Or add as git submodule
+npx compounding-marketing --dry-run          # preview every action without writing
+npx compounding-marketing --yes              # CI-friendly: accept safe defaults
+npx compounding-marketing --uninstall        # roll back via the install manifest
+npx compounding-marketing --tool=codex --scope=global
 ```
 
-2. **For Claude Code:** Plugin auto-loads from `CLAUDE.md`
+### Per-tool targets
 
-3. **For ChatGPT:** Upload `AGENTS.md` to your Custom GPT
-
-4. **For Cursor:** Add skills directory to your project
+| Tool | Project install | Global install | Instructions file |
+|------|------------------|----------------|-------------------|
+| Claude Code / Cowork | `./compounding-marketing/` + symlinks into `./.claude/commands/` | `~/.claude/plugins/compounding-marketing/` + symlinks into `~/.claude/{commands,skills}/` | `CLAUDE.md` |
+| Cursor | `./compounding-marketing/` + `./.cursor/rules/cm-*.mdc` | n/a (project only) | `AGENTS.md` |
+| Codex (OpenAI) | `./compounding-marketing/` + `./.codex/prompts/cm-*.md` | `~/.codex/prompts/cm-*.md` + `~/.codex/AGENTS.md` | `AGENTS.md` |
+| Zed | `./compounding-marketing/` + `./.zed/` rules | n/a (project only) | `AGENTS.md` |
+| ChatGPT (Custom GPT) | `./compounding-marketing/` + printed copy-paste instructions | n/a | `AGENTS.md` |
 
 ### Getting Started
 
 ```
 # Start with foundation
-Run the cm-context skill to create our product-marketing context document.
+/cm-context                 # in Claude Code
+"run the cm-context skill"  # in any other tool
 
 # Use workflows for big projects  
-Run /cm:position to develop our positioning, messaging, and value props.
+/cm-position                # positioning + messaging + value props end-to-end
 
 # Use individual skills for specific tasks
-Use the copywriting skill to write copy for our new landing page.
+"use the copywriting skill to write copy for our new landing page"
 ```
 
 ---
@@ -554,30 +586,53 @@ Just finished the homepage redesign project.
 
 ---
 
-## Installation
+## Installation Reference
 
-### Claude Code
+See [Quick Start](#quick-start) above for the recommended flows. Quick reminders by tool:
 
-1. Clone or download this repository
-2. Place in your project directory (or use as submodule)
-3. Claude Code automatically reads `CLAUDE.md`
-4. Skills are available via natural language or `/skill-name`
+### Claude Code / Claude Cowork
 
-### ChatGPT Custom GPT
-
-1. Upload `AGENTS.md` as knowledge
-2. Upload individual skills from `skills/` directory as needed
-3. Instruct: "Use skills from the Compounding Marketing plugin"
+```
+/plugin marketplace add classicchins/compounding-marketing
+/plugin install compounding-marketing
+/cm-setup                                # opt-in per-project bootstrap
+```
 
 ### Cursor
 
-1. Plugin structure is Cursor-compatible
-2. `.cursor-plugin/plugin.json` provides metadata
-3. Reference skills via relative paths
+```bash
+npx compounding-marketing --tool=cursor --scope=project
+```
 
-### Windsurf / OpenClaw
+`.cursor/rules/cm-*.mdc` rules are generated; AGENTS.md gets a marker-wrapped block.
 
-Compatible with Claude Code structure. Follow Claude Code installation.
+### Codex (OpenAI)
+
+```bash
+npx compounding-marketing --tool=codex --scope=global
+```
+
+Prompts land in `~/.codex/prompts/cm-*.md`; `~/.codex/AGENTS.md` is updated with the marker block.
+
+### ChatGPT Custom GPT
+
+```bash
+npx compounding-marketing --tool=chatgpt --scope=project
+```
+
+The wizard prints a copy-paste block for the Custom GPT Instructions field plus suggests which `skills/<name>/SKILL.md` files to upload as Knowledge.
+
+### Zed
+
+```bash
+npx compounding-marketing --tool=zed --scope=project
+```
+
+### Safety contract (every tool)
+
+- **No silent overwrites.** Every existing-file collision prompts for merge / overwrite-with-backup / skip.
+- **No `npm install` magic.** There is no postinstall hook. The wizard runs only when you invoke it.
+- **Full rollback.** Every install writes a manifest at `.compounding-marketing-install.json` (or `~/.claude/.compounding-marketing-install.json` for global). `--uninstall` reverses exactly the changes the wizard made and restores `.bak` backups byte-identical.
 
 ---
 

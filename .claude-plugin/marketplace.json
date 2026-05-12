@@ -7,14 +7,14 @@
   },
   "metadata": {
     "description": "Marketplace entry for the Compounding Marketing plugin — 61 marketing skills + 12 workflow commands for B2B SaaS.",
-    "version": "1.1.6"
+    "version": "1.2.0"
   },
   "plugins": [
     {
       "name": "compounding-marketing",
       "source": "./",
       "description": "61 marketing skills + 12 workflow commands. Positioning, messaging, copywriting, CRO, SEO, GTM. Includes /cm-setup for safe per-project bootstrap.",
-      "version": "1.1.6",
+      "version": "1.2.0",
       "author": {
         "name": "Chinmaya Shankar",
         "email": "c@bigdeal.ventures"

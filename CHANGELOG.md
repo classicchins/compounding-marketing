@@ -5,6 +5,73 @@ All notable changes to the Compounding Marketing plugin will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-05-12
+
+### Added
+
+**Marketplace-first install for Claude Code:**
+- `.claude-plugin/marketplace.json` — enables `/plugin marketplace add classicchins/compounding-marketing` flow
+- `.claude-plugin/plugin.json` — refreshed metadata with full author/homepage/repository fields
+- `commands/cm-setup.md` — explicit, opt-in per-project bootstrap slash command (mirrors the npx wizard inside Claude Code)
+
+**Hardened npx wizard (`bin/setup.js`):**
+- `--dry-run` — preview every action without writing
+- `--uninstall` — manifest-driven rollback that restores `.bak` backups
+- `--yes` / `-y` — CI-friendly defaults (merge instructions files, skip everything else)
+- `--scope=global|project|custom` — explicit install-location prompt
+- `--target=<path>` — custom install location
+- `--tool=claude-code|claude-cowork|cursor|codex|chatgpt|zed|other` — per-tool target paths
+- `--version` / `-v` and `--help` / `-h`
+
+**Per-tool target paths:**
+- Claude Code/Cowork → `~/.claude/plugins/` or `./compounding-marketing/` + symlinks into `.claude/{commands,skills}/`
+- Cursor → `./compounding-marketing/` + `./.cursor/rules/cm-*.mdc` + `AGENTS.md`
+- Codex (OpenAI) → `~/.codex/prompts/cm-*.md` + `~/.codex/AGENTS.md`
+- ChatGPT → `./compounding-marketing/` + printed copy-paste block for Custom GPT Instructions
+- Zed → `./compounding-marketing/` + `./.zed/` + `AGENTS.md`
+
+**Install manifest** (`.compounding-marketing-install.json`) tracks every `createdFiles[]`, `createdSymlinks[]`, `modifiedFiles[].backupPath`, and `appendedMarkers[]` so `--uninstall` reverses exactly the changes the wizard made.
+
+**Skill quality infrastructure:**
+- `skills/_TEMPLATE.md` — canonical 7-section gold-standard structure
+- `scripts/validate-skills.js` — enforces ≥300 lines, role prompt, all required sections, ≥5 common mistakes, ≥2 worked examples, ≥3 related skills. Wired into `npm run validate` and `npm run build`.
+
+**Skill expansions (53 skills brought up to gold-standard structure):**
+- Foundational strategy: content-strategy, copywriting, messaging-framework, value-proposition, launch-strategy, marketing-psychology, cm-context
+- Channel/content: email-sequence, social-content, channel-strategy, webinar-strategy, partnership-marketing, newsletter-growth, community-strategy
+- CRO/SEO: programmatic-seo, site-architecture, competitor-alternatives, ab-test-setup, page-cro, schema-markup, popup-cro, form-cro
+- Lifecycle/ops: churn-prevention, revops, marketing-automation, attribution-modeling, analytics-tracking, email-deliverability
+- Research: icp-research, customer-research, customer-interview, competitive-analysis, market-sizing, competitor-content-monitoring
+- Channel/paid: ad-creative, linkedin-ads, video-marketing, product-hunt-launch, press-pr, abm-strategy
+- Conversion/activation: signup-flow-cro, onboarding-cro, paywall-upgrade-cro, pricing-strategy, copy-editing
+- Sales/meta: case-study, testimonial-collection, sales-enablement, lead-magnets, free-tool-strategy, marketing-ideas, social-media-strategy, content-performance-scoring
+- Tier A conformance pass on the 8 reference skills (ai-seo, cold-email, gtm-strategy, referral-program, paid-ads, brand-voice, positioning, seo-audit) to bring them into validator compliance
+
+### Changed
+
+- Every existing-file write now prompts: **Merge with markers** / **Overwrite (with `.bak` backup)** / **Skip**. With `--yes`: instructions files default to merge, everything else defaults to skip.
+- `cm-*` symlink cleanup is now gated behind a confirmation prompt; `--yes` defaults to preserve.
+- `CLAUDE.md` / `AGENTS.md` edits are always wrapped in `<!-- COMPOUNDING-MARKETING-START/END -->` markers so re-runs are idempotent.
+- Post-install verification now offers to repair (or remove) broken symlinks instead of just reporting them.
+- `package.json` `main` field unchanged but the bin entrypoint was rewritten end-to-end (~700 lines) around an `fsx` filesystem wrapper that respects `--dry-run` and tracks every change in the manifest.
+
+### Removed
+
+- `npm postinstall` hook — installation is now opt-in. `npm install` performs zero file writes. **This was the root cause of CLAUDE.md being silently overwritten** in earlier versions.
+- `bin/setup.js --silent` mode (no longer needed; the postinstall hook is gone).
+
+### Fixed
+
+- `CLAUDE.md` and `AGENTS.md` are no longer silently overwritten by `npm install` or by the wizard. All collisions prompt.
+- `fs.cpSync(..., { force: true })` replaced with a per-leaf `copyTreeRespectingCollisions` walker that consults the collision handler.
+- Re-running the wizard against an existing install no longer duplicates marker blocks (idempotent replace path).
+
+## [1.1.6] - 2026-03-15
+
+### Removed
+
+- `npm postinstall` hook — emergency patch ahead of the full v1.2.0 install rewrite. Prevents silent file writes on `npm install`.
+
 ## [1.1.0] - 2026-03-14
 
 ### Added
