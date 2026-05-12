@@ -1,11 +1,15 @@
 {
   "name": "compounding-marketing",
-  "version": "1.1.0",
-  "description": "61 skills for positioning, messaging, copywriting, CRO, SEO, and GTM. Make each unit of marketing work easier than the last.",
+  "version": "1.6.0",
+  "description": "61 marketing skills + 16 workflow commands for B2B SaaS — positioning, messaging, copywriting, CRO, SEO, GTM, lifecycle, sprint planning. Make each unit of marketing work easier than the last.",
   "author": {
     "name": "Chinmaya Shankar",
-    "url": "https://authoritymax.ai"
+    "email": "c@bigdeal.ventures",
+    "url": "https://github.com/classicchins/compounding-marketing"
   },
+  "homepage": "https://github.com/classicchins/compounding-marketing",
+  "repository": "https://github.com/classicchins/compounding-marketing",
+  "license": "MIT",
   "keywords": [
     "marketing",
     "positioning",
@@ -21,7 +25,8 @@
   ],
   "components": {
     "skills": 61,
-    "commands": 11
+    "commands": 16
   },
-  "license": "MIT"
+  "commands": "./commands/",
+  "skills": "./skills/"
 }

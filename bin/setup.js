@@ -163,13 +163,6 @@ function setupClaudeCodePlugin(projectDir) {
 
 // Main setup flow
 async function main() {
-  // Silent mode for postinstall
-  if (process.argv.includes('--silent')) {
-    console.log(c('green', '✓ Compounding Marketing v1.5 installed!'));
-    console.log(c('dim', '  Run `npx compounding-marketing` to set up.\n'));
-    process.exit(0);
-  }
-
   // Quick info mode
   if (process.argv.includes('--info')) {
     console.log(`Compounding Marketing v1.5`);

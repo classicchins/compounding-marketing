@@ -1,0 +1,37 @@
+{
+  "name": "compounding-marketing",
+  "owner": {
+    "name": "Chinmaya Shankar",
+    "email": "c@bigdeal.ventures",
+    "url": "https://github.com/classicchins/compounding-marketing"
+  },
+  "metadata": {
+    "description": "Marketplace entry for the Compounding Marketing plugin — 61 marketing skills + 16 workflow commands for B2B SaaS.",
+    "version": "1.6.0"
+  },
+  "plugins": [
+    {
+      "name": "compounding-marketing",
+      "source": "./",
+      "description": "61 marketing skills + 16 workflow commands. Positioning, messaging, copywriting, CRO, SEO, GTM, sprint/retro/audit, lifecycle. Includes /cm-setup for safe per-project bootstrap and /cm-uninstall for manifest-driven rollback.",
+      "version": "1.6.0",
+      "author": {
+        "name": "Chinmaya Shankar",
+        "email": "c@bigdeal.ventures"
+      },
+      "homepage": "https://github.com/classicchins/compounding-marketing",
+      "license": "MIT",
+      "keywords": [
+        "marketing",
+        "saas",
+        "positioning",
+        "copywriting",
+        "seo",
+        "gtm",
+        "cro"
+      ],
+      "category": "productivity",
+      "strict": false
+    }
+  ]
+}
