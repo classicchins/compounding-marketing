@@ -280,23 +280,29 @@ async function resolveCollision(rl, destPath, kind, flags) {
 // ─── Per-tool target resolution ─────────────────────────────────────────────
 function getInstallTargets(scope, tool, cwd, customTarget) {
   const home = os.homedir();
-  let installRoot;
+  let installRoot, projectRoot;
   if (scope === 'global') {
     installRoot = path.join(home, '.claude', 'plugins', 'compounding-marketing');
+    projectRoot = home; // tool-specific paths under home (overridden per-tool below)
   } else if (scope === 'custom' && customTarget) {
-    installRoot = path.resolve(customTarget);
+    // For custom scope, treat --target as the project root.
+    // Plugin files go into <target>/compounding-marketing/; instructions/MCP at <target>/.
+    projectRoot = path.resolve(customTarget);
+    installRoot = path.join(projectRoot, 'compounding-marketing');
   } else {
+    // Project scope: cwd is the project root.
+    projectRoot = cwd;
     installRoot = path.join(cwd, 'compounding-marketing');
   }
 
   const targets = {
     scope, tool, installRoot,
-    commandsDir: null,        // where cm-* slash commands / rules land
-    skillsLinkDir: null,      // where skill directories get linked
-    instructionsFile: null,   // CLAUDE.md or AGENTS.md
-    mcpConfigFile: null,      // .mcp.json | .cursor/mcp.json | .codex/config.toml
-    mcpConfigFormat: null,    // 'json' | 'toml' | null
-    registrationStyle: 'none', // 'claude-symlinks' | 'cursor-mdc' | 'codex-dir' | 'none'
+    commandsDir: null,
+    skillsLinkDir: null,
+    instructionsFile: null,
+    mcpConfigFile: null,
+    mcpConfigFormat: null,
+    registrationStyle: 'none',
   };
 
   switch (tool) {
@@ -312,22 +318,22 @@ function getInstallTargets(scope, tool, cwd, customTarget) {
         targets.mcpConfigFile = null;
         targets.mcpConfigFormat = null;
       } else {
-        targets.commandsDir = path.join(cwd, '.claude', 'commands');
-        targets.skillsLinkDir = path.join(cwd, '.claude', 'skills');
-        targets.instructionsFile = path.join(cwd, 'CLAUDE.md');
-        targets.mcpConfigFile = path.join(cwd, '.mcp.json');
+        targets.commandsDir = path.join(projectRoot, '.claude', 'commands');
+        targets.skillsLinkDir = path.join(projectRoot, '.claude', 'skills');
+        targets.instructionsFile = path.join(projectRoot, 'CLAUDE.md');
+        targets.mcpConfigFile = path.join(projectRoot, '.mcp.json');
         targets.mcpConfigFormat = 'json';
       }
       targets.registrationStyle = 'claude-symlinks';
       break;
 
     case 'cursor':
-      targets.commandsDir = path.join(cwd, '.cursor', 'rules');
+      targets.commandsDir = path.join(projectRoot, '.cursor', 'rules');
       targets.skillsLinkDir = null;
-      targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.instructionsFile = path.join(projectRoot, 'AGENTS.md');
       targets.mcpConfigFile = scope === 'global'
         ? path.join(home, '.cursor', 'mcp.json')
-        : path.join(cwd, '.cursor', 'mcp.json');
+        : path.join(projectRoot, '.cursor', 'mcp.json');
       targets.mcpConfigFormat = 'json';
       targets.registrationStyle = 'cursor-mdc';
       break;
@@ -339,12 +345,12 @@ function getInstallTargets(scope, tool, cwd, customTarget) {
         targets.skillsLinkDir = path.join(home, '.agents', 'skills');
         targets.mcpConfigFile = path.join(home, '.codex', 'config.toml');
       } else {
-        targets.skillsLinkDir = path.join(cwd, '.agents', 'skills');
-        targets.mcpConfigFile = path.join(cwd, '.codex', 'config.toml');
+        targets.skillsLinkDir = path.join(projectRoot, '.agents', 'skills');
+        targets.mcpConfigFile = path.join(projectRoot, '.codex', 'config.toml');
       }
       targets.commandsDir = null;
       // AGENTS.md is always project-scoped in Codex (Git-root discovery, not ~/)
-      targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.instructionsFile = path.join(projectRoot, 'AGENTS.md');
       targets.mcpConfigFormat = 'toml';
       targets.registrationStyle = 'codex-dir';
       break;
@@ -353,7 +359,7 @@ function getInstallTargets(scope, tool, cwd, customTarget) {
       // Zed reads project-root AGENTS.md. No separate plugin dir.
       targets.commandsDir = null;
       targets.skillsLinkDir = null;
-      targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.instructionsFile = path.join(projectRoot, 'AGENTS.md');
       targets.mcpConfigFile = null;
       targets.registrationStyle = 'none';
       break;
@@ -361,7 +367,7 @@ function getInstallTargets(scope, tool, cwd, customTarget) {
     case 'chatgpt':
       targets.commandsDir = null;
       targets.skillsLinkDir = null;
-      targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.instructionsFile = path.join(projectRoot, 'AGENTS.md');
       targets.mcpConfigFile = null;
       targets.registrationStyle = 'none';
       break;
@@ -369,7 +375,7 @@ function getInstallTargets(scope, tool, cwd, customTarget) {
     default:
       targets.commandsDir = null;
       targets.skillsLinkDir = null;
-      targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.instructionsFile = path.join(projectRoot, 'AGENTS.md');
       targets.mcpConfigFile = null;
       targets.registrationStyle = 'none';
   }
@@ -512,9 +518,13 @@ async function applyInstructionsBlock(rl, instructionsFile, pluginContent, fsx, 
     console.log(c('green', `  ✓ Overwrote ${instructionsFile} (backup at .bak)`));
     return;
   }
+  // Merge path: back up the original BEFORE appending so --uninstall can
+  // restore byte-identical (the marker-strip regex on uninstall normalizes
+  // whitespace and can leave the file 1 byte short of the original).
+  fsx.backup(instructionsFile);
   fsx.append(instructionsFile, markerBlock, 'plugin block');
   manifest.appendedMarkers.push({ path: instructionsFile });
-  console.log(c('green', `  ✓ Appended plugin block to ${instructionsFile}`));
+  console.log(c('green', `  ✓ Appended plugin block to ${instructionsFile} (backup at .bak)`));
 }
 
 // ─── Idempotent .gitignore append ───────────────────────────────────────────
@@ -1001,8 +1011,29 @@ async function runUninstall(flags) {
     }
   }
 
-  // Walk install dirs bottom-up, remove empties
-  const dirsToTry = [manifest.installRoot, manifest.commandsDir, manifest.skillsLinkDir].filter(Boolean);
+  // Walk install dirs bottom-up, remove empties. Then walk parents up while
+  // they look like tool-config dirs we created (.claude/, .cursor/, .codex/,
+  // .agents/, .zed/), so empty wrapper dirs don't linger after uninstall.
+  // Never remove cwd, home, or any dir not under one of those patterns.
+  const home = os.homedir();
+  const toolDirPatterns = ['/.claude', '/.cursor', '/.codex', '/.agents', '/.zed', '/compounding-marketing'];
+  const isToolDir = (p) => toolDirPatterns.some(pat => p.endsWith(pat) || p.includes(pat + '/'));
+  const dirsToTry = [
+    manifest.installRoot,
+    manifest.commandsDir,
+    manifest.skillsLinkDir,
+    manifest.mcpConfigFile && path.dirname(manifest.mcpConfigFile),
+  ].filter(Boolean);
+  // Add parent chains for each entry up to but not including cwd / home.
+  const expanded = new Set(dirsToTry);
+  for (const d of dirsToTry) {
+    let cur = path.dirname(d);
+    while (cur && cur !== '/' && cur !== home && cur !== path.dirname(cur)) {
+      if (!isToolDir(cur)) break;
+      expanded.add(cur);
+      cur = path.dirname(cur);
+    }
+  }
   function rmEmptyDirs(dir, stopAt) {
     if (!dir || !fs.existsSync(dir)) return;
     try {
@@ -1016,7 +1047,9 @@ async function runUninstall(flags) {
       }
     } catch (_) { /* ignore */ }
   }
-  for (const d of dirsToTry) rmEmptyDirs(d, path.dirname(d));
+  // Sort deepest-first so children are processed before parents.
+  const sortedDirs = Array.from(expanded).sort((a, b) => b.length - a.length);
+  for (const d of sortedDirs) rmEmptyDirs(d, path.dirname(d));
 
   // Remove manifest itself
   if (flags.dryRun) console.log(c('magenta', `  [dry-run] REMOVE manifest ${mPath}`));
@@ -1080,6 +1113,13 @@ async function main() {
     const claudeExists = fs.existsSync(homeClaude);
     const projectDir = isProjectDirectory(cwd);
     const defaultScope = projectDir ? 'project' : (claudeExists ? 'global' : 'project');
+
+    // Warn if cwd isn't an obvious project directory and user is doing a project install.
+    if (!projectDir && !flags.scope && !flags.yes) {
+      console.log(c('yellow', `  ⚠  Current directory ${c('bright', cwd)} does not look like a project root`));
+      console.log(c('dim', '     (no package.json/.git/Cargo.toml/Gemfile/pyproject.toml/go.mod/Makefile/src/app)'));
+      console.log(c('dim', '     A project install will still work but is usually run from a project root.'));
+    }
 
     let scope = flags.scope;
     if (!scope) {
