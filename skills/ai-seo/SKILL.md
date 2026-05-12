@@ -15,11 +15,11 @@ You are an AI search optimization specialist. Your goal is to maximize brand vis
 
 Traditional search is fragmenting. AI-powered search engines now synthesize answers from multiple sources, often without requiring a click-through. The brands that win are those whose content is structured to be extracted, cited, and recommended by AI systems.
 
-**Key statistics:**
-- **69% of searches are zero-click** in 2025 — users get answers without visiting a website
-- **AI-referred sessions grew +527% year-over-year** — AI search is driving a new traffic channel
-- **Only 11% of domains are cited by both ChatGPT AND Perplexity** — platform-specific optimization matters
-- **85.79% of AI Overviews citations come from top-10 organic results** — traditional SEO still feeds AI SEO
+**The directional trend (numbers vary by study; the direction is consistent):**
+- **The majority of Google searches now end without a click** — zero-click rates have climbed steadily since 2019, with multiple analyses (SparkToro, SimilarWeb) placing the figure well above 50% as AI Overviews expand.
+- **AI-referred sessions are growing rapidly** — referral traffic from ChatGPT, Perplexity, and Google AI Mode is small in absolute terms but increasing month-over-month for most B2B SaaS sites (visible in GA4 referral reports).
+- **Source overlap between AI engines is low** — ChatGPT, Perplexity, and Google AI Overviews cite substantially different domains for the same query, so per-platform optimization matters.
+- **AI Overviews disproportionately cite top-10 organic results** — multiple SEO industry analyses (Authoritas, SE Ranking, Semrush) report that the large majority of AI Overview citations come from URLs already ranking on page one for the query. Traditional SEO still feeds AI SEO.
 
 **Two disciplines, one strategy:**
 
@@ -178,7 +178,7 @@ AI systems determine which sources to cite based on entity authority — how wel
 **Authority signals:**
 1. **Brand mentions on third-party sites** — guest posts, press coverage, partner pages, industry directories
 2. **Comprehensive About/Team pages** — AI systems reference these for entity understanding
-3. **Wikipedia and Wikidata presence** — ChatGPT draws 47.9% of its citations from Wikipedia-style sources
+3. **Wikipedia and Wikidata presence** — Wikipedia is consistently among the most-cited domains in ChatGPT and Perplexity responses across published source-share analyses. Entity coverage there pays compounding dividends.
 4. **Consistent NAP (Name, Address, Phone)** — across directories and listings
 5. **Author entities** — named authors with bios, credentials, and linked social profiles
 6. **Backlink profile** — quality backlinks remain a strong authority signal for AI search
@@ -248,7 +248,7 @@ Featured snippets are the bridge between traditional SEO and AI search. Content 
 
 - Identify featured snippet opportunities for your target queries
 - Structure content in the exact format Google uses (paragraph, list, table)
-- 85.79% of AI Overviews citations come from top-10 organic results — rank first, get cited first
+- The large majority of AI Overviews citations come from URLs already ranking in the top 10 organic results (per multiple SEO industry analyses) — rank first, get cited first
 
 ### Tactic 2: Optimize for Bing
 
@@ -295,9 +295,11 @@ Each AI search platform favors different content types and sources. Optimize acc
 
 | Platform | Preferred Content Style | Top Source Pattern | Optimization Priority |
 |----------|------------------------|--------------------|-----------------------|
-| **ChatGPT** | Encyclopedic, well-sourced, comprehensive | Wikipedia 47.9%, news sites | Bing indexing, entity authority, comprehensive coverage |
-| **Perplexity** | Community-driven, recent, discussion-based | Reddit 46.7%, forums | Reddit presence, community content, recency |
-| **Google AI Overviews** | Balanced professional + community | Reddit 21%, YouTube 18.8% | Traditional SEO, featured snippets, video content |
+| **ChatGPT** | Encyclopedic, well-sourced, comprehensive | Wikipedia and major news sites dominate | Bing indexing, entity authority, comprehensive coverage |
+| **Perplexity** | Community-driven, recent, discussion-based | Reddit and community forums heavily over-indexed | Reddit presence, community content, recency |
+| **Google AI Overviews** | Balanced professional + community | Mix of Reddit, YouTube, and top-ranking organic results | Traditional SEO, featured snippets, video content |
+
+*Source-share figures vary by study and shift quickly; the relative ranking of preferred source types is more stable than any specific percentage. Re-test on your own target queries before planning around exact ratios.*
 
 **Implications:**
 - **For ChatGPT visibility:** Focus on comprehensive, well-structured content with strong entity authority. Ensure Bing indexes your content.
@@ -467,7 +469,7 @@ The AI SEO optimization is complete when:
 4. **Heavy JavaScript rendering without static HTML fallback** — AI crawlers often cannot execute JavaScript. If your content only renders client-side, it will not be indexed or cited.
 5. **Ignoring Bing optimization** — ChatGPT Search uses Bing's index. If your content is not indexed by Bing, ChatGPT cannot cite it.
 6. **Using traditional SEO metrics to measure AI search performance** — Organic rankings and click-through rates do not capture AI mentions or citations. You need AI-specific measurement tools and processes.
-7. **Working in silos with separate AI SEO and traditional SEO teams** — AI search and traditional search are deeply interconnected (85.79% of AI Overviews citations come from top-10 organic). Integrate both into a single strategy.
+7. **Working in silos with separate AI SEO and traditional SEO teams** — AI search and traditional search are deeply interconnected (the large majority of AI Overviews citations come from URLs already ranking in the top 10 organic). Integrate both into a single strategy.
 
 ---
 
@@ -521,15 +523,15 @@ creating an effective onboarding experience for your users...
 
 ## What is customer onboarding?
 
-**Customer onboarding is the process of guiding new users from signup to first value in your product.** Effective onboarding reduces churn by up to 67% (Wyzowl, 2024) and increases trial-to-paid conversion by 25-40%.
+**Customer onboarding is the process of guiding new users from signup to first value in your product.** Strong onboarding is consistently linked with lower early-stage churn and higher trial-to-paid conversion — replace this sentence with your own measured numbers when publishing.
 
 - Time-to-value is the single most important onboarding metric
 - The best onboarding flows are 3-5 steps, not 10+
-- Personalized onboarding converts 2.5x better than generic flows
+- Personalized onboarding outperforms generic flows by a wide margin in most published case studies
 
 ## How long should SaaS onboarding take?
 
-**Most SaaS products should aim for first value within 5 minutes of signup.** According to Mixpanel's 2024 Product Benchmarks report, the median time-to-first-key-action for top-quartile SaaS products is 3.2 minutes.
+**Most SaaS products should aim for first value within the first session — ideally within a few minutes of signup.** Cite your own product analytics for the exact median; benchmarks vary widely by category and pricing model.
 ```
 
 ### Example 3: robots.txt Configuration

@@ -1,7 +1,7 @@
 {
   "name": "compounding-marketing",
   "version": "1.2.0",
-  "description": "61 marketing skills + 12 workflow commands for B2B SaaS — positioning, messaging, copywriting, CRO, SEO, GTM. Make each unit of marketing work easier than the last.",
+  "description": "61 marketing skills + 13 workflow commands for B2B SaaS — positioning, messaging, copywriting, CRO, SEO, GTM. Make each unit of marketing work easier than the last.",
   "author": {
     "name": "Chinmaya Shankar",
     "email": "c@bigdeal.ventures",
@@ -25,7 +25,7 @@
   ],
   "components": {
     "skills": 61,
-    "commands": 12
+    "commands": 13
   },
   "commands": "./commands/",
   "skills": "./skills/"

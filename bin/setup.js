@@ -295,23 +295,37 @@ async function resolveCollision(rl, destPath, kind, flags) {
 
 // ─── Per-tool target resolution ─────────────────────────────────────────────
 function getInstallTargets(scope, tool, cwd, customTarget) {
-  // Returns: { installRoot, commandsDir, skillsLinkDir, instructionsFile, instructionsFormat }
+  // Returns: { installRoot, commandsDir, skillsLinkDir, instructionsFile, registrationStyle }
+  // registrationStyle controls how skills/commands surface to the AI tool:
+  //   'claude-symlinks' — symlink each SKILL.md as cm-{skill}.md (Claude Code / Cowork)
+  //   'cursor-mdc'      — write .mdc files with Cursor frontmatter pointing to the SKILL.md
+  //   'codex-dir'       — symlink whole skill DIRECTORIES under ~/.agents/skills/<skill>/
+  //   'none'            — no per-skill registration; AGENTS.md alone (ChatGPT, Zed, other)
   const home = os.homedir();
+
+  // installRoot: where the plugin source files live
   let installRoot;
   if (scope === 'global') {
-    if (tool === 'codex') installRoot = path.join(home, '.codex');
-    else installRoot = path.join(home, '.claude', 'plugins', 'compounding-marketing');
+    installRoot = path.join(home, '.claude', 'plugins', 'compounding-marketing');
   } else if (scope === 'custom' && customTarget) {
     installRoot = path.resolve(customTarget);
   } else {
     installRoot = path.join(cwd, 'compounding-marketing');
   }
 
-  const targets = { scope, tool, installRoot, commandsDir: null, skillsLinkDir: null, instructionsFile: null, instructionsFormat: 'markdown' };
+  const targets = {
+    scope, tool, installRoot,
+    commandsDir: null,
+    skillsLinkDir: null,
+    instructionsFile: null,
+    registrationStyle: 'none',
+  };
 
   switch (tool) {
     case 'claude-code':
     case 'claude-cowork':
+      // Claude Code: symlink SKILL.md and command files under .claude/commands/ as cm-{name}.md.
+      // Skills also get a directory-level symlink under .claude/skills/<skill>/ for the native skill loader.
       if (scope === 'global') {
         targets.commandsDir = path.join(home, '.claude', 'commands');
         targets.skillsLinkDir = path.join(home, '.claude', 'skills');
@@ -321,48 +335,67 @@ function getInstallTargets(scope, tool, cwd, customTarget) {
         targets.skillsLinkDir = path.join(cwd, '.claude', 'skills');
         targets.instructionsFile = path.join(cwd, 'CLAUDE.md');
       }
+      targets.registrationStyle = 'claude-symlinks';
       break;
     case 'cursor':
-      // Cursor has no global plugin dir for this kind of thing; project only.
+      // Cursor: rules are .mdc files with frontmatter under .cursor/rules/. Project-only.
+      // Cursor docs: https://docs.cursor.com/en/context/rules
       targets.commandsDir = path.join(cwd, '.cursor', 'rules');
-      targets.skillsLinkDir = null; // skills surface via .cursor/rules
+      targets.skillsLinkDir = null;
       targets.instructionsFile = path.join(cwd, 'AGENTS.md');
-      targets.instructionsFormat = 'mdc'; // .mdc files for Cursor rules
+      targets.registrationStyle = 'cursor-mdc';
       break;
     case 'codex':
-      // OpenAI Codex CLI: ~/.codex/prompts/ globally, or project-local mirror
+      // OpenAI Codex: skills live as DIRECTORIES at ~/.agents/skills/<skill>/SKILL.md (global)
+      // or ./.agents/skills/<skill>/SKILL.md (project). AGENTS.md is project-scoped only.
+      // Source: https://developers.openai.com/codex/skills
       if (scope === 'global') {
-        targets.commandsDir = path.join(home, '.codex', 'prompts');
-        targets.skillsLinkDir = path.join(home, '.codex', 'prompts');
-        targets.instructionsFile = path.join(home, '.codex', 'AGENTS.md');
+        targets.skillsLinkDir = path.join(home, '.agents', 'skills');
       } else {
-        targets.commandsDir = path.join(cwd, '.codex', 'prompts');
-        targets.skillsLinkDir = path.join(cwd, '.codex', 'prompts');
-        targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+        targets.skillsLinkDir = path.join(cwd, '.agents', 'skills');
       }
+      targets.commandsDir = null; // Codex skills are the discovery mechanism; no separate commands dir
+      // AGENTS.md is always project-scoped in Codex (Git-root discovery, not ~/)
+      targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.registrationStyle = 'codex-dir';
       break;
     case 'zed':
-      targets.commandsDir = path.join(cwd, '.zed');
+      // Zed reads project-root AGENTS.md / .rules. No separate plugin dir.
+      targets.commandsDir = null;
       targets.skillsLinkDir = null;
       targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.registrationStyle = 'none';
       break;
     case 'chatgpt':
-      // ChatGPT has no native plugin install. We just write project files and print a copy-paste block.
+      // ChatGPT has no native plugin install. Project files only; wizard prints copy-paste block.
       targets.commandsDir = null;
       targets.skillsLinkDir = null;
       targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.registrationStyle = 'none';
       break;
     default:
-      // 'other'
+      // 'other' — generic AGENTS.md fallback
       targets.commandsDir = null;
       targets.skillsLinkDir = null;
       targets.instructionsFile = path.join(cwd, 'AGENTS.md');
+      targets.registrationStyle = 'none';
   }
   return targets;
 }
 
 // ─── Manifest ───────────────────────────────────────────────────────────────
 function newManifest(flags, scope, tool, targets) {
+  // If a manifest already exists from a previous install, merge its tracked
+  // entries forward so re-runs don't orphan files. Without this, idempotent
+  // re-installs would zero out the manifest and break --uninstall.
+  const mPath = manifestPath(scope, targets.installRoot);
+  let prior = null;
+  try {
+    if (fs.existsSync(mPath)) {
+      prior = JSON.parse(fs.readFileSync(mPath, 'utf8'));
+    }
+  } catch (_) { /* corrupt manifest; start fresh */ }
+
   return {
     version: PKG_VERSION,
     timestamp: new Date().toISOString(),
@@ -373,11 +406,29 @@ function newManifest(flags, scope, tool, targets) {
     commandsDir: targets.commandsDir,
     skillsLinkDir: targets.skillsLinkDir,
     instructionsFile: targets.instructionsFile,
-    createdFiles: [],
-    createdSymlinks: [],
-    modifiedFiles: [], // each: { path, backupPath }
-    appendedMarkers: [], // each: { path }
+    createdFiles: prior?.createdFiles || [],
+    createdSymlinks: prior?.createdSymlinks || [],
+    modifiedFiles: prior?.modifiedFiles || [],
+    appendedMarkers: prior?.appendedMarkers || [],
   };
+}
+
+// Dedupe manifest entries by `path` field before persisting.
+function dedupeManifest(manifest) {
+  const dedupe = (arr) => {
+    const seen = new Set();
+    return arr.filter(entry => {
+      if (!entry || !entry.path) return false;
+      if (seen.has(entry.path)) return false;
+      seen.add(entry.path);
+      return true;
+    });
+  };
+  manifest.createdFiles = dedupe(manifest.createdFiles);
+  manifest.createdSymlinks = dedupe(manifest.createdSymlinks);
+  manifest.modifiedFiles = dedupe(manifest.modifiedFiles);
+  manifest.appendedMarkers = dedupe(manifest.appendedMarkers);
+  return manifest;
 }
 
 function manifestPath(scope, installRoot) {
@@ -388,8 +439,9 @@ function manifestPath(scope, installRoot) {
 }
 
 function persistManifest(manifest, mPath, flags) {
+  dedupeManifest(manifest);
   if (flags.dryRun) {
-    console.log(c('magenta', `  [dry-run] WRITE manifest ${mPath}`));
+    console.log(c('magenta', `  [dry-run] WRITE manifest ${mPath} (${manifest.createdFiles.length} files, ${manifest.createdSymlinks.length} symlinks, ${manifest.modifiedFiles.length} modified, ${manifest.appendedMarkers.length} markers)`));
     return;
   }
   fs.mkdirSync(path.dirname(mPath), { recursive: true });
@@ -573,6 +625,156 @@ To use the skills inside a Custom GPT:
 `);
 }
 
+// ─── Per-tool skill/command registration ───────────────────────────────────
+// Routes to claude-symlinks, cursor-mdc, or codex-dir based on targets.registrationStyle.
+async function registerSkillsForTool(rl, targets, fsx, manifest) {
+  const style = targets.registrationStyle;
+  const skillsSource = path.join(targets.installRoot, 'skills');
+  const commandsSource = path.join(targets.installRoot, 'commands');
+
+  if (!fs.existsSync(skillsSource)) {
+    console.log(c('yellow', `  ⚠  No skills/ directory at ${skillsSource}; skipping registration.`));
+    return;
+  }
+  const skillDirs = fs.readdirSync(skillsSource).filter(d => {
+    if (d.startsWith('_')) return false;
+    try { return fs.statSync(path.join(skillsSource, d)).isDirectory(); } catch (_) { return false; }
+  });
+
+  // Common: ask before clobbering existing cm-* entries
+  const dirToCheck = targets.commandsDir || targets.skillsLinkDir;
+  if (!dirToCheck) return;
+  let existingCm = [];
+  if (fs.existsSync(dirToCheck)) {
+    existingCm = fs.readdirSync(dirToCheck).filter(f => f.startsWith('cm-'));
+  }
+  let cleanup = true;
+  if (existingCm.length > 0) {
+    console.log(c('yellow', `\n  ⚠  Found ${existingCm.length} existing cm-* entries in ${dirToCheck}.`));
+    if (fsx.flags.yes) {
+      cleanup = true; // for idempotent re-runs we want to refresh; tracked in manifest below
+      console.log(c('dim', '  Refreshing existing entries (--yes).'));
+    } else {
+      cleanup = await confirm(rl, '  Replace them with fresh entries?', true);
+    }
+  }
+  if (cleanup && existingCm.length > 0) {
+    for (const entry of existingCm) {
+      const entryPath = path.join(dirToCheck, entry);
+      try {
+        const stat = fs.lstatSync(entryPath);
+        if (stat.isSymbolicLink() || stat.isFile()) fsx.unlink(entryPath);
+        else if (stat.isDirectory()) fs.rmSync(entryPath, { recursive: true, force: true });
+      } catch (_) { /* ignore */ }
+    }
+  }
+
+  if (style === 'claude-symlinks') {
+    fsx.mkdir(targets.commandsDir);
+    if (targets.skillsLinkDir) fsx.mkdir(targets.skillsLinkDir);
+    // Workflow commands → symlink as cm-{name}.md
+    let cmdCount = 0;
+    if (fs.existsSync(commandsSource)) {
+      for (const file of fs.readdirSync(commandsSource).filter(f => f.endsWith('.md'))) {
+        const linkPath = path.join(targets.commandsDir, file);
+        if (fs.existsSync(linkPath)) continue;
+        const linkTarget = path.relative(targets.commandsDir, path.join(commandsSource, file));
+        if (fsx.symlink(linkTarget, linkPath, file)) cmdCount++;
+      }
+    }
+    // Skills → two-place registration:
+    //   1) <commandsDir>/cm-<skill>.md → SKILL.md (so user can invoke /cm-<skill>)
+    //   2) <skillsLinkDir>/<skill>/ → <skill>/ directory (so Claude Code's native skill loader picks it up)
+    let skillCount = 0;
+    for (const skill of skillDirs) {
+      const skillFile = path.join(skillsSource, skill, 'SKILL.md');
+      if (!fs.existsSync(skillFile)) continue;
+      const cmdLinkName = skill.startsWith('cm-') ? `${skill}.md` : `cm-${skill}.md`;
+      const cmdLinkPath = path.join(targets.commandsDir, cmdLinkName);
+      if (!fs.existsSync(cmdLinkPath)) {
+        const linkTarget = path.relative(targets.commandsDir, skillFile);
+        if (fsx.symlink(linkTarget, cmdLinkPath, cmdLinkName)) skillCount++;
+      }
+      if (targets.skillsLinkDir) {
+        const skillDirLink = path.join(targets.skillsLinkDir, skill);
+        if (!fs.existsSync(skillDirLink)) {
+          const linkTarget = path.relative(targets.skillsLinkDir, path.join(skillsSource, skill));
+          fsx.symlink(linkTarget, skillDirLink, skill);
+        }
+      }
+    }
+    console.log(c('green', `  ✓ Registered ${cmdCount} workflow commands + ${skillCount} skills as /cm-{name}`));
+    if (targets.skillsLinkDir) console.log(c('green', `  ✓ Linked ${skillDirs.length} skill dirs under ${targets.skillsLinkDir}`));
+  }
+
+  else if (style === 'cursor-mdc') {
+    // Cursor expects .mdc files under .cursor/rules/ with frontmatter (description, globs, alwaysApply).
+    // We write small .mdc files that load the SKILL.md content via Cursor's @-mention/auto-attach.
+    fsx.mkdir(targets.commandsDir);
+    let written = 0;
+    const writeMdc = (name, description, skillFilePath) => {
+      const mdcPath = path.join(targets.commandsDir, `cm-${name}.mdc`);
+      if (fs.existsSync(mdcPath)) return false;
+      const relSkillPath = path.relative(path.dirname(mdcPath), skillFilePath);
+      const body = `---
+description: ${description.replace(/"/g, "'")}
+globs:
+alwaysApply: false
+---
+
+# cm-${name}
+
+Load and follow the full skill definition at \`${relSkillPath}\` before responding.
+
+The skill defines a process, output format, and quality bar. Apply them. Ask the user for any required inputs the skill calls out.
+`;
+      fsx.write(mdcPath, body, 'cursor-rule');
+      return true;
+    };
+
+    // Workflow commands
+    if (fs.existsSync(commandsSource)) {
+      for (const file of fs.readdirSync(commandsSource).filter(f => f.endsWith('.md'))) {
+        const name = file.replace(/^cm-/, '').replace(/\.md$/, '');
+        if (writeMdc(name, `Compounding Marketing workflow: ${name}`, path.join(commandsSource, file))) written++;
+      }
+    }
+    // Skills
+    for (const skill of skillDirs) {
+      const skillFile = path.join(skillsSource, skill, 'SKILL.md');
+      if (!fs.existsSync(skillFile)) continue;
+      // Pull description from frontmatter for the .mdc description field
+      let desc = `Compounding Marketing skill: ${skill}`;
+      try {
+        const fm = fs.readFileSync(skillFile, 'utf8').match(/^---\n([\s\S]*?)\n---/);
+        if (fm) {
+          const m = fm[1].match(/^description:\s*(.+)$/m);
+          if (m) desc = m[1].trim();
+        }
+      } catch (_) { /* ignore */ }
+      if (writeMdc(skill, desc, skillFile)) written++;
+    }
+    console.log(c('green', `  ✓ Generated ${written} .mdc rules in ${targets.commandsDir}`));
+  }
+
+  else if (style === 'codex-dir') {
+    // Codex looks for skills as DIRECTORIES at ~/.agents/skills/<name>/SKILL.md.
+    // Symlink the whole skill directory so Codex picks up SKILL.md and any sibling assets.
+    fsx.mkdir(targets.skillsLinkDir);
+    let linked = 0;
+    for (const skill of skillDirs) {
+      const skillDir = path.join(skillsSource, skill);
+      if (!fs.existsSync(path.join(skillDir, 'SKILL.md'))) continue;
+      const linkPath = path.join(targets.skillsLinkDir, skill);
+      if (fs.existsSync(linkPath)) continue;
+      const linkTarget = path.relative(targets.skillsLinkDir, skillDir);
+      if (fsx.symlink(linkTarget, linkPath, skill)) linked++;
+    }
+    console.log(c('green', `  ✓ Linked ${linked} skill directories under ${targets.skillsLinkDir}`));
+    console.log(c('dim', `  Codex will discover them as ~/.agents/skills/<name>/SKILL.md (or ./.agents/skills/...).`));
+  }
+}
+
 // ─── Build instructions content for marker block ────────────────────────────
 function buildInstructionsContent(scope, installRoot) {
   // Read the plugin's CLAUDE.md (or AGENTS.md) and rewrite skill paths to point
@@ -749,8 +951,14 @@ async function main() {
     }
 
     // ─── Step 3: Save .cm-config.json ──────────────────────────────────────
+    // Project scope → ./.cm-config.json (next to .git, gitignored).
+    // Global scope  → ~/.claude/.cm-config.json (so it doesn't pollute cwd).
+    // Custom scope  → <installRoot>/../.cm-config.json
     console.log(c('blue', '\n━━━ Step 3: Save Configuration ━━━'));
-    const configPath = path.join(cwd, '.cm-config.json');
+    const configDir = scope === 'global'
+      ? path.join(os.homedir(), '.claude')
+      : (scope === 'custom' ? path.dirname(targets.installRoot) : cwd);
+    const configPath = path.join(configDir, '.cm-config.json');
     const configJSON = JSON.stringify(config, null, 2);
     let saveConfig = true;
     if (fs.existsSync(configPath)) {
@@ -761,7 +969,10 @@ async function main() {
     if (saveConfig) {
       fsx.write(configPath, configJSON, 'config');
       console.log(c('green', `  ✓ Wrote ${configPath}`));
-      ensureGitignore(cwd, '.cm-config.json', 'Compounding Marketing config (contains API keys)', fsx);
+      // Only add to .gitignore if writing inside the project (scope=project).
+      if (scope === 'project') {
+        ensureGitignore(cwd, '.cm-config.json', 'Compounding Marketing config (contains API keys)', fsx);
+      }
     }
 
     // ─── Step 4: Install plugin files ──────────────────────────────────────
@@ -784,70 +995,9 @@ async function main() {
     }
 
     // ─── Step 5: Register slash commands / rules ───────────────────────────
-    if (targets.commandsDir) {
-      console.log(c('blue', '\n━━━ Step 5: Register Slash Commands ━━━'));
-      console.log(c('dim', `  Target: ${targets.commandsDir}`));
-
-      // Check for existing cm-* entries and ask before cleaning up
-      let existingCm = [];
-      if (fs.existsSync(targets.commandsDir)) {
-        existingCm = fs.readdirSync(targets.commandsDir).filter(f => f.startsWith('cm-') && (f.endsWith('.md') || f.endsWith('.mdc')));
-      }
-      let cleanup = true;
-      if (existingCm.length > 0) {
-        console.log(c('yellow', `\n  ⚠  Found ${existingCm.length} existing cm-* entries in ${targets.commandsDir}.`));
-        if (flags.yes) {
-          cleanup = false;
-          console.log(c('dim', '  Skipping cleanup (--yes default = preserve existing).'));
-        } else {
-          cleanup = await confirm(rl, '  Replace them with fresh symlinks?', false);
-        }
-      }
-      if (cleanup && existingCm.length > 0) {
-        for (const entry of existingCm) {
-          const entryPath = path.join(targets.commandsDir, entry);
-          try {
-            const stat = fs.lstatSync(entryPath);
-            if (stat.isSymbolicLink()) fsx.unlink(entryPath);
-          } catch (_) { /* ignore */ }
-        }
-      }
-
-      fsx.mkdir(targets.commandsDir);
-
-      // Workflow commands
-      const cmCommandsDir = path.join(targets.installRoot, 'commands');
-      let cmdCount = 0;
-      if (fs.existsSync(cmCommandsDir)) {
-        const cmdFiles = fs.readdirSync(cmCommandsDir).filter(f => f.endsWith('.md'));
-        for (const file of cmdFiles) {
-          const linkPath = path.join(targets.commandsDir, file);
-          if (fs.existsSync(linkPath) && !cleanup) continue;
-          const targetPath = path.relative(targets.commandsDir, path.join(cmCommandsDir, file));
-          if (fsx.symlink(targetPath, linkPath, file)) cmdCount++;
-        }
-        console.log(c('green', `  ✓ Registered ${cmdCount} workflow commands`));
-      }
-
-      // Skills as slash commands
-      const skillsDir = path.join(targets.installRoot, 'skills');
-      let skillCount = 0;
-      if (fs.existsSync(skillsDir)) {
-        const skillDirs = fs.readdirSync(skillsDir).filter(d => {
-          if (d.startsWith('_')) return false; // skip _TEMPLATE.md, etc.
-          try { return fs.statSync(path.join(skillsDir, d)).isDirectory(); } catch (_) { return false; }
-        });
-        for (const skill of skillDirs) {
-          const skillFile = path.join(skillsDir, skill, 'SKILL.md');
-          if (!fs.existsSync(skillFile)) continue;
-          const linkName = skill.startsWith('cm-') ? `${skill}.md` : `cm-${skill}.md`;
-          const linkPath = path.join(targets.commandsDir, linkName);
-          if (fs.existsSync(linkPath) && !cleanup) continue;
-          const targetPath = path.relative(targets.commandsDir, skillFile);
-          if (fsx.symlink(targetPath, linkPath, linkName)) skillCount++;
-        }
-        console.log(c('green', `  ✓ Registered ${skillCount} skills as /cm-{skill} commands`));
-      }
+    if (targets.registrationStyle !== 'none') {
+      console.log(c('blue', '\n━━━ Step 5: Register Skills + Commands ━━━'));
+      await registerSkillsForTool(rl, targets, fsx, manifest);
     }
 
     // ─── Step 6: Update instructions file (CLAUDE.md / AGENTS.md) ──────────
@@ -860,6 +1010,7 @@ async function main() {
     }
 
     // ─── Step 7: Optional .gitignore for the install dir ───────────────────
+    // Only relevant for project scope — global installs don't touch cwd.
     if (scope === 'project' && !isLocalClone) {
       console.log(c('blue', '\n━━━ Step 7: Gitignore (optional) ━━━'));
       let addToGitignore = false;

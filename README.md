@@ -75,7 +75,7 @@ Inside Claude Code:
 /plugin install compounding-marketing
 ```
 
-That's it — all 61 skills and 12 workflow commands become available immediately. Zero file writes to your project.
+That's it — all 61 skills and 13 workflow commands become available immediately. Zero file writes to your project.
 
 When you're ready to wire the plugin into a specific project (with merged CLAUDE.md, optional `.gitignore`, and a `.compounding-marketing-install.json` manifest for safe rollback), run:
 
@@ -98,7 +98,7 @@ npx compounding-marketing
 
 The wizard walks you through three decisions:
 
-1. **Scope** — install into the current project (`./compounding-marketing/`), globally (`~/.claude/plugins/` or `~/.codex/`), or a custom path.
+1. **Scope** — install into the current project (`./compounding-marketing/`), globally (`~/.claude/plugins/`), or a custom path.
 2. **Tool** — `claude-code`, `claude-cowork`, `cursor`, `codex`, `chatgpt`, `zed`, or `other`.
 3. **For every existing file collision** — merge with idempotent markers, overwrite (auto-creates `.bak` backup), or skip.
 
@@ -115,11 +115,11 @@ npx compounding-marketing --tool=codex --scope=global
 
 | Tool | Project install | Global install | Instructions file |
 |------|------------------|----------------|-------------------|
-| Claude Code / Cowork | `./compounding-marketing/` + symlinks into `./.claude/commands/` | `~/.claude/plugins/compounding-marketing/` + symlinks into `~/.claude/{commands,skills}/` | `CLAUDE.md` |
-| Cursor | `./compounding-marketing/` + `./.cursor/rules/cm-*.mdc` | n/a (project only) | `AGENTS.md` |
-| Codex (OpenAI) | `./compounding-marketing/` + `./.codex/prompts/cm-*.md` | `~/.codex/prompts/cm-*.md` + `~/.codex/AGENTS.md` | `AGENTS.md` |
-| Zed | `./compounding-marketing/` + `./.zed/` rules | n/a (project only) | `AGENTS.md` |
-| ChatGPT (Custom GPT) | `./compounding-marketing/` + printed copy-paste instructions | n/a | `AGENTS.md` |
+| Claude Code / Cowork | `./compounding-marketing/` + symlinks into `./.claude/commands/cm-*.md` and `./.claude/skills/<skill>/` | `~/.claude/plugins/compounding-marketing/` + symlinks into `~/.claude/commands/` and `~/.claude/skills/` | `CLAUDE.md` |
+| Cursor | `./compounding-marketing/` + generated `./.cursor/rules/cm-*.mdc` files (with proper Cursor frontmatter: `description`, `globs`, `alwaysApply`) | n/a (project only) | `AGENTS.md` |
+| Codex (OpenAI) | `./compounding-marketing/` + skill directories symlinked under `./.agents/skills/<skill>/` | `~/.claude/plugins/compounding-marketing/` + skill directories under `~/.agents/skills/<skill>/` | `AGENTS.md` (project-scoped — Codex uses Git-root discovery) |
+| Zed | `./compounding-marketing/` only (Zed reads `AGENTS.md` from project root) | n/a (project only) | `AGENTS.md` |
+| ChatGPT (Custom GPT) | `./compounding-marketing/` + printed copy-paste instructions for the GPT editor | n/a | `AGENTS.md` |
 
 ### Getting Started
 
@@ -688,7 +688,7 @@ You're building a SaaS. You need to do marketing, but you're not a marketer. The
 
 ### Solo Marketers
 
-You're a marketing team of one. You need leverage. This plugin gives you 50 specialized skills — like hiring 50 consultants.
+You're a marketing team of one. You need leverage. This plugin gives you 61 specialized skills — like hiring 61 consultants.
 
 ### Marketing Managers
 
