@@ -1,6 +1,6 @@
 {
   "name": "compounding-marketing",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "61 marketing skills for Claude Code, Codex CLI, ChatGPT, Cursor & more. Make each unit of marketing work easier than the last.",
   "keywords": [
     "marketing",
@@ -49,8 +49,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "setup": "node bin/setup.js",
-    "postinstall": "node bin/setup.js --silent"
+    "setup": "node bin/setup.js"
   },
   "dependencies": {}
 }

@@ -146,13 +146,6 @@ function isProjectDirectory(dir) {
 
 // Main setup flow
 async function main() {
-  // Silent mode for postinstall
-  if (process.argv.includes('--silent')) {
-    console.log(c('green', '✓ Compounding Marketing installed successfully!'));
-    console.log(c('dim', '  Run `npx compounding-marketing` to configure.\n'));
-    process.exit(0);
-  }
-
   printBanner();
 
   const rl = createPrompt();
