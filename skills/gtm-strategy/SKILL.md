@@ -2,7 +2,7 @@
 name: gtm-strategy
 description: Design go-to-market motion (PLG vs. sales-led vs. hybrid). Analyzes product fit, defines funnel, outlines team structure. Triggers - go-to-market, GTM strategy, sales motion, PLG, product-led growth, sales-led.
 metadata:
-  version: 1.1.0
+  version: 1.1.1
 ---
 
 # Go-to-Market Strategy
@@ -85,7 +85,7 @@ Rate each factor on a 1-5 scale. Score both columns independently — a factor c
 - PLG 25-32 and Sales-Led 25-32: Strong hybrid signal. Lead with PLG, layer sales at $2M ARR.
 - Both scores under 20: Product-market fit may not be clear. Revisit positioning and ICP before choosing a motion.
 
-### Example Scoring
+### Example 1: Scoring the GTM Fit Matrix for a Mid-Market PLG Candidate
 
 **Slack (circa 2015):**
 
@@ -473,25 +473,29 @@ Every GTM strategy rests on 3-5 key bets — assumptions that must prove true fo
 
 ## Real-World GTM Examples
 
-### Slack — Pure PLG
+### Example 2: Reference GTM Motions from Public SaaS Companies
+
+The four cases below show how product complexity, ACV, and buyer type drive the choice of PLG, sales-led, or hybrid motions. Use them as reference points when scoring your own GTM fit.
+
+#### Slack — Pure PLG
 - **Motion:** Free tier, team-level adoption, bottom-up viral growth
 - **Why it worked:** Instant time-to-value (send first message in 30 seconds), built-in virality (every message exposes non-users), low switching cost
 - **Sales added:** After $5M ARR, for enterprise deals ($100K+ ACV)
 - **Result:** $27.7B acquisition by Salesforce
 
-### HubSpot — Hybrid (PLG + Sales)
+#### HubSpot — Hybrid (PLG + Sales)
 - **Motion:** Free CRM as entry point, sales team closes Marketing Hub and Sales Hub upgrades
 - **Why it worked:** Free CRM generates massive PQL volume, sales team converts high-ACV accounts
 - **Key insight:** The free product IS the demo. Users see value before talking to sales.
 - **Result:** $30B+ market cap, 194,000+ customers
 
-### Salesforce — Pure Sales-Led
+#### Salesforce — Pure Sales-Led
 - **Motion:** Enterprise sales team, demo-driven, annual contracts
 - **Why it worked:** Complex product (CRM implementation takes weeks), high ACV ($50K-$500K+), executive buyer
 - **Key insight:** Invented the SaaS sales playbook — SDR/AE split, MEDDIC qualification, Sandler selling
 - **Result:** $250B+ market cap
 
-### Atlassian — PLG at Scale
+#### Atlassian — PLG at Scale
 - **Motion:** No outbound sales team until $2B+ revenue. All inbound and self-serve.
 - **Spend allocation:** 47% R&D vs. 16% sales and marketing
 - **Why it works:** Products (Jira, Confluence) spread virally within engineering teams. Low price, easy setup, team-level adoption.

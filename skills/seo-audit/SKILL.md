@@ -2,7 +2,7 @@
 name: seo-audit
 description: Comprehensive SEO audit covering technical, on-page, content, and off-page optimization. Identifies issues and prioritizes fixes by impact. Triggers - SEO audit, technical SEO, on-page SEO, SEO analysis, SEO optimization, site audit.
 metadata:
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # SEO Audit
@@ -444,7 +444,7 @@ perplexity_research "What content do top [industry] websites have?"
 
 ## Audit Examples: Complete Walkthrough
 
-### Example Site: B2B SaaS Project Management Tool
+### Example 1: B2B SaaS Project Management Tool — Full Audit Walkthrough
 
 **Site:** projectplanner.io (fictional example)
 
@@ -639,7 +639,11 @@ Every blog post should have:
 
 ## Audit Examples: Good vs. Bad
 
-### Title Tags
+### Example 2: Good vs. Bad — Title Tags, Meta, Links, and Speed
+
+The examples below contrast common audit findings (titles, meta descriptions, internal links, page speed) so you can write your audit recommendations with the same level of specificity.
+
+#### Title Tags
 
 **❌ Bad:**
 - "Home" (too generic, no keywords)

@@ -2,7 +2,7 @@
 name: positioning
 description: Define market position using April Dunford's Obviously Awesome framework. Identify competitive alternatives, unique attributes, value delivered, best-fit customers, and market category. Triggers - positioning workshop, market position, differentiation strategy, April Dunford, positioning canvas, product positioning.
 metadata:
-  version: 1.0.0
+  version: 1.0.1
 ---
 
 # Strategic Positioning Workshop
@@ -331,6 +331,50 @@ Unlike [alternatives],
 - Defining target as "all companies that need [thing]"
 - Inventing a new category without budget to educate the market
 - Positioning statement that could apply to any competitor
+
+---
+
+## Examples
+
+Two worked examples showing how the Dunford canvas converts a generic claim into defensible market position.
+
+### Example 1: Bookkeep — fintech for Shopify operators
+
+**Before positioning (generic claim):**
+"Bookkeep is the best accounting automation tool for ecommerce. We help businesses save time and reduce errors."
+
+**After positioning (Dunford canvas applied):**
+
+- **Competitive alternatives:** Manual reconciliation in spreadsheets; QuickBooks Online with the A2X connector; outsourced bookkeeping firms ($500-$2,000/month).
+- **Unique attributes (stress-tested):**
+  - Native, daily journal-entry summarization for every Shopify payout (not just CSV imports).
+  - Multi-channel revenue recognition across Shopify, Amazon, and Stripe in a single ledger entry.
+  - Automatic reconciliation of payout fees, refunds, and taxes — no manual matching.
+- **Value delivered:** Closes monthly books in 1 day instead of 5; eliminates ~$1,200/month in outsourced bookkeeping; reduces audit risk from missing transactions.
+- **Best-fit customers:** Multi-channel ecommerce operators doing $1M-$50M GMV with an in-house finance person (controller or part-time CFO) who already uses QuickBooks or Xero.
+- **Market category:** "Ecommerce accounting automation" (not "AI bookkeeping" — that category is overcrowded and undifferentiated).
+- **Positioning statement:** "Bookkeep is the ecommerce accounting automation layer for multi-channel Shopify and Amazon sellers that closes monthly books in one day by automating the journal entries QuickBooks alone cannot."
+
+**Why this works:** The category — ecommerce accounting automation — instantly clarifies who it is for and what it does. Unique attributes are operational, not marketing copy. Value is quantified in days and dollars saved. Best-fit customer eliminates SMB plumbers and Series B enterprises in one sentence.
+
+### Example 2: Bolt — developer API for instant checkout
+
+**Before positioning (generic claim):**
+"Bolt makes checkout faster. Increase conversions with our one-click checkout solution."
+
+**After positioning (Dunford canvas applied):**
+
+- **Competitive alternatives:** Shop Pay (Shopify-only); native Stripe Checkout; rolling your own checkout flow; PayPal one-touch.
+- **Unique attributes (stress-tested):**
+  - Cross-merchant network — a shopper who checks out on Merchant A is recognized on Merchant B without re-creating an account.
+  - Embedded fraud scoring as part of the checkout API — no separate fraud vendor required.
+  - SDK-first integration in under 200 lines of code for a custom storefront.
+- **Value delivered:** 50-80% lift in checkout conversion for repeat shoppers across the network; eliminates separate fraud-vendor contract ($2K-$10K/month); engineering integration in days, not quarters.
+- **Best-fit customers:** Mid-market headless commerce brands ($20M-$500M GMV) running custom storefronts on Next.js, Hydrogen, or commercetools, NOT on Shopify Plus (where Shop Pay is already native).
+- **Market category:** "Networked checkout" (not "one-click checkout," which competes head-on with Shop Pay).
+- **Positioning statement:** "Bolt is the networked checkout layer for headless commerce brands that lifts repeat-shopper conversion 50-80% by recognizing buyers across every merchant in the Bolt network."
+
+**Why this works:** Category positions away from a giant incumbent (Shopify). Unique attributes are technical and verifiable (lines of code, network size). Best-fit customer is defined by tech stack and revenue range, which a sales team can qualify in under 30 seconds.
 
 ---
 
