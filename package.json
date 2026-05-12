@@ -49,7 +49,9 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "setup": "node bin/setup.js"
+    "setup": "node bin/setup.js",
+    "validate": "node scripts/validate-skills.js",
+    "build": "node scripts/validate-skills.js && node scripts/generate-claude-md.js"
   },
   "dependencies": {}
 }
