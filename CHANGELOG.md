@@ -66,6 +66,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `fs.cpSync(..., { force: true })` replaced with a per-leaf `copyTreeRespectingCollisions` walker that consults the collision handler.
 - Re-running the wizard against an existing install no longer duplicates marker blocks (idempotent replace path).
 
+### Fixed (post-QA pass)
+
+- **Cursor target corrected** — wizard now generates `.cursor/rules/cm-*.mdc` files with proper Cursor frontmatter (`description`, `globs`, `alwaysApply`). Earlier `.md`-symlink approach was ignored by Cursor.
+- **Codex target corrected** — skills now land at `~/.agents/skills/<skill>/` (per [Codex skills docs](https://developers.openai.com/codex/skills)). Earlier `~/.codex/prompts/` path was not read by Codex. `AGENTS.md` is project-scoped per Codex's Git-root discovery.
+- **Zed target simplified** — wizard now writes only `AGENTS.md` (Zed reads project-root `AGENTS.md` directly). Earlier `.zed/` writes were wasted bytes.
+- **Claude Code skill directories** — wizard now populates `.claude/skills/<skill>/` directory symlinks (previously only `.claude/commands/cm-*.md` were created), enabling Claude Code's native skill loader to discover them.
+- **Manifest preservation across re-installs** — re-running the wizard now loads and forwards prior manifest entries instead of zeroing them. Without this fix, `--uninstall` after a re-run would orphan every file/symlink the first run created.
+- **Global scope no longer pollutes cwd** — `.cm-config.json` and `.gitignore` only land in cwd for `--scope=project`; global installs write config to `~/.claude/.cm-config.json`.
+- **`commands/cm-uninstall.md` added** — slash command referenced in 3 places but didn't previously exist.
+- **`brand-voice` skill rebuilt** — was passing the validator with placeholder `[Example]` text and a one-sentence role prompt. Now 554 lines with a 40-line role prompt grounded in Mailchimp Content Style Guide, NN/g, Marty Neumeier, Lawrence Vincent, plus 2 real worked examples (Bookkeep fintech, Bolt API dev tool).
+- **`ai-seo` unsourced statistics softened** — QA flagged ~7 oddly-precise figures as likely hallucinations. "69% zero-click", "+527% YoY", "85.79% top-10 citations", platform-share percentages all softened to directional claims with verifiable industry-research citations. Wyzowl 2024 and Mixpanel 2024 Product Benchmarks citations removed entirely (unverifiable).
+- **`AGENTS.md` skill catalog regenerated** — was a stale 50-skill v1.0 snapshot; now correctly lists all 61 across 12 categories with current names.
+- **Slash-command syntax** — README/AGENTS.md now use `/cm-{name}` (matching marketplace install) instead of legacy `/cm:{name}`.
+
 ## [1.1.6] - 2026-03-15
 
 ### Removed
