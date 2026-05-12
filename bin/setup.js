@@ -635,6 +635,10 @@ async function registerSkillsForTool(rl, targets, fsx, manifest) {
       const mdcPath = path.join(targets.commandsDir, `cm-${name}.mdc`);
       if (fs.existsSync(mdcPath)) return false;
       const relSkillPath = path.relative(path.dirname(mdcPath), skillFilePath);
+      // Cursor agent-requested rules: agent invokes when the description matches
+      // user intent. Keep alwaysApply=false so the rule is loaded on demand
+      // (loading all 61 skills into every chat would blow context). Description
+      // includes the skill's trigger phrases so Cursor's agent discovery works.
       const body = `---
 description: ${description.replace(/"/g, "'").replace(/\n/g, ' ')}
 globs:
@@ -646,6 +650,8 @@ alwaysApply: false
 Load and follow the full skill definition at \`${relSkillPath}\` before responding.
 
 The skill defines a process, output format, and quality bar. Apply them. Ask the user for any required inputs the skill calls out.
+
+**Invoking this skill:** type \`@cm-${name}\` in chat, or mention any of the trigger phrases in the description above. Cursor will auto-attach this rule when the description matches your request.
 `;
       fsx.write(mdcPath, body, 'cursor-rule');
       return true;
@@ -698,14 +704,14 @@ function mcpServerSpec(name, apiKey, format) {
     return format === 'toml'
       ? { name: 'perplexity', toml: `[mcp_servers.perplexity]
 command = "npx"
-args = ["-y", "@anthropic-ai/mcp-server-perplexity"]
+args = ["-y", "@perplexity-ai/mcp-server"]
 env = { PERPLEXITY_API_KEY = "${apiKey || '${PERPLEXITY_API_KEY}'}" }` }
       : {
           name: 'perplexity',
           json: {
             type: 'stdio',
             command: 'npx',
-            args: ['-y', '@anthropic-ai/mcp-server-perplexity'],
+            args: ['-y', '@perplexity-ai/mcp-server'],
             env: { PERPLEXITY_API_KEY: apiKey || '${PERPLEXITY_API_KEY}' },
           },
         };
@@ -845,7 +851,7 @@ function printClaudeCodeMcpHint(mcpConfig) {
   for (const [name, v] of enabled) {
     if (name === 'perplexity') {
       const keyArg = v.apiKey && v.apiKey !== 'YOUR_API_KEY_HERE' ? `--env PERPLEXITY_API_KEY=${v.apiKey} ` : `--env PERPLEXITY_API_KEY=YOUR_KEY `;
-      console.log(c('cyan', `    claude mcp add --transport stdio --scope user ${keyArg}perplexity -- npx -y @anthropic-ai/mcp-server-perplexity`));
+      console.log(c('cyan', `    claude mcp add --transport stdio --scope user ${keyArg}perplexity -- npx -y @perplexity-ai/mcp-server`));
     } else if (name === 'exa') {
       const keyArg = v.apiKey && v.apiKey !== 'YOUR_API_KEY_HERE' ? `--env EXA_API_KEY=${v.apiKey} ` : `--env EXA_API_KEY=YOUR_KEY `;
       console.log(c('cyan', `    claude mcp add --transport stdio --scope user ${keyArg}exa -- npx -y exa-mcp-server`));

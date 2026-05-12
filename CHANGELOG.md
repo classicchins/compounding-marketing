@@ -274,5 +274,7 @@ Planned additions for future versions:
 
 ---
 
+[1.6.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.6.0
+[1.5.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.5.0
 [1.1.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.1.0
 [1.0.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.0.0

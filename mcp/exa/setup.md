@@ -19,13 +19,13 @@ Exa provides neural/semantic web search and specialized research tools. Unlike k
 
 No installation needed:
 ```bash
-npx -y @anthropic-ai/mcp-server-exa
+npx -y exa-mcp-server
 ```
 
 ### Option 2: Global install
 
 ```bash
-npm install -g @anthropic-ai/mcp-server-exa
+npm install -g exa-mcp-server
 ```
 
 ## Configuration
@@ -39,7 +39,7 @@ Add to your MCP settings:
   "mcpServers": {
     "exa": {
       "command": "npx",
-      "args": ["-y", "@anthropic-ai/mcp-server-exa"],
+      "args": ["-y", "exa-mcp-server"],
       "env": {
         "EXA_API_KEY": "your-exa-api-key"
       }
@@ -56,7 +56,7 @@ Add to `.cursor/mcp.json`:
 {
   "exa": {
     "command": "npx",
-    "args": ["-y", "@anthropic-ai/mcp-server-exa"],
+    "args": ["-y", "exa-mcp-server"],
     "env": {
       "EXA_API_KEY": "your-exa-api-key"
     }

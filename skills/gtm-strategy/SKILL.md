@@ -54,7 +54,7 @@ Self-serve for SMB and mid-market, sales-assisted for enterprise. Product-qualif
 Free Signup → Self-Serve Conversion (SMB) → PQL Triggers Sales (Enterprise) → Expansion
 ```
 
-**Key insight:** 97% of PLG companies eventually add sales. The question is not PLG *or* sales — it is which motion leads, and when to layer the other. The typical inflection point is ~$5K ACV and $2-5M ARR.
+**Key insight:** Nearly every successful PLG company eventually adds sales (OpenView Partners' PLG benchmarks have consistently shown this — only a handful of pure-PLG companies stay sales-free at scale). The question is not PLG *or* sales — it is which motion leads, and when to layer the other. The typical inflection point is ~$5K ACV and $2-5M ARR.
 
 ---
 

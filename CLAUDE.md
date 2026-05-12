@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-Compounding Marketing is a Claude Code / ChatGPT / Cursor plugin providing 61 marketing skills and 14 workflow commands for SaaS marketing. It is **not a traditional codebase** — it's a structured knowledge system where skills are SKILL.md files and workflows are command `.md` files.
+Compounding Marketing is a cross-platform AI plugin (Claude Code, Claude Cowork, Cursor, Codex, ChatGPT, Zed) providing 61 marketing skills and 16 workflow commands for SaaS marketing. It is **not a traditional codebase** — it's a structured knowledge system where skills are SKILL.md files and workflows are command `.md` files.
 
 Philosophy: **Make each unit of marketing work easier than the last.** 80% research and planning, 20% execution. Core workflow: **Research → Position → Message → Execute → Compound.**
 
@@ -12,7 +12,7 @@ Philosophy: **Make each unit of marketing work easier than the last.** 80% resea
 
 ```
 skills/           # 61 self-contained marketing skills (each is a SKILL.md with YAML frontmatter)
-commands/         # 14 workflow commands (cm-*.md files invoked via /cm:*)
+commands/         # 16 workflow commands (cm-*.md files invoked via /cm-*)
 bin/setup.js      # npx setup wizard (interactive CLI using readline, no framework)
 scripts/          # generate-claude-md.js — regenerates this file's skills section from frontmatter
 mcp/              # Pre-configured MCP servers (Perplexity, Exa) for research enhancement
@@ -42,10 +42,11 @@ When a user requests marketing help, the correct skill should be loaded and exec
 
 ## How Workflow Commands Work
 
-Commands in `commands/cm-*.md` orchestrate multiple skills in sequence. They are invoked as `/cm:{name}` (e.g., `/cm:research`, `/cm:position`, `/cm:copy`).
+Commands in `commands/cm-*.md` orchestrate multiple skills in sequence. They are invoked as `/cm-{name}` (e.g., `/cm-research`, `/cm-position`, `/cm-copy`).
 
+**Install / Lifecycle (v1.6.0)**: setup, uninstall
 **Project workflows**: research, position, copy, launch, compound, social, email
-**Planning & review**: sprint, retro, audit
+**Planning & review (v1.5)**: sprint, retro, audit
 **Daily operations**: standup, daily, eod, weekly
 
 ## Skill Categories
@@ -83,7 +84,7 @@ Setup details in `mcp/README.md`. Config stored in `.cm-config.json` (gitignored
 ## Important Conventions
 
 - The `cm-context` skill must always run first on a new project — it creates `.agents/product-marketing-context.md`
-- Learnings are stored in `.agents/learnings/{category}.md` by the `/cm:compound` workflow
+- Learnings are stored in `.agents/learnings/{category}.md` by the `/cm-compound` workflow
 - The setup wizard (`bin/setup.js`) uses only Node.js `readline` (no external dependencies)
 - Cross-platform: `CLAUDE.md` for Claude Code, `AGENTS.md` for ChatGPT, `.cursor-plugin/plugin.json` for Cursor
 

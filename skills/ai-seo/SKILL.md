@@ -178,7 +178,7 @@ AI systems determine which sources to cite based on entity authority — how wel
 **Authority signals:**
 1. **Brand mentions on third-party sites** — guest posts, press coverage, partner pages, industry directories
 2. **Comprehensive About/Team pages** — AI systems reference these for entity understanding
-3. **Wikipedia and Wikidata presence** — ChatGPT draws 47.9% of its citations from Wikipedia-style sources
+3. **Wikipedia and Wikidata presence** — ChatGPT draws heavily from Wikipedia-style sources; encyclopedic / Wikidata-linked entities are consistently over-represented in its citation set
 4. **Consistent NAP (Name, Address, Phone)** — across directories and listings
 5. **Author entities** — named authors with bios, credentials, and linked social profiles
 6. **Backlink profile** — quality backlinks remain a strong authority signal for AI search
@@ -295,9 +295,11 @@ Each AI search platform favors different content types and sources. Optimize acc
 
 | Platform | Preferred Content Style | Top Source Pattern | Optimization Priority |
 |----------|------------------------|--------------------|-----------------------|
-| **ChatGPT** | Encyclopedic, well-sourced, comprehensive | Wikipedia 47.9%, news sites | Bing indexing, entity authority, comprehensive coverage |
-| **Perplexity** | Community-driven, recent, discussion-based | Reddit 46.7%, forums | Reddit presence, community content, recency |
-| **Google AI Overviews** | Balanced professional + community | Reddit 21%, YouTube 18.8% | Traditional SEO, featured snippets, video content |
+| **ChatGPT** | Encyclopedic, well-sourced, comprehensive | Wikipedia and major news sites dominate | Bing indexing, entity authority, comprehensive coverage |
+| **Perplexity** | Community-driven, recent, discussion-based | Reddit and community forums heavily over-indexed | Reddit presence, community content, recency |
+| **Google AI Overviews** | Balanced professional + community | Mix of Reddit, YouTube, and top-ranking organic results | Traditional SEO, featured snippets, video content |
+
+*Source-share percentages shift quickly across platforms — confirm with current SEO industry analyses (Authoritas, SE Ranking, Semrush, BrightEdge) before quoting precise figures.*
 
 **Implications:**
 - **For ChatGPT visibility:** Focus on comprehensive, well-structured content with strong entity authority. Ensure Bing indexes your content.

@@ -155,7 +155,7 @@ For each risk tier, define the playbook. Intervention should escalate from autom
 The cancel flow is the single highest-leverage retention surface. Get it right and you save 15-30% of cancels at near-zero marginal cost. Get it wrong (dark patterns) and you create NPS detractors who post on Reddit.
 
 **Principles:**
-- **Never make canceling harder than signing up.** That's a dark pattern, will hurt brand, and increasingly violates law (FTC's "Click to Cancel" rule, California AB 390).
+- **Never make canceling harder than signing up.** That's a dark pattern, hurts brand, and exposes you to enforcement risk — California's Automatic Renewal Law (ARL) and FTC actions on negative-option marketing have repeatedly targeted hard-to-cancel flows. (Note: the FTC's broader "Click to Cancel" rule was issued in 2024 but vacated by the 8th Circuit in July 2025; state ARLs and FTC enforcement actions on a case-by-case basis remain in force.)
 - **Always capture a structured cancel reason** with a follow-up text field. This is your most valuable retention data.
 - **Offer the right alternative based on reason** — pause, downgrade, discount, help — not all of them at once.
 - **One-click cancel must work.** If they confirm, cancel. Period.
@@ -383,7 +383,7 @@ A churn-prevention playbook is "done" when:
 
 2. **Blanket discounts in the cancel flow** — "Everyone gets 30% off if they try to cancel." **Why it happens:** Easy to build, "saves" accounts on day one. **Fix:** Branch save offers by cancel reason. A customer canceling because of a missing feature doesn't need a discount; they need to know if it's on the roadmap. A blanket discount also trains customers to threaten cancellation to extract price cuts.
 
-3. **Dark patterns in the cancel flow** — Hidden cancel button, "call us to cancel," forced multi-screen guilt trips. **Why it happens:** Short-term save rate looks great. **Fix:** Make cancel as easy as sign-up. Federal regulators are now actively litigating this (FTC "Click to Cancel"), and even if it were legal, it creates NPS detractors who eat your top-of-funnel. Save with value, not friction.
+3. **Dark patterns in the cancel flow** — Hidden cancel button, "call us to cancel," forced multi-screen guilt trips. **Why it happens:** Short-term save rate looks great. **Fix:** Make cancel as easy as sign-up. State Automatic Renewal Laws (notably California's ARL) and FTC enforcement actions on negative-option marketing make this increasingly risky; even where legal, it creates NPS detractors who eat your top-of-funnel. Save with value, not friction.
 
 4. **Reacting only after cancel intent** — Retention program kicks in only when the customer hits the /cancel page. **Why it happens:** Easier to see cancellations than predict them. **Fix:** Build a leading-indicator churn score (Step 2). High-risk intervention 2 weeks before cancel intent saves 3-5x more than intervention *during* cancel intent.
 
@@ -516,4 +516,4 @@ Threshold: 60+ → CSM + AE jointly own a 30-day save plan; 90+ → exec sponsor
 - Patrick Campbell (ProfitWell / Paddle) — *The State of Subscription Churn* benchmarks
 - Nick Mehta (Gainsight) — *Customer Success* (account-management playbooks for mid-market+)
 - Baremetrics, ChartMogul, ProfitWell Retain — published industry data on pause uptake, win-back rates, dunning recovery
-- FTC "Click to Cancel" rule, California AB 390 — regulatory constraints on cancel-flow design
+- California Automatic Renewal Law (ARL), FTC enforcement on negative-option marketing — regulatory constraints on cancel-flow design

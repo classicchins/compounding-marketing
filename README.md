@@ -2,7 +2,7 @@
 
 **Make each unit of marketing work easier than the last.**
 
-A Claude Code + ChatGPT plugin with 61 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
+A cross-platform AI plugin (Claude Code, Claude Cowork, Cursor, OpenAI Codex, ChatGPT, Zed) with 61 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
 
 **v1.6.0** — Marketplace-first install for Claude Code. Hardened `npx` wizard with `--dry-run` / `--uninstall` / per-tool target paths (Cursor `.mdc`, Codex `~/.agents/skills/`, Zed). Writes actual MCP config files at each tool's documented location. All 61 skills brought up to gold-standard structure with a built-in validator. 16 workflow commands total (adds `/cm-setup` and `/cm-uninstall`).
 
@@ -639,30 +639,36 @@ Just finished the homepage redesign project.
 
 ---
 
-## Installation
+## Installation Reference
 
-### Claude Code
+See [Quick Start](#quick-start) above for the recommended flows. Quick reminders per tool:
 
-1. Clone or download this repository
-2. Place in your project directory (or use as submodule)
-3. Claude Code automatically reads `CLAUDE.md`
-4. Skills are available via natural language or `/skill-name`
+```bash
+# Claude Code / Cowork  (recommended path: marketplace install)
+/plugin marketplace add classicchins/compounding-marketing
+/plugin install compounding-marketing
+/cm-setup                                            # opt-in per-project bootstrap
 
-### ChatGPT Custom GPT
+# Cursor
+npx compounding-marketing --tool=cursor --scope=project
 
-1. Upload `AGENTS.md` as knowledge
-2. Upload individual skills from `skills/` directory as needed
-3. Instruct: "Use skills from the Compounding Marketing plugin"
+# Codex (OpenAI)
+npx compounding-marketing --tool=codex --scope=global    # or --scope=project
 
-### Cursor
+# ChatGPT (Custom GPT)
+npx compounding-marketing --tool=chatgpt --scope=project
 
-1. Plugin structure is Cursor-compatible
-2. `.cursor-plugin/plugin.json` provides metadata
-3. Reference skills via relative paths
+# Zed
+npx compounding-marketing --tool=zed --scope=project
 
-### Windsurf / OpenClaw
+# Windsurf / OpenClaw — use the Claude Code project install
+npx compounding-marketing --tool=claude-code --scope=project
+```
 
-Compatible with Claude Code structure. Follow Claude Code installation.
+**Safety contract (every tool):**
+- No silent overwrites. Every existing-file collision prompts for merge / overwrite-with-`.bak` / skip.
+- No `npm install` magic — the postinstall hook is gone; the wizard runs only when you invoke it.
+- Full rollback. Every install writes a manifest at `.compounding-marketing-install.json` (or `~/.claude/.compounding-marketing-install.json` for global). `--uninstall` reverses exactly the changes the wizard made.
 
 ---
 
