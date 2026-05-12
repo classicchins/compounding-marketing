@@ -1,10 +1,25 @@
 # Compounding Marketing — Agent Instructions
 
-This repository contains the **Compounding Marketing** plugin. Compatible with Claude Code, ChatGPT, Cursor, Windsurf, and any AI assistant that supports structured skills.
+This repository contains the **Compounding Marketing** plugin (v1.6.0). Compatible with Claude Code, Claude Cowork, ChatGPT, OpenAI Codex, Cursor, Zed, Windsurf, and any AI assistant that supports structured skills.
 
 ## Overview
 
-50 marketing skills covering positioning, messaging, copywriting, CRO, SEO, and GTM. Built on the philosophy that **each unit of marketing work should make subsequent units easier**.
+61 marketing skills + 16 workflow commands covering positioning, messaging, copywriting, CRO, SEO, GTM, lifecycle, and growth. Built on the philosophy that **each unit of marketing work should make subsequent units easier**.
+
+## Installation (per tool)
+
+The plugin **never modifies your files without confirmation** on any platform.
+
+| Tool | Install command | Where it lands |
+|------|-----------------|----------------|
+| Claude Code / Cowork | `/plugin marketplace add classicchins/compounding-marketing` then `/plugin install compounding-marketing`. Run `/cm-setup` to wire into a project. | Marketplace: nothing in your dirs. `/cm-setup`: `./compounding-marketing/` + symlinks into `./.claude/commands/cm-*.md` and `./.claude/skills/<skill>/`. Project MCP config to `.mcp.json`. |
+| Cursor | `npx compounding-marketing --tool=cursor --scope=project` | `./compounding-marketing/` + generated `./.cursor/rules/cm-*.mdc` (with `description`/`globs`/`alwaysApply` frontmatter) + `AGENTS.md` (marker block) + `.cursor/mcp.json` if MCPs enabled |
+| Codex (OpenAI) | `npx compounding-marketing --tool=codex --scope=global` (or `--scope=project`) | Global: skill directories symlinked under `~/.agents/skills/<skill>/` ([Codex skills docs](https://developers.openai.com/codex/skills)). Project: under `./.agents/skills/<skill>/`. `AGENTS.md` is project-scoped. MCP config to `~/.codex/config.toml` (TOML format). |
+| ChatGPT (Custom GPT) | `npx compounding-marketing --tool=chatgpt --scope=project` | `./compounding-marketing/` + printed copy-paste block for Custom GPT Instructions; manually upload selected `skills/<name>/SKILL.md` files as Knowledge |
+| Zed | `npx compounding-marketing --tool=zed --scope=project` | `./compounding-marketing/` + `AGENTS.md` (Zed reads project-root `AGENTS.md` directly — no separate `.zed/` rules dir for this kind of guidance) |
+| Other | `npx compounding-marketing --tool=other` | Project files only; you wire up your tool manually |
+
+Useful flags: `--dry-run` (preview), `--yes` (CI), `--uninstall` (manifest-driven rollback that restores `.bak` backups), `--scope=global|project|custom`, `--target=<path>`.
 
 ## Philosophy
 
@@ -18,12 +33,14 @@ Traditional marketing accumulates chaos. Compounding marketing inverts this by:
 
 ## Skills Location
 
-All skills are in `skills/` directory. Each skill is a self-contained `SKILL.md` file with:
-- Purpose and when to use it
-- Required inputs
-- Step-by-step process
-- Output format template
-- Quality bar
+All 61 skills are in `skills/` directory. Each skill is a self-contained `SKILL.md` file with the validated 7-section structure:
+- Role prompt
+- Initial Assessment (prerequisites + diagnostic questions)
+- Process (numbered steps with how-to / decision criteria / common gotchas)
+- Output Format (fenced markdown template)
+- Quality Bar with ≥5 Common Mistakes (mistake / why / fix)
+- Examples (≥2 worked B2B SaaS scenarios)
+- Related Skills (≥3 cross-references)
 
 ## Workflow
 
@@ -34,16 +51,16 @@ All skills are in `skills/` directory. Each skill is a self-contained `SKILL.md`
 3. **Research-heavy execution** — Use research skills to inform decisions
 4. **Compound learnings** — Document insights after completing work
 
-## Skill Categories
+## Skill Categories (61 total)
 
 ### Foundation (5 skills)
 cm-context | positioning | messaging-framework | value-proposition | brand-voice
 
-### Research (5 skills)
-icp-research | customer-research | competitive-analysis | market-sizing | marketing-psychology
+### Research (7 skills)
+icp-research | customer-research | customer-interview | competitive-analysis | competitor-content-monitoring | market-sizing | marketing-psychology
 
-### Content & Copy (7 skills)
-copywriting | copy-editing | content-strategy | case-study | social-content | video-marketing | lead-magnets
+### Content & Copy (8 skills)
+copywriting | copy-editing | content-strategy | case-study | social-content | social-media-strategy | video-marketing | lead-magnets
 
 ### SEO & Discovery (6 skills)
 seo-audit | ai-seo | programmatic-seo | site-architecture | schema-markup | competitor-alternatives
@@ -51,20 +68,20 @@ seo-audit | ai-seo | programmatic-seo | site-architecture | schema-markup | comp
 ### CRO (7 skills)
 page-cro | signup-flow-cro | onboarding-cro | form-cro | popup-cro | paywall-upgrade-cro | pricing-strategy
 
-### Outreach & Email (3 skills)
-cold-email | email-sequence | testimonial-collection
+### Outreach & Email (6 skills)
+abm-strategy | cold-email | email-sequence | email-deliverability | marketing-automation | testimonial-collection
 
-### Paid Acquisition (2 skills)
-paid-ads | ad-creative
+### Paid Acquisition (3 skills)
+paid-ads | linkedin-ads | ad-creative
 
-### Measurement & Testing (3 skills)
-analytics-tracking | ab-test-setup | attribution-modeling
+### Measurement & Testing (4 skills)
+analytics-tracking | ab-test-setup | attribution-modeling | content-performance-scoring
 
-### GTM & Launch (3 skills)
-launch-strategy | gtm-strategy | channel-strategy
+### GTM & Launch (5 skills)
+launch-strategy | gtm-strategy | channel-strategy | product-hunt-launch | press-pr
 
-### Growth & Retention (5 skills)
-referral-program | free-tool-strategy | churn-prevention | partnership-marketing | community-strategy
+### Growth & Retention (6 skills)
+referral-program | free-tool-strategy | churn-prevention | partnership-marketing | community-strategy | newsletter-growth
 
 ### Sales & RevOps (3 skills)
 sales-enablement | revops | webinar-strategy
@@ -77,52 +94,71 @@ marketing-ideas
 When a user asks for marketing help:
 
 1. **Check for existing context** — Read `.agents/product-marketing-context.md` if it exists
-2. **Select the right skill** — Match the request to a skill from the list above
+2. **Select the right skill** — Match the request to a skill from the categories above
 3. **Read the full SKILL.md** — Load `skills/{skill-name}/SKILL.md`
 4. **Follow the process** — Execute step-by-step as documented
 5. **Deliver according to output format** — Use the template provided in the skill
 
-## Workflow Commands
+## Workflow Commands (16 total)
 
-Commands are in `commands/` directory. Use `/cm:{command}` syntax.
+Commands are in `commands/` directory. Use `/cm-{command}` syntax (matching marketplace install).
+
+### Install / Lifecycle (v1.6.0)
+- `/cm-setup` — Opt-in per-project bootstrap (safe install with collision prompts)
+- `/cm-uninstall` — Manifest-driven rollback (restores `.bak` backups, strips marker blocks)
 
 ### Project Workflows
-- `/cm:research` — Deep market + customer research workflow
-- `/cm:position` — Full positioning workshop (Dunford framework)
-- `/cm:copy` — End-to-end copywriting with CRO review
-- `/cm:launch` — Launch planning and execution
-- `/cm:compound` — Document learnings to compound knowledge
+- `/cm-research` — Deep market + customer research workflow
+- `/cm-position` — Full positioning workshop (Dunford framework)
+- `/cm-copy` — End-to-end copywriting with CRO review
+- `/cm-launch` — Launch planning and execution
+- `/cm-compound` — Document learnings to compound knowledge
+- `/cm-social` — Social media campaign planning
+- `/cm-email` — Email campaign setup end-to-end
 
-### Periodic Workflows (v1.2)
-- `/cm:daily` — Daily marketing review (10 min — what's live, performing, needs attention)
-- `/cm:standup` — Marketing standup (5 min — yesterday/today/blockers)
-- `/cm:weekly` — Weekly marketing review + planning (30-45 min — patterns, wins, plan ahead)
-- `/cm:eod` — End-of-day wrap (5-10 min — what shipped, what's pending, tomorrow's start)
+### Planning & Review (v1.5)
+- `/cm-sprint` — 2-week marketing sprint planning
+- `/cm-retro` — Campaign/sprint retrospective
+- `/cm-audit` — Quarterly marketing health check
+
+### Periodic Workflows
+- `/cm-daily` — Daily marketing review (10 min — what's live, performing, needs attention)
+- `/cm-standup` — Marketing standup (5 min — yesterday/today/blockers)
+- `/cm-weekly` — Weekly marketing review + planning (30-45 min — patterns, wins, plan ahead)
+- `/cm-eod` — End-of-day wrap (5-10 min — what shipped, what's pending, tomorrow's start)
 
 ### Rhythm Recommendations
 | Time | Command | Purpose |
 |------|---------|---------|
-| Morning | `/cm:daily` | Orient, set the day's marketing priority |
-| Async sync | `/cm:standup` | Team accountability, surface blockers |
-| End of day | `/cm:eod` | Capture progress, prep tomorrow's start |
-| Friday | `/cm:weekly` | Review patterns, plan next week |
-| Post-project | `/cm:compound` | Document learnings for future use |
+| Morning | `/cm-daily` | Orient, set the day's marketing priority |
+| Async sync | `/cm-standup` | Team accountability, surface blockers |
+| End of day | `/cm-eod` | Capture progress, prep tomorrow's start |
+| Friday | `/cm-weekly` | Review patterns, plan next week |
+| Sprint start | `/cm-sprint` | Plan a 2-week marketing sprint |
+| Sprint end | `/cm-retro` | Capture what worked, what didn't |
+| Quarterly | `/cm-audit` | Channels, funnel, priorities health check |
+| Post-project | `/cm-compound` | Document learnings for future use |
 
 ## Cross-Platform Compatibility
 
-- **Claude Code** — Reads `CLAUDE.md` automatically
-- **ChatGPT** — Upload this file or reference skills manually
-- **Cursor** — Uses `.cursor-plugin/plugin.json`
-- **Windsurf** — Compatible with Claude Code structure
-- **OpenClaw** — Supports skills via `.agents/skills/` symlink
+- **Claude Code / Claude Cowork** — Marketplace install (`/plugin marketplace add ... && /plugin install`), then `/cm-setup`. Reads `CLAUDE.md` automatically.
+- **Cursor** — `npx compounding-marketing --tool=cursor`. Generated `.cursor/rules/cm-*.mdc` files use Cursor's documented frontmatter (`description`, `globs`, `alwaysApply`).
+- **Codex (OpenAI)** — `npx compounding-marketing --tool=codex`. Skills surface as `~/.agents/skills/<skill>/SKILL.md` (global) or `./.agents/skills/<skill>/SKILL.md` (project), per [Codex skills docs](https://developers.openai.com/codex/skills). `AGENTS.md` is project-scoped.
+- **ChatGPT** — `npx compounding-marketing --tool=chatgpt`. Wizard prints copy-paste block for Custom GPT Instructions; selected skills upload as Knowledge.
+- **Zed** — `npx compounding-marketing --tool=zed`. Zed reads project-root `AGENTS.md` directly.
+- **Windsurf / OpenClaw** — Compatible with Claude Code project install.
 
 ## Quality Standards
 
 Every skill includes:
-- Clear purpose and trigger phrases
-- Required inputs defined upfront
-- Step-by-step process (no guessing)
-- Output format template
-- Quality bar (what "great" looks like)
+- 40-80 line role prompt establishing authority and philosophy
+- Initial Assessment with prerequisites + 5-10 diagnostic questions
+- 5-10 numbered Process steps with how-to bullets, decision criteria, common gotchas
+- Output Format with fenced markdown template
+- Quality Bar checklist + ≥5 Common Mistakes (mistake / why / fix format)
+- ≥2 worked B2B SaaS examples (realistic scenarios, abbreviated outputs)
+- ≥3 Related Skills cross-references
+
+Enforced by `scripts/validate-skills.js`. Run `npm run validate` to check.
 
 This is not a prompt library. This is a marketing methodology.

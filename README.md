@@ -4,7 +4,9 @@
 
 A Claude Code + ChatGPT plugin with 61 skills for world-class SaaS marketing. From positioning to launch, from copy to CRO — everything you need to build marketing that compounds.
 
-**v1.5** — Added sprint planning, campaign retrospectives, and marketing audit workflows. Improved setup wizard with auto MCP config generation. 14 workflow commands total.
+**v1.6.0** — Marketplace-first install for Claude Code. Hardened `npx` wizard with `--dry-run` / `--uninstall` / per-tool target paths (Cursor `.mdc`, Codex `~/.agents/skills/`, Zed). Writes actual MCP config files at each tool's documented location. All 61 skills brought up to gold-standard structure with a built-in validator. 16 workflow commands total (adds `/cm-setup` and `/cm-uninstall`).
+
+> **Installation never modifies your files without confirmation.** No silent overwrites. No postinstall hooks. Roll back any install with `npx compounding-marketing --uninstall` (restores `.bak` backups byte-identical).
 
 ---
 
@@ -26,7 +28,7 @@ Each project should make the next project easier.
 
 ## What's Inside
 
-**61 marketing skills** across 10 categories:
+**61 marketing skills** across 12 categories:
 
 | Category | Skills | What You Get |
 |----------|--------|--------------|
@@ -43,69 +45,110 @@ Each project should make the next project easier.
 | **Sales & RevOps** | 3 | Sales enablement, revenue operations, webinar strategy |
 | **Meta** | 1 | 140+ SaaS marketing ideas |
 
-**14 workflow commands** for complex marketing work:
+**16 workflow commands** for complex marketing work:
+
+**Install / Lifecycle (v1.6.0):**
+- `/cm-setup` — Opt-in per-project bootstrap (safe install with merge/overwrite-with-bak/skip prompts)
+- `/cm-uninstall` — Manifest-driven rollback (restores `.bak` backups byte-identical, strips marker blocks)
 
 **Project Workflows:**
-- `/cm:research` — Deep market + customer research workflow
-- `/cm:position` — Full positioning workshop (Dunford framework)
-- `/cm:copy` — End-to-end copywriting with CRO review
-- `/cm:launch` — Launch planning and execution
-- `/cm:compound` — Document learnings for future projects
-- `/cm:social` — Social media campaign planning (platforms, calendar, engagement tactics)
-- `/cm:email` — Email campaign setup end-to-end (segmentation, copy, send time optimization)
+- `/cm-research` — Deep market + customer research workflow
+- `/cm-position` — Full positioning workshop (Dunford framework)
+- `/cm-copy` — End-to-end copywriting with CRO review
+- `/cm-launch` — Launch planning and execution
+- `/cm-compound` — Document learnings for future projects
+- `/cm-social` — Social media campaign planning (platforms, calendar, engagement tactics)
+- `/cm-email` — Email campaign setup end-to-end (segmentation, copy, send time optimization)
 
-**Planning & Review:**
-- `/cm:sprint` — 2-week marketing sprint planning (goals, deliverables, schedule) **(NEW)**
-- `/cm:retro` — Campaign/sprint retrospective (what worked, what didn't, actions) **(NEW)**
-- `/cm:audit` — Quarterly marketing health check (channels, funnel, priorities) **(NEW)**
+**Planning & Review (v1.5):**
+- `/cm-sprint` — 2-week marketing sprint planning (goals, deliverables, schedule)
+- `/cm-retro` — Campaign/sprint retrospective (what worked, what didn't, actions)
+- `/cm-audit` — Quarterly marketing health check (channels, funnel, priorities)
 
 **Daily Operations:**
-- `/cm:standup` — Marketing standup (5 min)
-- `/cm:daily` — Daily marketing review (10 min)
-- `/cm:eod` — End-of-day wrap (5-10 min)
-- `/cm:weekly` — Weekly review + planning (30-45 min)
+- `/cm-standup` — Marketing standup (5 min)
+- `/cm-daily` — Daily marketing review (10 min)
+- `/cm-eod` — End-of-day wrap (5-10 min)
+- `/cm-weekly` — Weekly review + planning (30-45 min)
 
 ---
 
 ## Quick Start
 
-### Option 1: npx Setup (Recommended)
+### Option 1 — Claude Code marketplace (Recommended for Claude Code users)
+
+Inside Claude Code:
+
+```
+/plugin marketplace add classicchins/compounding-marketing
+/plugin install compounding-marketing
+```
+
+That's it — all 61 skills and 16 workflow commands become available immediately. **Zero file writes to your project** from the marketplace install.
+
+When you're ready to wire the plugin into a specific project (with merged `CLAUDE.md`, optional `.gitignore`, MCP config files at the right locations, and a `.compounding-marketing-install.json` manifest for safe rollback), run:
+
+```
+/cm-setup
+```
+
+Roll back any time with:
+
+```
+/cm-uninstall            # or
+npx compounding-marketing --uninstall
+```
+
+### Option 2 — npx wizard (Cursor, Codex, ChatGPT, Zed, others)
 
 ```bash
 npx compounding-marketing
 ```
 
-This interactive wizard will:
-- Configure your AI tool (Claude Code, Cursor, ChatGPT)
-- Set up MCP integrations (Perplexity, Exa)
-- Enable optional integrations (Linear, GA, etc.)
-- Create `.cm-config.json` with your settings
+The wizard walks you through 4 steps:
 
-### Option 2: Manual Setup
+1. **Tool** — `claude-code`, `claude-cowork`, `cursor`, `codex`, `chatgpt`, `zed`, or `other`
+2. **Scope** — project / global / custom path
+3. **MCP servers (optional)** — Perplexity / Exa, written to the correct config file for your tool
+4. **Install** — collisions prompt for merge with markers / overwrite (auto-creates `.bak`) / skip
 
-1. **Clone the repo:**
+Useful flags:
+
 ```bash
-git clone https://github.com/classicchins/compounding-marketing.git
-# Or add as git submodule
+npx compounding-marketing --dry-run                       # preview every action without writing
+npx compounding-marketing --yes                           # CI-friendly: accept safe defaults
+npx compounding-marketing --uninstall                     # roll back via the install manifest
+npx compounding-marketing --tool=codex --scope=global     # explicit tool + scope
+npx compounding-marketing --target=/abs/path              # custom install location
 ```
 
-2. **For Claude Code:** Plugin auto-loads from `CLAUDE.md`
+### Per-tool targets
 
-3. **For ChatGPT:** Upload `AGENTS.md` to your Custom GPT
+The wizard writes to each tool's **documented** location — verified against the official docs for Claude Code, Cursor, OpenAI Codex, and Zed.
 
-4. **For Cursor:** Add skills directory to your project
+| Tool | Project install | Global install | Instructions file | MCP config |
+|------|------------------|----------------|-------------------|------------|
+| Claude Code / Cowork | `./compounding-marketing/` + symlinks into `./.claude/commands/cm-*.md` and `./.claude/skills/<skill>/` | `~/.claude/plugins/compounding-marketing/` + symlinks into `~/.claude/{commands,skills}/` | `CLAUDE.md` | Project: `.mcp.json`. Global: prints `claude mcp add --scope user ...` commands (safer than editing `~/.claude.json` directly) |
+| Cursor | `./compounding-marketing/` + generated `./.cursor/rules/cm-*.mdc` (with `description`/`globs`/`alwaysApply` frontmatter) | n/a (project only) | `AGENTS.md` | `.cursor/mcp.json` or `~/.cursor/mcp.json` (JSON, `{"mcpServers": {...}}`) |
+| Codex (OpenAI) | `./compounding-marketing/` + skill directories symlinked under `./.agents/skills/<skill>/` | `~/.claude/plugins/compounding-marketing/` + skill directories under `~/.agents/skills/<skill>/` | `AGENTS.md` (project-scoped — Codex uses Git-root discovery) | `~/.codex/config.toml` or `.codex/config.toml` (TOML, `[mcp_servers.<name>]` tables) |
+| Zed | `./compounding-marketing/` only (Zed reads `AGENTS.md` from project root) | n/a (project only) | `AGENTS.md` | n/a |
+| ChatGPT (Custom GPT) | `./compounding-marketing/` + printed copy-paste instructions for the GPT editor | n/a | `AGENTS.md` | n/a |
 
 ### Getting Started
 
 ```
-# Start with foundation — creates your product-marketing context doc
-Run the cm-context skill to create our product-marketing context document.
+# Foundation — creates your product-marketing context doc
+/cm-context                 # in Claude Code
+"run the cm-context skill"  # in any other tool
 
-# Use workflows for big projects
-Run /cm:position to develop our positioning, messaging, and value props.
+# Big projects
+/cm-position                # positioning + messaging + value props end-to-end
+/cm-research                # deep market + customer research
 
-# Use individual skills for specific tasks
-Use the copywriting skill to write copy for our new landing page.
+# Sprint workflow
+/cm-sprint                  # plan a 2-week marketing sprint
+/cm-retro                   # post-sprint retrospective
+/cm-audit                   # quarterly health check
 ```
 
 ### Example Workflows (Real Usage)
@@ -113,26 +156,26 @@ Use the copywriting skill to write copy for our new landing page.
 **Week 1 — Foundation:**
 ```
 1. "Run cm-context for [your product]"       → Creates product-marketing context
-2. "Run /cm:research"                         → ICP, competitors, market sizing
-3. "Run /cm:position"                         → Positioning, messaging, value props
+2. "Run /cm-research"                         → ICP, competitors, market sizing
+3. "Run /cm-position"                         → Positioning, messaging, value props
 ```
 
 **Week 2+ — Execution:**
 ```
-4. "Run /cm:copy for our homepage"            → Full copywriting with CRO review
-5. "Run /cm:email for trial users"            → Welcome sequence + nurture flow
-6. "Run /cm:social for LinkedIn launch"       → 30-day content calendar
-7. "Run /cm:launch for v2 release"            → Launch plan with timeline
+4. "Run /cm-copy for our homepage"            → Full copywriting with CRO review
+5. "Run /cm-email for trial users"            → Welcome sequence + nurture flow
+6. "Run /cm-social for LinkedIn launch"       → 30-day content calendar
+7. "Run /cm-launch for v2 release"            → Launch plan with timeline
 ```
 
 **Ongoing — Operations:**
 ```
-"Run /cm:standup"                             → 5-min daily accountability check
-"Run /cm:daily"                               → 10-min performance review
-"Run /cm:sprint"                              → Plan next 2-week marketing sprint
-"Run /cm:retro"                               → Post-campaign retrospective
-"Run /cm:audit"                               → Quarterly marketing health check
-"Run /cm:compound"                            → Capture learnings after any project
+"Run /cm-standup"                             → 5-min daily accountability check
+"Run /cm-daily"                               → 10-min performance review
+"Run /cm-sprint"                              → Plan next 2-week marketing sprint
+"Run /cm-retro"                               → Post-campaign retrospective
+"Run /cm-audit"                               → Quarterly marketing health check
+"Run /cm-compound"                            → Capture learnings after any project
 ```
 
 **Individual skills (ask naturally):**
@@ -207,7 +250,7 @@ Bad marketing starts with tactics ("Let's write a landing page!").
 Good marketing starts with positioning:
 
 ```
-Run /cm:position
+Run /cm-position
 ```
 
 This executes:
@@ -222,7 +265,7 @@ This executes:
 Once positioning is clear, execution is faster:
 
 ```
-Run /cm:copy for homepage
+Run /cm-copy for homepage
 ```
 
 or
@@ -238,7 +281,7 @@ Every skill references your positioning and messaging, so outputs are consistent
 After completing work:
 
 ```
-Run /cm:compound
+Run /cm-compound
 ```
 
 This captures what you learned (what worked, what didn't, what surprised you) and saves it to `.agents/learnings/[category].md`.
@@ -251,11 +294,11 @@ This captures what you learned (what worked, what didn't, what surprised you) an
 
 Workflow commands combine multiple skills for common marketing rhythms. Here's what each one looks like in practice.
 
-### `/cm:daily` — Daily Marketing Review (10 min)
+### `/cm-daily` — Daily Marketing Review (10 min)
 
 **Input:**
 ```
-/cm:daily
+/cm-daily
 ```
 
 **What it asks:**
@@ -291,11 +334,11 @@ Workflow commands combine multiple skills for common marketing rhythms. Here's w
 
 ---
 
-### `/cm:standup` — Marketing Standup (5 min)
+### `/cm-standup` — Marketing Standup (5 min)
 
 **Input:**
 ```
-/cm:standup
+/cm-standup
 ```
 
 **What it asks:**
@@ -324,11 +367,11 @@ Workflow commands combine multiple skills for common marketing rhythms. Here's w
 
 ---
 
-### `/cm:eod` — End of Day Wrap (5-10 min)
+### `/cm-eod` — End of Day Wrap (5-10 min)
 
 **Input:**
 ```
-/cm:eod
+/cm-eod
 ```
 
 **What it asks:**
@@ -364,11 +407,11 @@ Workflow commands combine multiple skills for common marketing rhythms. Here's w
 
 ---
 
-### `/cm:weekly` — Weekly Review (30-45 min)
+### `/cm-weekly` — Weekly Review (30-45 min)
 
 **Input:**
 ```
-/cm:weekly
+/cm-weekly
 ```
 
 **What it asks:**
@@ -424,11 +467,11 @@ Workflow commands combine multiple skills for common marketing rhythms. Here's w
 
 ---
 
-### `/cm:compound` — Document Learnings (10-15 min)
+### `/cm-compound` — Document Learnings (10-15 min)
 
 **Input:**
 ```
-/cm:compound
+/cm-compound
 
 Just finished the homepage redesign project.
 ```
@@ -659,7 +702,7 @@ No generic outputs. No AI slop. Every skill is built to world-class standards.
 
 ### Built to Compound
 
-The `/cm:compound` workflow captures learnings after every project.
+The `/cm-compound` workflow captures learnings after every project.
 
 Over time, your `.agents/learnings/` directory becomes a library of what works for *your* business, *your* audience, *your* market.
 
@@ -675,7 +718,7 @@ You're building a SaaS. You need to do marketing, but you're not a marketer. The
 
 ### Solo Marketers
 
-You're a marketing team of one. You need leverage. This plugin gives you 50 specialized skills — like hiring 50 consultants.
+You're a marketing team of one. You need leverage. This plugin gives you 61 specialized skills — like hiring 61 consultants.
 
 ### Marketing Managers
 
@@ -748,4 +791,4 @@ See `LICENSE` for full terms.
 
 ---
 
-**Make marketing compound. Start with `/cm:research`.**
+**Make marketing compound. Start with `/cm-research`.**
