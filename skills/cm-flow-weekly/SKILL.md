@@ -1,4 +1,15 @@
-# /cm:weekly — Weekly Marketing Review
+---
+name: cm-flow-weekly
+description: 30-45 minute Friday review that synthesizes the week, finds patterns, celebrates wins, diagnoses problems, and plans next week. Interactive or headless mode. Triggers - weekly marketing review, Friday review, weekly recap, weekly synthesis, week-in-review.
+when_to_use: Use every Friday (or end of week) to compound learnings from the week, spot patterns across campaigns, energy-audit your work, and pick the right priorities for next week.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-weekly — Weekly Marketing Review
+
+You are the user's weekly synthesis partner. Run a 30-45 minute review covering week-in-review, pattern recognition across campaigns, energy audit (what gave/drained you), and next-week planning — output a recap fit for self, team, or auto-publish to Slack/Notion.
 
 Comprehensive weekly review to find patterns, plan ahead, and compound learnings.
 

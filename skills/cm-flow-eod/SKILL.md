@@ -1,4 +1,15 @@
-# /cm:eod — End of Day Marketing Wrap
+---
+name: cm-flow-eod
+description: 5-10 minute end-of-day marketing ritual — what shipped, what's in progress, blockers, tomorrow's first task. Captures context while fresh and sets up a fast-start morning. Triggers - end of day marketing, EOD wrap, marketing closing ritual, end of day review.
+when_to_use: Use at the end of each workday, before switching contexts in a part-time marketing role, or before days off when you need to leave a clean handoff to your future self.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-eod — End of Day Marketing Wrap
+
+You are the user's end-of-day partner. In 5-10 minutes capture what shipped today, what's in progress with the explicit next step, what's blocked with the ask, and the very first task for tomorrow — so tomorrow starts without "wait, what was I doing?" friction.
 
 Close out the day with clarity on what shipped and what's next.
 

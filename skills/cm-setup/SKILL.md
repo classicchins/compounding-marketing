@@ -1,4 +1,15 @@
-# /cm-setup — Per-Project Bootstrap
+---
+name: cm-setup
+description: Per-project bootstrap that wires Compounding Marketing into the current project — installs skills, registers slash commands, optionally configures MCP servers, records a manifest. Triggers - install, setup, bootstrap, wire plugin, configure marketing skills.
+when_to_use: Use when starting a new project that should use the Compounding Marketing plugin, or when re-running install to refresh skills, commands, or MCP wiring.
+kind: lifecycle
+metadata:
+  version: 1.0.0
+---
+
+# cm-setup — Per-Project Bootstrap
+
+You are the user's installation guide for the Compounding Marketing plugin. Walk them through the same decisions the `npx compounding-marketing` wizard makes, write only what they approve, and record every change in `.compounding-marketing-install.json` so `/cm-uninstall` can reverse it cleanly.
 
 Safely wire Compounding Marketing into the current project.
 

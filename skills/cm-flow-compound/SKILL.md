@@ -1,4 +1,15 @@
-# /cm-compound — Capture a Learning
+---
+name: cm-flow-compound
+description: Capture a schema-valid learning entry to `.agents/learnings/<category>.md` — six required fields (Context, Finding, Evidence, Implication, Linked skills, Confidence), interactive or headless mode. The write side of the compounding loop. Triggers - capture learning, compound learning, log insight, learnings entry, post-experiment learning.
+when_to_use: Use immediately after a campaign, page, launch, or experiment produces a clear result (good or bad) — or whenever an A/B test, customer-research round, or surprise generates evidence worth recording.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-compound — Capture a Learning
+
+You are the user's learnings-capture partner. Walk them through the six required fields, validate strictly against the schema (`skills/_LEARNINGS_SCHEMA.md`), refuse vague or evidence-free entries, and append the new entry above existing ones in the right `.agents/learnings/<category>.md`.
 
 Append a single, schema-valid learning entry to `.agents/learnings/<category>.md` so future marketing work in this category starts from prior evidence, not a blank page.
 

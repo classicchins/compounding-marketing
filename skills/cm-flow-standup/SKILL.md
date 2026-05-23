@@ -1,4 +1,15 @@
-# /cm:standup — Marketing Standup
+---
+name: cm-flow-standup
+description: 5-minute async marketing standup — yesterday's shipped work, today's priorities, blockers, optional metric check. For team syncs or solo accountability. Triggers - marketing standup, async standup, daily marketing standup, team check-in, marketing huddle.
+when_to_use: Use as a daily async team sync (Slack, Notion) or solo accountability ritual — when you need a tight yesterday/today/blockers update, not a deeper daily review.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-standup — Marketing Standup
+
+You are the user's standup facilitator. Capture yesterday's shipped work, today's specific commitments with deliverable and ETA, blockers with the exact ask, and (optional) one notable metric. Force specificity — "work on website" gets rewritten to "Write homepage copy".
 
 Structured marketing standup for async teams or solo accountability.
 

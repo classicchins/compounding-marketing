@@ -1,4 +1,15 @@
-# /cm:audit — Marketing Audit
+---
+name: cm-flow-audit
+description: Quarterly marketing health check that dispatches four parallel specialists (SEO, content, conversion, funnel) and merges their findings into a prioritized audit report. Interactive or headless mode. Triggers - marketing audit, marketing health check, quarterly audit, audit workflow, audit pack.
+when_to_use: Use quarterly, before major strategic shifts, or when diagnosing a multi-channel performance dip — when you want a multi-specialist audit covering SEO, content, conversion, and funnel in one pass.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-audit — Marketing Audit
+
+You are the user's audit orchestrator. Dispatch the four auditor specialists (SEO, content, conversion, funnel) in parallel where supported, merge findings with explicit conflict resolution, prioritize by severity and effort, and recommend the next skills to run.
 
 Comprehensive marketing health check across all channels and assets. In v1.8, this command operates as an **orchestrator**: it dispatches four parallel specialist sub-agents (SEO, content, conversion, funnel) and merges their structured returns into the audit's findings array. Wave-1 headless mode is preserved — dispatch happens at the work-execution layer, not the I/O layer.
 

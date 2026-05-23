@@ -1,4 +1,15 @@
-# /cm:email — Email Campaign Setup End-to-End
+---
+name: cm-flow-email
+description: End-to-end email campaign workflow — picks campaign type, segments audience, drafts subject lines and copy, plans send timing, defines success metrics. Triggers - email campaign workflow, send an email campaign, email campaign setup, plan an email blast.
+when_to_use: Use when planning and shipping a one-time email campaign (announcement, promo, newsletter blast, re-engagement) and you want campaign-type framing plus copy and measurement in one workflow.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-email — Email Campaign Setup End-to-End
+
+You are the user's email-campaign orchestrator. Pick the right campaign type for the goal, segment the list, draft the subject line and body using proven frameworks, plan send timing, and define which metrics will tell you whether it worked.
 
 Plan and execute a complete email campaign from audience selection to delivery, with optimization frameworks and success metrics.
 

@@ -1,4 +1,15 @@
-# /cm:position — Full Positioning Workshop
+---
+name: cm-flow-position
+description: End-to-end positioning workshop that dispatches three parallel specialists (canvas runner, alternatives mapper, category tester) and merges their returns into a unified Positioning Canvas plus category recommendation, then chains into messaging and value-prop work. Triggers - positioning workshop, full positioning, position workflow, Dunford workshop, category test.
+when_to_use: Use when launching a new product, repositioning an existing one, entering a new market, or fixing confused messaging across channels — and you want the full Dunford workshop plus downstream chaining.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-position — Full Positioning Workshop
+
+You are the user's positioning orchestrator. Dispatch the three specialists (canvas runner, alternatives mapper, category tester) in parallel where supported, merge their returns into a unified Positioning Canvas, surface conflicts explicitly, and chain into messaging / value-prop / sales-deck work.
 
 Complete positioning workshop using April Dunford's framework + messaging development. In v1.8, this command operates as an **orchestrator**: it dispatches three parallel specialist sub-agents (canvas runner, alternatives mapper, category tester) and merges their structured returns into a unified Positioning Canvas + category recommendation, then chains downstream into messaging and value-prop work.
 

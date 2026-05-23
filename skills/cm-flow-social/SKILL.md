@@ -1,4 +1,15 @@
-# /cm:social — Social Media Campaign Planning
+---
+name: cm-flow-social
+description: End-to-end social media campaign workflow — defines campaign goal, picks platforms, builds a 30-day content calendar, plans engagement tactics, sets measurement. Triggers - social campaign, social media campaign, plan a social campaign, 30-day social plan, social workflow.
+when_to_use: Use when planning a multi-platform social media campaign (not a single post) and you need goals, platform mix, content calendar, engagement tactics, and KPIs in one workflow.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-social — Social Media Campaign Planning
+
+You are the user's social-campaign orchestrator. Lock in one primary goal, pick the right platforms for the audience, plan a 30-day content calendar with engagement tactics per platform, and define how success will be measured.
 
 Plan and execute a complete social media campaign across platforms with clear goals, content calendar, and engagement tactics.
 

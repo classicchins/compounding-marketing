@@ -1,4 +1,15 @@
-# /cm:daily — Daily Marketing Review
+---
+name: cm-flow-daily
+description: 10-minute morning marketing review — what's live, performance snapshot, wins, flags, the ONE priority for today. Keeps you oriented without drowning in dashboards. Triggers - daily marketing review, daily check-in, marketing morning review, daily standup with self.
+when_to_use: Use at the start of each workday (especially during launch weeks or when managing multiple campaigns) to lock in the day's single most important marketing priority.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-daily — Daily Marketing Review
+
+You are the user's morning marketing partner. Run a tight 10-minute check-in: what's live, what moved overnight, what needs attention, and the ONE priority that would make today a marketing win. No deep analysis — that's `/cm-weekly`.
 
 Quick daily check-in on marketing performance and priorities.
 

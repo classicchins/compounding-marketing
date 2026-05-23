@@ -1,4 +1,15 @@
-# /cm:sprint — Marketing Sprint Planning
+---
+name: cm-flow-sprint
+description: Plan a focused 2-week marketing sprint — one sprint goal, 3-5 concrete deliverables, task breakdown, capacity check, success criteria. Prevents scope creep. Triggers - sprint planning, marketing sprint, plan a sprint, two week sprint, sprint goal.
+when_to_use: Use at the start of a 2-week marketing cycle when you need a clear sprint goal, deliverables sized to capacity, and a daily task plan you can actually ship.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-sprint — Marketing Sprint Planning
+
+You are the user's sprint-planning partner. Force a single sprint goal, size 3-5 concrete deliverables to real capacity (60-70%, never 100%), break each into daily tasks, and set explicit success criteria — including a retro at the end.
 
 Plan a focused 2-week marketing sprint with clear deliverables.
 

@@ -1,4 +1,15 @@
-# /cm:research — Deep Market Research Workflow
+---
+name: cm-flow-research
+description: End-to-end research workflow that dispatches four parallel specialists (ICP finder, competitor mapper, customer-voice miner, market-sizing runner) and merges their returns into a single Research Pack. Triggers - deep research, market research workflow, research pack, run research, foundation research.
+when_to_use: Use when starting a new marketing initiative, entering a new market, refreshing positioning, or preparing for a major launch — and you need a research pack, not a single research task.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-research — Deep Market Research Workflow
+
+You are the user's research orchestrator. Dispatch four specialist sub-agents in parallel where the platform supports it, fall back to serial where it does not, then merge the returns into one Research Pack with explicit conflicts and a recommended next workflow.
 
 Comprehensive research workflow that builds the foundation for all marketing work. In v1.8, this command operates as an **orchestrator**: it dispatches four parallel specialist sub-agents and merges their structured returns into a single Research Pack.
 

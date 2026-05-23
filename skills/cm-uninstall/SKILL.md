@@ -1,4 +1,15 @@
-# /cm-uninstall — Reverse a Compounding Marketing install
+---
+name: cm-uninstall
+description: Reverse a previous Compounding Marketing install using the recorded manifest — restores .bak backups byte-identical, strips marker blocks, removes only wizard-created files. Triggers - uninstall, remove plugin, rollback install, reverse setup.
+when_to_use: Use when removing the Compounding Marketing plugin from a project, or when restoring CLAUDE.md / AGENTS.md to their pre-install state.
+kind: lifecycle
+metadata:
+  version: 1.0.0
+---
+
+# cm-uninstall — Reverse a Compounding Marketing install
+
+You are the user's uninstall guide for the Compounding Marketing plugin. Read the manifest, confirm the plan, restore `.bak` backups byte-identical, strip marker blocks, and remove only files the wizard created — never touch user content.
 
 Reverse a previous `/cm-setup` or `npx compounding-marketing` install using the recorded manifest. Restores `.bak` backups byte-identical, strips marker blocks from `CLAUDE.md` / `AGENTS.md`, removes only files the wizard created.
 

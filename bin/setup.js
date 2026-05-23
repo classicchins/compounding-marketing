@@ -550,18 +550,68 @@ function buildInstructionsContent(scope, installRoot) {
   const prefix = scope === 'project' ? 'compounding-marketing' : installRoot;
   content = content
     .replace(/`skills\//g, `\`${prefix}/skills/`)
-    .replace(/`commands\//g, `\`${prefix}/commands/`)
     .replace(/`mcp\//g, `\`${prefix}/mcp/`)
     .replace(/`integrations\//g, `\`${prefix}/integrations/`)
     .replace(/`\.agents\//g, `\`${prefix}/.agents/`);
   return content;
 }
 
+// v1.8 S1: legacy `/cm-*` workflow command names → new `cm-flow-*` skill names.
+// The wizard writes shim .md files under `.claude/commands/<old-name>.md` so that
+// existing user muscle memory (`/cm-research`) keeps working until v2.0. Lifecycle
+// commands (`/cm-setup`, `/cm-uninstall`) kept their names, so they are not shimmed.
+const LEGACY_WORKFLOW_SHIMS = {
+  'cm-research': 'cm-flow-research',
+  'cm-position': 'cm-flow-position',
+  'cm-copy': 'cm-flow-copy',
+  'cm-launch': 'cm-flow-launch',
+  'cm-social': 'cm-flow-social',
+  'cm-email': 'cm-flow-email',
+  'cm-compound': 'cm-flow-compound',
+  'cm-sprint': 'cm-flow-sprint',
+  'cm-retro': 'cm-flow-retro',
+  'cm-audit': 'cm-flow-audit',
+  'cm-daily': 'cm-flow-daily',
+  'cm-standup': 'cm-flow-standup',
+  'cm-eod': 'cm-flow-eod',
+  'cm-weekly': 'cm-flow-weekly',
+};
+
+// Lightweight SKILL.md frontmatter parser used by the wizard for discovery —
+// returns { name, description, kind }. Different from the validator's parser:
+// this one is best-effort and never throws.
+function readSkillMeta(skillFile, fallbackName) {
+  const meta = { name: fallbackName, description: '', kind: 'skill' };
+  try {
+    const raw = fs.readFileSync(skillFile, 'utf8');
+    const m = raw.match(/^---\n([\s\S]*?)\n---/);
+    if (!m) return meta;
+    const fm = m[1];
+    const name = fm.match(/^name:\s*(.+)$/m);
+    const desc = fm.match(/^description:\s*(.+)$/m);
+    const kind = fm.match(/^kind:\s*(.+)$/m);
+    if (name) meta.name = name[1].trim();
+    if (desc) meta.description = desc[1].trim();
+    if (kind) meta.kind = kind[1].trim().toLowerCase();
+  } catch (_) { /* ignore */ }
+  return meta;
+}
+
+// Render the body of a backward-compat shim. The shim is a tiny .md file the
+// user invokes via `/cm-<old-name>`; it points them at the renamed skill.
+function shimBody(oldName, newName, skillRelPath) {
+  return `# /${oldName}
+
+> **Note:** As of v1.8, this command is named \`/${newName}\` (workflows use the \`cm-flow-\` prefix). The old name continues to work until v2.0.
+
+See \`${skillRelPath}\` for the full skill.
+`;
+}
+
 // ─── Per-tool skill / command registration ──────────────────────────────────
 async function registerSkillsForTool(rl, targets, fsx, manifest) {
   const style = targets.registrationStyle;
   const skillsSource = path.join(targets.installRoot, 'skills');
-  const commandsSource = path.join(targets.installRoot, 'commands');
 
   if (!fs.existsSync(skillsSource)) {
     console.log(c('yellow', `  ⚠  No skills/ at ${skillsSource}; skipping registration.`));
@@ -571,6 +621,14 @@ async function registerSkillsForTool(rl, targets, fsx, manifest) {
     if (d.startsWith('_')) return false;
     try { return fs.statSync(path.join(skillsSource, d)).isDirectory(); } catch (_) { return false; }
   });
+
+  // Pre-resolve metadata for every skill so we can route shims correctly.
+  const skillMeta = new Map();
+  for (const skill of skillDirs) {
+    const skillFile = path.join(skillsSource, skill, 'SKILL.md');
+    if (!fs.existsSync(skillFile)) continue;
+    skillMeta.set(skill, readSkillMeta(skillFile, skill));
+  }
 
   const dirToCheck = targets.commandsDir || targets.skillsLinkDir;
   if (!dirToCheck) return;
@@ -607,15 +665,6 @@ async function registerSkillsForTool(rl, targets, fsx, manifest) {
     fsx.mkdir(targets.commandsDir);
     if (targets.skillsLinkDir) fsx.mkdir(targets.skillsLinkDir);
 
-    let cmdCount = 0;
-    if (fs.existsSync(commandsSource)) {
-      for (const file of fs.readdirSync(commandsSource).filter(f => f.endsWith('.md'))) {
-        const linkPath = path.join(targets.commandsDir, file);
-        if (fs.existsSync(linkPath)) continue;
-        const linkTarget = path.relative(targets.commandsDir, path.join(commandsSource, file));
-        if (fsx.symlink(linkTarget, linkPath, file)) cmdCount++;
-      }
-    }
     let skillCount = 0;
     for (const skill of skillDirs) {
       const skillFile = path.join(skillsSource, skill, 'SKILL.md');
@@ -634,7 +683,22 @@ async function registerSkillsForTool(rl, targets, fsx, manifest) {
         }
       }
     }
-    console.log(c('green', `  ✓ Registered ${cmdCount} workflow commands + ${skillCount} skills as /cm-{name}`));
+
+    // v1.8 backward-compat shims: write `.claude/commands/<old>.md` for every
+    // legacy workflow name that points at its new `cm-flow-*` skill. Tracked in
+    // manifest.createdFiles so --uninstall removes them.
+    let shimCount = 0;
+    for (const [oldName, newName] of Object.entries(LEGACY_WORKFLOW_SHIMS)) {
+      if (!skillMeta.has(newName)) continue; // skill missing → skip its shim
+      const shimPath = path.join(targets.commandsDir, `${oldName}.md`);
+      if (fs.existsSync(shimPath)) continue;
+      const skillRelPath = path.relative(path.dirname(shimPath), path.join(skillsSource, newName, 'SKILL.md'));
+      fsx.write(shimPath, shimBody(oldName, newName, skillRelPath), 'shim');
+      shimCount++;
+    }
+
+    console.log(c('green', `  ✓ Registered ${skillCount} skills as /cm-{name}`));
+    if (shimCount > 0) console.log(c('green', `  ✓ Wrote ${shimCount} backward-compat command shims (legacy names → cm-flow-*)`));
     if (targets.skillsLinkDir) console.log(c('green', `  ✓ Linked ${skillDirs.length} skill dirs under ${targets.skillsLinkDir}`));
   }
 
@@ -647,7 +711,7 @@ async function registerSkillsForTool(rl, targets, fsx, manifest) {
       const relSkillPath = path.relative(path.dirname(mdcPath), skillFilePath);
       // Cursor agent-requested rules: agent invokes when the description matches
       // user intent. Keep alwaysApply=false so the rule is loaded on demand
-      // (loading all 61 skills into every chat would blow context). Description
+      // (loading all 91 skills into every chat would blow context). Description
       // includes the skill's trigger phrases so Cursor's agent discovery works.
       const body = `---
 description: ${description.replace(/"/g, "'").replace(/\n/g, ' ')}
@@ -668,24 +732,14 @@ The skill defines a process, output format, and quality bar. Apply them. Ask the
     };
 
     let written = 0;
-    if (fs.existsSync(commandsSource)) {
-      for (const file of fs.readdirSync(commandsSource).filter(f => f.endsWith('.md'))) {
-        const name = file.replace(/^cm-/, '').replace(/\.md$/, '');
-        if (writeMdc(name, `Compounding Marketing workflow: ${name}`, path.join(commandsSource, file))) written++;
-      }
-    }
     for (const skill of skillDirs) {
       const skillFile = path.join(skillsSource, skill, 'SKILL.md');
       if (!fs.existsSync(skillFile)) continue;
-      let desc = `Compounding Marketing skill: ${skill}`;
-      try {
-        const fm = fs.readFileSync(skillFile, 'utf8').match(/^---\n([\s\S]*?)\n---/);
-        if (fm) {
-          const m = fm[1].match(/^description:\s*(.+)$/m);
-          if (m) desc = m[1].trim();
-        }
-      } catch (_) { /* ignore */ }
-      if (writeMdc(skill, desc, skillFile)) written++;
+      const meta = skillMeta.get(skill) || readSkillMeta(skillFile, skill);
+      const desc = meta.description || `Compounding Marketing skill: ${skill}`;
+      // .mdc filename strips the leading `cm-` (writeMdc adds it back) — preserve old behavior.
+      const mdcName = skill.startsWith('cm-') ? skill.replace(/^cm-/, '') : skill;
+      if (writeMdc(mdcName, desc, skillFile)) written++;
     }
     console.log(c('green', `  ✓ Generated ${written} .mdc rules in ${targets.commandsDir}`));
   }
@@ -1196,7 +1250,8 @@ async function main() {
     const isLocalClone = path.resolve(PKG_ROOT) === path.resolve(targets.installRoot);
     if (!isLocalClone) {
       console.log(c('dim', `\n  Copying plugin files: ${PKG_ROOT} → ${targets.installRoot}`));
-      const items = ['CLAUDE.md', 'AGENTS.md', 'skills', 'commands', '.claude-plugin', '.cursor-plugin', 'mcp', 'integrations'];
+      // v1.8 S1: workflows + lifecycle commands now live under skills/, no separate commands/ dir.
+      const items = ['CLAUDE.md', 'AGENTS.md', 'skills', '.claude-plugin', '.cursor-plugin', 'mcp', 'integrations'];
       fsx.mkdir(targets.installRoot);
       for (const item of items) {
         const srcPath = path.join(PKG_ROOT, item);

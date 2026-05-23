@@ -125,7 +125,7 @@ Install via `/cm-setup` (it offers MCP wiring) or `npx compounding-marketing` (w
 - **Edits to `CLAUDE.md` / `AGENTS.md` are wrapped in `<!-- COMPOUNDING-MARKETING-START/END -->` markers.** Re-running setup is idempotent — never duplicates the block.
 - **No file write happens without confirmation.** The wizard prompts for every collision (merge / overwrite-with-`.bak` / skip). `--dry-run` previews everything; `--uninstall` reverses it.
 
-## Skills (61)
+## Skills (91)
 
 ### ab-test-setup
 
@@ -187,11 +187,191 @@ Install via `/cm-setup` (it offers MCP wiring) or `npx compounding-marketing` (w
 
 **Location:** `skills/churn-prevention/SKILL.md`
 
+### cm-alternatives-mapper
+
+**Description:** Specialist sub-agent dispatched by the `cm-position` orchestrator to identify and characterize competitive alternatives in four buckets — status quo, manual, adjacent, direct — and rank by buyer-likelihood. Narrower than `competitive-analysis`; positioning-focused, not feature-matrix-focused. Triggers - sub-agent, specialist, alternatives mapper, competitive alternatives, parallel positioning.
+
+**Location:** `skills/cm-alternatives-mapper/SKILL.md`
+
+### cm-canvas-runner
+
+**Description:** Specialist sub-agent dispatched by the `cm-position` orchestrator to run the April Dunford 5-axis Obviously Awesome canvas (alternatives, attributes, value, best-fit customers, category) in a fast structured pass. Narrower than `positioning`; outputs a structured payload for merge. Triggers - sub-agent, specialist, canvas runner, Dunford canvas, 5-axis positioning, parallel positioning.
+
+**Location:** `skills/cm-canvas-runner/SKILL.md`
+
+### cm-category-tester
+
+**Description:** Specialist sub-agent dispatched by the `cm-position` orchestrator to pressure-test category-name candidates against recognizability, buyer-intent search, and messaging-compatibility — returning a category recommendation with rationale. Combines `positioning` and `messaging-framework` methodology. Triggers - sub-agent, specialist, category tester, market category, category design, parallel positioning.
+
+**Location:** `skills/cm-category-tester/SKILL.md`
+
+### cm-competitor-mapper
+
+**Description:** Specialist sub-agent dispatched by the `cm-research` orchestrator to map the competitive landscape in under five minutes — direct competitors, indirect competitors, status-quo alternatives, and white-space gaps. Narrower than `competitive-analysis`; outputs a structured payload designed for merge with peer specialists. Triggers - sub-agent, specialist, competitor mapper, competitive landscape, parallel research, alternatives map.
+
+**Location:** `skills/cm-competitor-mapper/SKILL.md`
+
+### cm-content-auditor
+
+**Description:** Specialist sub-agent dispatched by the `cm-audit` orchestrator to score and audit existing content using the `content-performance-scoring` framework — readability, SEO alignment, engagement potential, brand voice — in a fast structured pass. Triggers - sub-agent, specialist, content auditor, content scoring, parallel audit, content quality pass.
+
+**Location:** `skills/cm-content-auditor/SKILL.md`
+
 ### cm-context
 
 **Description:** The foundational product-marketing context document. Run this first before any marketing work. Creates `.agents/product-marketing-context.md` with product details, positioning, audience, competitors, and brand voice. Triggers - new project, missing context, product brief, context document, foundation setup.
 
 **Location:** `skills/cm-context/SKILL.md`
+
+### cm-conversion-auditor
+
+**Description:** Specialist sub-agent dispatched by the `cm-audit` orchestrator to audit conversion surfaces — landing pages, signup flows, forms — using `page-cro`, `signup-flow-cro`, and `form-cro` methodology in a fast structured pass. Triggers - sub-agent, specialist, conversion auditor, CRO audit, parallel audit, page audit.
+
+**Location:** `skills/cm-conversion-auditor/SKILL.md`
+
+### cm-customer-voice-miner
+
+**Description:** Specialist sub-agent dispatched by the `cm-research` orchestrator to mine raw customer language — quotes, JTBD verbatims, switching triggers, anxieties — from existing interview transcripts, reviews, and testimonials. Combines `customer-research` and `testimonial-collection` methodology in a narrow, fast pass. Triggers - sub-agent, specialist, voice of customer, customer language, JTBD verbatims, parallel research.
+
+**Location:** `skills/cm-customer-voice-miner/SKILL.md`
+
+### cm-flow-audit
+
+**Description:** Quarterly marketing health check that dispatches four parallel specialists (SEO, content, conversion, funnel) and merges their findings into a prioritized audit report. Interactive or headless mode. Triggers - marketing audit, marketing health check, quarterly audit, audit workflow, audit pack.
+
+**Location:** `skills/cm-flow-audit/SKILL.md`
+
+### cm-flow-compound
+
+**Description:** Capture a schema-valid learning entry to `.agents/learnings/<category>.md` — six required fields (Context, Finding, Evidence, Implication, Linked skills, Confidence), interactive or headless mode. The write side of the compounding loop. Triggers - capture learning, compound learning, log insight, learnings entry, post-experiment learning.
+
+**Location:** `skills/cm-flow-compound/SKILL.md`
+
+### cm-flow-copy
+
+**Description:** End-to-end copywriting workflow — reads positioning + messaging, runs the copywriting skill, audits via page-cro, returns polished copy plus A/B test ideas. Triggers - copy workflow, end-to-end copy, write and audit copy, copy plus CRO.
+
+**Location:** `skills/cm-flow-copy/SKILL.md`
+
+### cm-flow-daily
+
+**Description:** 10-minute morning marketing review — what's live, performance snapshot, wins, flags, the ONE priority for today. Keeps you oriented without drowning in dashboards. Triggers - daily marketing review, daily check-in, marketing morning review, daily standup with self.
+
+**Location:** `skills/cm-flow-daily/SKILL.md`
+
+### cm-flow-email
+
+**Description:** End-to-end email campaign workflow — picks campaign type, segments audience, drafts subject lines and copy, plans send timing, defines success metrics. Triggers - email campaign workflow, send an email campaign, email campaign setup, plan an email blast.
+
+**Location:** `skills/cm-flow-email/SKILL.md`
+
+### cm-flow-eod
+
+**Description:** 5-10 minute end-of-day marketing ritual — what shipped, what's in progress, blockers, tomorrow's first task. Captures context while fresh and sets up a fast-start morning. Triggers - end of day marketing, EOD wrap, marketing closing ritual, end of day review.
+
+**Location:** `skills/cm-flow-eod/SKILL.md`
+
+### cm-flow-launch
+
+**Description:** End-to-end launch workflow — runs launch-strategy, gtm-strategy (if new product), and channel-strategy, then assembles a unified launch plan with timeline, owners, channel tactics, and success metrics. Triggers - launch workflow, launch plan, plan a launch, full launch planning.
+
+**Location:** `skills/cm-flow-launch/SKILL.md`
+
+### cm-flow-position
+
+**Description:** End-to-end positioning workshop that dispatches three parallel specialists (canvas runner, alternatives mapper, category tester) and merges their returns into a unified Positioning Canvas plus category recommendation, then chains into messaging and value-prop work. Triggers - positioning workshop, full positioning, position workflow, Dunford workshop, category test.
+
+**Location:** `skills/cm-flow-position/SKILL.md`
+
+### cm-flow-research
+
+**Description:** End-to-end research workflow that dispatches four parallel specialists (ICP finder, competitor mapper, customer-voice miner, market-sizing runner) and merges their returns into a single Research Pack. Triggers - deep research, market research workflow, research pack, run research, foundation research.
+
+**Location:** `skills/cm-flow-research/SKILL.md`
+
+### cm-flow-retro
+
+**Description:** Structured post-mortem for campaigns, launches, or sprints — keep/stop/start, surprises, action items, learnings to feed cm-flow-compound. Interactive or headless mode. Triggers - retrospective, post mortem, campaign retro, sprint retro, launch debrief.
+
+**Location:** `skills/cm-flow-retro/SKILL.md`
+
+### cm-flow-social
+
+**Description:** End-to-end social media campaign workflow — defines campaign goal, picks platforms, builds a 30-day content calendar, plans engagement tactics, sets measurement. Triggers - social campaign, social media campaign, plan a social campaign, 30-day social plan, social workflow.
+
+**Location:** `skills/cm-flow-social/SKILL.md`
+
+### cm-flow-sprint
+
+**Description:** Plan a focused 2-week marketing sprint — one sprint goal, 3-5 concrete deliverables, task breakdown, capacity check, success criteria. Prevents scope creep. Triggers - sprint planning, marketing sprint, plan a sprint, two week sprint, sprint goal.
+
+**Location:** `skills/cm-flow-sprint/SKILL.md`
+
+### cm-flow-standup
+
+**Description:** 5-minute async marketing standup — yesterday's shipped work, today's priorities, blockers, optional metric check. For team syncs or solo accountability. Triggers - marketing standup, async standup, daily marketing standup, team check-in, marketing huddle.
+
+**Location:** `skills/cm-flow-standup/SKILL.md`
+
+### cm-flow-weekly
+
+**Description:** 30-45 minute Friday review that synthesizes the week, finds patterns, celebrates wins, diagnoses problems, and plans next week. Interactive or headless mode. Triggers - weekly marketing review, Friday review, weekly recap, weekly synthesis, week-in-review.
+
+**Location:** `skills/cm-flow-weekly/SKILL.md`
+
+### cm-funnel-auditor
+
+**Description:** Specialist sub-agent dispatched by the `cm-audit` orchestrator to audit funnel attribution, tracking gaps, and stage-by-stage drop-offs using `attribution-modeling` and `analytics-tracking` methodology in a fast structured pass. Triggers - sub-agent, specialist, funnel auditor, attribution audit, analytics gaps, parallel audit.
+
+**Location:** `skills/cm-funnel-auditor/SKILL.md`
+
+### cm-icp-finder
+
+**Description:** Specialist sub-agent dispatched by the `cm-research` orchestrator to identify and characterize 2-3 high-fit ICP segments under a tight time budget. Narrower than `icp-research` — drops the 20-customer data requirement and produces a structured JSON payload designed for merge with peer specialists. Triggers - sub-agent, specialist, ICP finder, ICP cohorts, segment identification, parallel research.
+
+**Location:** `skills/cm-icp-finder/SKILL.md`
+
+### cm-learnings-researcher
+
+**Description:** Frontmatter-first retrieval agent for `.agents/learnings/<category>.md`. Other skills call this researcher to find the 1-3 most relevant prior learnings without re-scanning the whole vault. Triggers - research learnings, search past learnings, prior learnings lookup, retrieve learnings, learnings researcher, learning relevance.
+
+**Location:** `skills/cm-learnings-researcher/SKILL.md`
+
+### cm-market-sizing-runner
+
+**Description:** Specialist sub-agent dispatched by the `cm-research` orchestrator to produce a directional TAM/SAM/SOM in under five minutes using both top-down and bottom-up methods, with explicit source notes and confidence bands. Narrower than `market-sizing` (no deck-grade depth); outputs a structured payload for merge. Triggers - sub-agent, specialist, TAM runner, market sizing runner, SAM SOM, parallel research.
+
+**Location:** `skills/cm-market-sizing-runner/SKILL.md`
+
+### cm-seo-auditor
+
+**Description:** Specialist sub-agent dispatched by the `cm-audit` orchestrator to run a fast SEO audit pass — technical, on-page, content, and link signals — returning a structured findings payload in under five minutes. Narrower than `seo-audit`; outputs designed for merge with peer audit specialists. Triggers - sub-agent, specialist, SEO auditor, fast SEO audit, parallel audit.
+
+**Location:** `skills/cm-seo-auditor/SKILL.md`
+
+### cm-setup
+
+**Description:** Per-project bootstrap that wires Compounding Marketing into the current project — installs skills, registers slash commands, optionally configures MCP servers, records a manifest. Triggers - install, setup, bootstrap, wire plugin, configure marketing skills.
+
+**Location:** `skills/cm-setup/SKILL.md`
+
+### cm-skill-author
+
+**Description:** Scaffold a new structurally-valid SKILL.md for the compounding-marketing plugin. Generates the 7-section gold-standard template, fills it with skill-specific content, and validates against scripts/validate-skills.js before declaring done. Triggers - new skill, author skill, write skill, skill template, create skill, skill author, scaffold skill, generate skill.
+
+**Location:** `skills/cm-skill-author/SKILL.md`
+
+### cm-strategy
+
+**Description:** Create and maintain `.agents/STRATEGY.md` — the one-page focus document above `product-marketing-context.md`. Captures target problem, primary ICP, key metrics, and active tracks of work so every planning skill can check requests against the current focus. Triggers - strategy, STRATEGY.md, target problem, key metrics, active tracks, focus, what are we working on, quarterly plan, roadmap focus.
+
+**Location:** `skills/cm-strategy/SKILL.md`
+
+### cm-uninstall
+
+**Description:** Reverse a previous Compounding Marketing install using the recorded manifest — restores .bak backups byte-identical, strips marker blocks, removes only wizard-created files. Triggers - uninstall, remove plugin, rollback install, reverse setup.
+
+**Location:** `skills/cm-uninstall/SKILL.md`
 
 ### cold-email
 

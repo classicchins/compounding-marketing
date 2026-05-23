@@ -199,6 +199,42 @@ function hasRolePrompt(content) {
   return false;
 }
 
+// Lite validation for workflow / lifecycle entries. They live in skills/ alongside
+// the 75 marketing skills (v1.8 S1 unified the paradigm) but don't follow the same
+// 7-section gold-standard structure — they're orchestrators or install lifecycle
+// commands, often much shorter and lacking the "Common Mistakes" / "Examples"
+// structure. Lite validation checks the contract those entries DO need to honor:
+// valid frontmatter, role prompt, when_to_use ≤240 chars, and at least one H2.
+function validateLite(filePath, content, fm, kind) {
+  const errors = [];
+  const warnings = [];
+
+  if (!fm) {
+    errors.push('missing YAML frontmatter');
+  } else {
+    if (!fm.name) errors.push('frontmatter missing `name`');
+    if (!fm.description) errors.push('frontmatter missing `description`');
+    if (!fm['metadata.version']) warnings.push('frontmatter missing `metadata.version`');
+    if (!fm.when_to_use) {
+      errors.push('frontmatter missing `when_to_use` (required for workflow/lifecycle)');
+    } else if (fm.when_to_use.length > 240) {
+      errors.push(`\`when_to_use\` is ${fm.when_to_use.length} chars (max 240)`);
+    }
+  }
+
+  if (!hasRolePrompt(content)) {
+    errors.push('missing role prompt (first paragraph after H1 must start with "You are")');
+  }
+
+  const h2s = getH2Headings(content);
+  if (h2s.length === 0) {
+    errors.push('needs at least one H2 section');
+  }
+
+  const lineCount = content.split('\n').length;
+  return { errors, warnings, lineCount, mistakes: 0, examples: 0, related: 0, kind };
+}
+
 function validate(filePath) {
   const errors = [];
   const warnings = [];
@@ -210,12 +246,21 @@ function validate(filePath) {
     return { errors: [`cannot read file: ${err.message}`], warnings: [] };
   }
 
+  const fm = extractFrontmatter(content);
+  const kind = (fm && fm.kind) ? fm.kind.toLowerCase() : 'skill';
+
+  // Workflows and lifecycle entries get the lite validation set — they aren't
+  // structured like full skills. Everything else (default `kind: skill`) goes
+  // through the full gold-standard checks below.
+  if (kind === 'workflow' || kind === 'lifecycle') {
+    return validateLite(filePath, content, fm, kind);
+  }
+
   const lineCount = content.split('\n').length;
   if (lineCount < MIN_LINES) {
     errors.push(`file is only ${lineCount} lines (minimum ${MIN_LINES})`);
   }
 
-  const fm = extractFrontmatter(content);
   if (!fm) {
     errors.push('missing YAML frontmatter');
   } else {
@@ -258,7 +303,7 @@ function validate(filePath) {
     warnings.push(`wired skill is missing "## Prior Learnings Consulted" section (see skills/_LEARNINGS_SCHEMA.md)`);
   }
 
-  return { errors, warnings, lineCount, mistakes, examples, related };
+  return { errors, warnings, lineCount, mistakes, examples, related, kind };
 }
 
 function main() {
@@ -279,6 +324,9 @@ function main() {
   let totalWarnings = 0;
   let passed = 0;
   let failed = 0;
+  let passedSkills = 0;
+  let passedWorkflows = 0;
+  let passedLifecycle = 0;
   const failures = [];
   const warned = [];
 
@@ -298,13 +346,20 @@ function main() {
       failures.push({ file: rel, result });
     } else {
       passed++;
+      if (result.kind === 'workflow') passedWorkflows++;
+      else if (result.kind === 'lifecycle') passedLifecycle++;
+      else passedSkills++;
       if (result.warnings.length > 0) warned.push({ file: rel, result });
       totalWarnings += result.warnings.length;
     }
   }
 
-  // Report
-  console.log(`\nSkills validation: ${passed} passed, ${failed} failed, ${totalWarnings} warnings\n`);
+  // Report — break down by kind so the unified `skills/` tree stays legible.
+  const parts = [`${passedSkills} skills passed`];
+  if (passedWorkflows > 0) parts.push(`${passedWorkflows} workflows passed`);
+  if (passedLifecycle > 0) parts.push(`${passedLifecycle} lifecycle passed`);
+  parts.push(`${failed} failed`, `${totalWarnings} warnings`);
+  console.log(`\nSkills validation: ${parts.join(', ')}\n`);
 
   if (failures.length > 0) {
     console.log('FAILURES:');

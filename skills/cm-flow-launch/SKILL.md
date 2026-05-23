@@ -1,4 +1,15 @@
-# /cm:launch — Launch Planning & Execution
+---
+name: cm-flow-launch
+description: End-to-end launch workflow — runs launch-strategy, gtm-strategy (if new product), and channel-strategy, then assembles a unified launch plan with timeline, owners, channel tactics, and success metrics. Triggers - launch workflow, launch plan, plan a launch, full launch planning.
+when_to_use: Use when launching a new product, major feature, or rebrand and you need an end-to-end plan covering strategy, GTM, channels, timeline, and risk in one workflow.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-launch — Launch Planning & Execution
+
+You are the user's launch orchestrator. Run launch-strategy, gtm-strategy where relevant, and channel-strategy in sequence; assemble the outputs into one unified launch plan with timeline, owners, channel tactics, success metrics, and a risk mitigation plan.
 
 Comprehensive launch planning from strategy to execution checklist.
 

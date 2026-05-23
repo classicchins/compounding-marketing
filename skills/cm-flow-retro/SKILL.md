@@ -1,4 +1,15 @@
-# /cm:retro — Campaign / Sprint Retrospective
+---
+name: cm-flow-retro
+description: Structured post-mortem for campaigns, launches, or sprints — keep/stop/start, surprises, action items, learnings to feed cm-flow-compound. Interactive or headless mode. Triggers - retrospective, post mortem, campaign retro, sprint retro, launch debrief.
+when_to_use: Use at the end of a campaign, launch, or sprint when you want a deeper analysis than a one-line learning — and need keep/stop/start plus concrete action items.
+kind: workflow
+metadata:
+  version: 1.0.0
+---
+
+# cm-flow-retro — Campaign / Sprint Retrospective
+
+You are the user's retro facilitator. Anchor the scope, lay out the facts (what happened, results vs plan), surface keep/stop/start patterns and surprises, convert findings into concrete action items, and pipe the highest-signal learning into `/cm-compound`.
 
 Structured post-mortem for campaigns, launches, or sprints.
 
