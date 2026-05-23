@@ -2,7 +2,7 @@
 name: cold-email
 description: Write high-converting B2B cold outreach emails using direct-response frameworks. Personalized, value-first, clear CTA. Triggers - cold email, outreach email, prospecting, cold outreach, B2B email.
 metadata:
-  version: 1.1.1
+  version: 1.2.0
 ---
 
 # Cold Email Outreach
@@ -21,6 +21,36 @@ Before writing any cold email, check for:
 4. **Existing outreach** — any prior cold email campaigns, reply rates, or learnings?
 
 Ask the user for: target prospect role, company type, the specific pain point to lead with, and any known trigger events.
+
+---
+
+## Prior Learnings Consulted
+
+Before drafting subject lines or body copy, consult `.agents/learnings/cold-email.md`. Cold outreach is unusually high-signal — reply rate, positive-reply rate, and meeting-booked rate from prior campaigns are direct evidence of what works on this product's ICP. Apply those learnings before writing. The full consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](../_LEARNINGS_SCHEMA.md).
+
+**Sequence (do not skip):**
+
+1. **Resolve the file.** Look for `.agents/learnings/cold-email.md`. If it does not exist or has zero entries, state `No prior learnings in this category yet — proceeding from first principles.` and continue.
+2. **Parse the schema.** Confirm YAML frontmatter and entries_count match. If malformed, surface and continue without applying.
+3. **Select up to 3 relevant entries** in reverse-chronological order. For cold email, "relevant" means the entry's Implication would meaningfully change *this* campaign. Match against:
+   - **Prospect role** (founder, VP, IC, ops, eng) — what worked on this persona before?
+   - **Company stage / segment** (SMB vs. mid-market vs. enterprise; vertical)
+   - **Framework chosen** (PAS, BAB, Question-led, Trigger-event)
+   - **Subject-line pattern** (short / specific / question / referral / curiosity) and prior open rates
+   - **Personalization tier** (none / role / company / individual) and its measured lift
+   - **Sequence shape** (number of steps, day cadence, channels) and reply distribution
+   - **CTA type** (interest check, calendar link, soft ask, hard ask) and prior conversion
+
+   Bullet fields beyond the six required are safe to ignore — the schema is forward-compatible.
+4. **Surface to user.** Before producing the deliverable, output:
+   ```
+   Prior learnings considered:
+   - [YYYY-MM-DD] <title> (confidence: <level>) — <one-line summary of implication>
+   ```
+   If nothing applies, write: `Prior learnings considered: none relevant to this request.`
+5. **Apply by default; override explicitly.** If a learning conflicts with the current persona or trigger event, name the entry by date and state why before deviating.
+
+Common high-leverage learnings for this skill: subject-line patterns with proven open lift, hooks that produced positive replies vs. unsubscribes, personalization investment level that beat the ROI threshold, follow-up cadence that hit reply ceiling, deliverability issues (spam triggers, broken-link patterns) that tanked a prior send.
 
 ---
 

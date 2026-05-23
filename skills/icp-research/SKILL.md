@@ -2,7 +2,7 @@
 name: icp-research
 description: Develop detailed Ideal Customer Profile through data analysis and pattern identification. Defines firmographics, behaviors, psychographics, and qualification criteria. Triggers - ICP, ideal customer profile, target customer, customer profile, best-fit customer, persona development.
 metadata:
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Ideal Customer Profile Development
@@ -40,6 +40,35 @@ Ask the user 5-8 of these before doing work:
 8. **Use case** — "What will this ICP power? Outbound list building, paid targeting, sales qualification, board deck? Each needs slightly different fidelity."
 
 If the user can't answer the cohort or data questions, **stop and clarify**. An ICP built on assumption is worse than no ICP because sales will treat it as truth.
+
+---
+
+## Prior Learnings Consulted
+
+Before running a fresh ICP analysis, consult `.agents/learnings/icp-research.md`. ICP is the most compounding skill in this plugin: every prior cohort study, interview synthesis, and disqualifier observation produces evidence that should *constrain* this run. Re-deriving an ICP from scratch when the team has already learned that segment X churns at 3x or that role Y is a decision-maker but not the user is exactly the kind of waste this plugin exists to prevent. The full consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](../_LEARNINGS_SCHEMA.md).
+
+**Sequence (do not skip):**
+
+1. **Resolve the file.** Look for `.agents/learnings/icp-research.md`. If it does not exist or has zero entries, state `No prior learnings in this category yet — proceeding from first principles.` and continue.
+2. **Parse the schema.** Confirm YAML frontmatter and entries_count match. If malformed, surface and continue without applying.
+3. **Select up to 3 relevant entries** in reverse-chronological order. For ICP work, "relevant" means the entry's Implication would meaningfully change *this* cohort definition, segmentation, or qualification system. Match against:
+   - **Cohort definition that won** (highest-ACV vs. longest-retention vs. fastest-close — which previously produced the most actionable ICP?)
+   - **Firmographic cut** (industry, size, geo, tech stack) that predicted retention vs. one that didn't
+   - **Behavioral signal** (activation event, integration count, seat count) that distinguished best customers
+   - **Disqualifier / negative persona** patterns — known bad-fit segments to exclude up front
+   - **Buyer vs. user split** that held across prior research
+   - **Use case** the ICP needs to power (outbound, paid, sales qualification) — prior format choices that worked
+
+   Bullet fields beyond the six required are safe to ignore — the schema is forward-compatible.
+4. **Surface to user.** Before producing the deliverable, output:
+   ```
+   Prior learnings considered:
+   - [YYYY-MM-DD] <title> (confidence: <level>) — <one-line summary of implication>
+   ```
+   If nothing applies, write: `Prior learnings considered: none relevant to this request.`
+5. **Apply by default; override explicitly.** Market and product evolve. If the company has shipped a major new capability, entered a new vertical, or changed pricing tier since the prior learning, weight it down and re-validate rather than blind-apply. State the override inline by date and reason.
+
+Common high-leverage learnings for this skill: a firmographic cut that looked predictive but didn't survive cohort retention analysis, a behavioral signal that became the single best ICP filter, a disqualifier worth blacklisting in sales workflow, a buyer/user role split that requires two-segment messaging, an industry that closed fast but churned faster.
 
 ---
 

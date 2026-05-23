@@ -2,7 +2,7 @@
 name: positioning
 description: Define market position using April Dunford's Obviously Awesome framework. Identify competitive alternatives, unique attributes, value delivered, best-fit customers, and market category. Triggers - positioning workshop, market position, differentiation strategy, April Dunford, positioning canvas, product positioning.
 metadata:
-  version: 1.0.1
+  version: 1.1.0
 ---
 
 # Strategic Positioning Workshop
@@ -31,6 +31,34 @@ Positioning is NOT just a tagline or slogan. It's a system of related decisions:
 5. **Market Category** — The context that makes your value obvious
 
 We'll work through these in order.
+
+---
+
+## Prior Learnings Consulted
+
+Before re-running the positioning canvas, consult `.agents/learnings/positioning.md`. Positioning is one of the highest-leverage areas to compound knowledge: prior workshops have already named competitive alternatives, identified attributes that customers actually care about (and ones that fell flat in market), and surfaced category-naming experiments. Do not re-derive what's already known. The full consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](../_LEARNINGS_SCHEMA.md).
+
+**Sequence (do not skip):**
+
+1. **Resolve the file.** Look for `.agents/learnings/positioning.md`. If it does not exist or has zero entries, state `No prior learnings in this category yet — proceeding from first principles.` and continue.
+2. **Parse the schema.** Confirm YAML frontmatter and entries_count match. If malformed, surface and continue without applying.
+3. **Select up to 3 relevant entries** in reverse-chronological order. For positioning, "relevant" means the entry's Implication would meaningfully change the Canvas output. Match against:
+   - **Canvas axis** (alternatives, attributes, value, best-fit customer, market category) — which prior decisions still hold?
+   - **Trigger for re-positioning** (new competitor, lost-deal pattern, new segment, pricing change, launch) — same trigger or new?
+   - **Segment / ICP** under consideration
+   - **Category bet** (e.g., a prior attempt to claim or reject a category label and how the market reacted)
+   - **Tested messaging** that rolled up from the prior positioning (objections, win/loss themes)
+
+   Bullet fields beyond the six required are safe to ignore — the schema is forward-compatible.
+4. **Surface to user.** Before producing the deliverable, output:
+   ```
+   Prior learnings considered:
+   - [YYYY-MM-DD] <title> (confidence: <level>) — <one-line summary of implication>
+   ```
+   If nothing applies, write: `Prior learnings considered: none relevant to this request.`
+5. **Apply by default; override explicitly.** If a prior learning conflicts with new market data (e.g., a new competitor changes the alternatives set), name the entry by date, cite the new evidence, and state why before deviating.
+
+Common high-leverage learnings for this skill: an attribute that buyers nodded along to but didn't pay for, a category name that confused prospects, an alternative that turned out to be the *real* competitor (not the one we tracked), best-fit customer signals that predicted retention vs. ones that didn't.
 
 ---
 
