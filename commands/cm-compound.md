@@ -24,6 +24,75 @@ Do **not** run it for routine deliveries that taught nothing new, or for opinion
 5. Updates frontmatter (`last_updated`, `entries_count`).
 6. Reports what was captured and which wired skills will now consume it.
 
+## Modes
+
+This workflow supports two modes:
+
+### `interactive` (default)
+
+Walks the user through every step. Asks the six-field questions, validates field-by-field, and produces a rich human-readable confirmation. This is the unchanged behavior — invoke `/cm-compound` with no `mode` arg.
+
+### `headless`
+
+Runs non-interactively. Accepts a pre-built learning entry and writes it to the correct `.agents/learnings/<category>.md` without prompting. Useful for piping LLM-generated post-experiment summaries straight into the learnings store, or for scheduled jobs that capture a learning at the end of each experiment.
+
+**Input resolution order:**
+
+1. CLI args passed to the slash command (e.g., `/cm-compound mode=headless input=path/to/entry.json`).
+2. Failing that, environment variable `CM_COMPOUND_INPUT` pointing to a JSON file path or containing inline JSON.
+3. Failing that, a default file at `.agents/compound-input.json`.
+
+**Input schema** (JSON; required unless noted):
+
+```json
+{
+  "category": "copywriting",              // required, lowercase-hyphenated, must match a skill or documented cluster
+  "date": "2026-05-23",                   // optional, defaults to today (YYYY-MM-DD)
+  "title": "Outcome-led H1 beats feature-led on pricing",  // required, ≤120 chars
+  "context": "Q2 pricing page rewrite for FlowOps, 14-day A/B test.", // required, 1–2 sentences
+  "finding": "Outcome-led H1 lifted pricing-to-trial 31%.", // required, 1–3 sentences as a claim
+  "evidence": "n=8,420; p<0.01; +31% conversion delta.",    // required, specific data/quote/pattern
+  "implication": "Default to outcome-led H1 on conversion pages.", // required, actionable
+  "linked_skills": ["copywriting", "page-cro"],             // required, 1–5 real skill names
+  "confidence": "high"                    // required, exactly one of: low | medium | high
+}
+```
+
+**Output schema** — on success, structured JSON (default written to `.agents/outputs/compound-<date>.json`, or stdout if `output=stdout`):
+
+```json
+{
+  "status": "ok",
+  "category_file": ".agents/learnings/copywriting.md",
+  "entry_date": "2026-05-23",
+  "entry_title": "Outcome-led H1 beats feature-led on pricing",
+  "linked_skills": ["copywriting", "page-cro"],
+  "entries_count_after": 7
+}
+```
+
+**Output schema** — on rejection (validation failure), structured error JSON with non-zero exit:
+
+```json
+{
+  "status": "error",
+  "code": "INVALID_INPUT",
+  "errors": [
+    { "field": "confidence", "reason": "must be one of low|medium|high (lowercase)" },
+    { "field": "evidence", "reason": "required, non-empty" }
+  ]
+}
+```
+
+**Exit behavior:**
+
+- Missing input file at all three resolution paths → exit with `{status:"error", code:"NO_INPUT", message:"..."}`. Do **not** fall back to prompting.
+- Schema validation failure (missing field, wrong `confidence` value, empty string, title >120 chars, unknown skill name) → exit with `INVALID_INPUT` and the list of field errors above. Do **not** silently correct.
+- Same-date entry already exists for that category → exit with `{status:"error", code:"DUPLICATE_DATE", message:"...", hint:"add disambiguating suffix to title"}` rather than guessing a suffix.
+- On success, the entry is appended above existing entries, frontmatter is updated, and the success JSON is emitted.
+
+Headless mode runs Steps 4–7 of the Process below (validate, locate/create file, insert entry, update frontmatter). It skips Steps 1–3 (which gather input interactively) and Step 8 (which reports back conversationally), substituting the structured JSON output instead.
+
 ## Process
 
 ### Step 1: Confirm there is a real learning to capture

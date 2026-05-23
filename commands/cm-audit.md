@@ -10,6 +10,89 @@ A structured audit of your entire marketing operation — messaging consistency,
 
 60-90 minutes
 
+## Modes
+
+This workflow supports two modes:
+
+### `interactive` (default)
+
+Walks the user through every step: foundation check, channel scoring, funnel mapping, asset inventory, competitive scan, priority ranking. Produces a rich human-readable scorecard plus narrative. This is the unchanged behavior — invoke `/cm-audit` with no `mode` arg.
+
+### `headless`
+
+Runs non-interactively. Accepts a list of marketing surfaces and metric snapshots as JSON, evaluates each against the audit rubric, and produces a structured findings report. Useful for quarterly automated health checks, CI gating on marketing-site changes, or piping into a dashboard.
+
+**Input resolution order:**
+
+1. CLI args (e.g., `/cm-audit mode=headless input=path/to/audit-input.json`).
+2. Environment variable `CM_AUDIT_INPUT` (JSON file path or inline JSON).
+3. Default file at `.agents/audit-input.json`.
+
+**Input schema** (JSON; required unless noted):
+
+```json
+{
+  "audit_date": "2026-05-23",                  // optional, defaults to today
+  "scope": ["positioning", "seo", "email", "paid", "social", "content", "funnel"],  // required, list of areas to score
+  "surfaces": [                                // optional but recommended
+    { "type": "url", "value": "https://example.com/pricing", "channel": "website" },
+    { "type": "url", "value": "https://example.com/blog/x", "channel": "content" }
+  ],
+  "metrics": {                                 // required for any scoped channel; missing channels are scored "unknown"
+    "seo": { "organic_traffic_4w": 12400, "organic_traffic_prev_4w": 14100, "top_pages": [...] },
+    "email": { "open_rate": 0.34, "click_rate": 0.04, "list_growth_4w_pct": 0.02, "deliverability_issues": false },
+    "paid":  { "roas": 2.1, "cac_trend_pct": 0.18, "creative_age_days_avg": 62 },
+    "social":{ "engagement_rate": 0.018, "follower_growth_4w_pct": 0.01 },
+    "content":{ "posts_published_4w": 3, "target_cadence": 8 },
+    "funnel":{ "stages": [ {"name":"visit","count":42000}, {"name":"signup","count":820}, {"name":"paid","count":71} ] }
+  },
+  "competitive_signals": [                     // optional
+    { "competitor": "Acme", "note": "launched comparable feature 2026-04" }
+  ],
+  "output": "file"                             // optional, "file" (default) or "stdout"
+}
+```
+
+**Output schema** — written to `.agents/outputs/audit-<date>.json` (or stdout):
+
+```json
+{
+  "status": "ok",
+  "audit_date": "2026-05-23",
+  "scorecard": [
+    { "area": "positioning", "status": "yellow", "score": 6, "notes": "..." },
+    { "area": "seo",         "status": "red",    "score": 3, "notes": "Organic -12% over 4w; top page CTR dropped." }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "area": "seo",
+      "severity": "high",                       // low | medium | high | critical
+      "issue": "Organic traffic down 12% MoM with no algorithm event explanation.",
+      "evidence": { "organic_traffic_4w": 12400, "prev": 14100 },
+      "recommendation": "Run /cm-seo-audit on top-10 declining pages and re-check internal linking.",
+      "linked_skills": ["seo-audit", "site-architecture"]
+    }
+  ],
+  "priority_stack": {
+    "fix_now":   ["F-001", "F-004"],
+    "improve_next": ["F-002"],
+    "invest_later": ["F-005"],
+    "deprioritize": []
+  },
+  "biggest_funnel_dropoff": { "from": "visit", "to": "signup", "rate": 0.0195 }
+}
+```
+
+**Exit behavior:**
+
+- Missing input at all three resolution paths → `{status:"error", code:"NO_INPUT"}`, non-zero exit. Do **not** prompt.
+- `scope` empty or absent → `INVALID_INPUT`.
+- Metric block missing for a scoped area → that area scores `"unknown"` in the scorecard and a finding of severity `medium` is emitted recommending instrumentation. The audit does **not** fail overall.
+- Malformed JSON → exit with `INVALID_INPUT` and the parser error.
+
+Headless mode runs Steps 1–6 of the Process below in deterministic order using only the provided JSON. No optional skill invocations (e.g., `competitive-analysis`) are triggered unless a `competitive_signals` array is provided.
+
 ## Process
 
 ### 1. Foundation Health Check

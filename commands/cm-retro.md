@@ -10,6 +10,95 @@ A deeper analysis than `/cm:compound`. While compound captures quick learnings, 
 
 20-30 minutes
 
+## Modes
+
+This workflow supports two modes:
+
+### `interactive` (default)
+
+Walks the user through scope, results, keep/stop/start, surprises, and action items conversationally. Produces a rich human-readable retro doc. This is the unchanged behavior — invoke `/cm-retro` with no `mode` arg.
+
+### `headless`
+
+Runs non-interactively. Accepts a structured input describing the sprint or campaign (goal, completed items, missed items, metric deltas) and produces a structured retrospective JSON. Useful for sprint automation that posts retros to Slack/Linear/Notion, or for chaining the output into `/cm-compound` to capture learnings programmatically.
+
+**Input resolution order:**
+
+1. CLI args (e.g., `/cm-retro mode=headless input=path/to/retro-input.json`).
+2. Environment variable `CM_RETRO_INPUT` (JSON file path or inline JSON).
+3. Default file at `.agents/retro-input.json`.
+
+**Input schema** (JSON; required unless noted):
+
+```json
+{
+  "scope": {
+    "name": "Sprint 14 — Pricing relaunch",       // required
+    "type": "sprint",                              // required: sprint | campaign | launch | experiment
+    "start_date": "2026-05-09",                    // required
+    "end_date": "2026-05-22",                      // required
+    "goal": "Ship new pricing page and lift trial→paid by 15%"  // required
+  },
+  "completed": [                                   // required (may be empty array)
+    { "item": "Pricing page V2 shipped", "impact": "trial→paid +9%" }
+  ],
+  "missed": [                                      // required (may be empty array)
+    { "item": "Comparison page", "reason": "design review slipped 4 days" }
+  ],
+  "metrics": [                                     // required
+    { "name": "trial_to_paid", "target": 0.15, "actual": 0.09, "unit": "rate_delta" },
+    { "name": "pricing_page_cvr", "target": 0.08, "actual": 0.082, "unit": "rate" }
+  ],
+  "qualitative_notes": [                           // optional
+    "Customers asked about annual discount more than expected.",
+    "Comparison table copy tested better than long-form."
+  ]
+}
+```
+
+**Output schema** — written to `.agents/outputs/retro-<date>.json` (or stdout):
+
+```json
+{
+  "status": "ok",
+  "scope": { "name": "Sprint 14 — Pricing relaunch", "end_date": "2026-05-22" },
+  "summary": "Hit pricing CVR target; missed trial→paid lift; comparison page slipped.",
+  "scorecard": [
+    { "metric": "trial_to_paid", "target": 0.15, "actual": 0.09, "delta": -0.06, "verdict": "red" },
+    { "metric": "pricing_page_cvr", "target": 0.08, "actual": 0.082, "delta": 0.002, "verdict": "green" }
+  ],
+  "keep": [ { "item": "Comparison-table copy approach", "why": "outperformed long-form variant" } ],
+  "stop": [ { "item": "Sequential design review", "why": "4-day slip blocked launch dependency" } ],
+  "start": [ { "item": "Parallel design + copy review", "why": "removes serial dependency" } ],
+  "surprises": [ "Annual discount demand higher than modeled" ],
+  "action_items": [
+    { "action": "Add annual toggle to pricing page", "owner": "tbd", "priority": "high", "deadline": "2026-06-05" }
+  ],
+  "key_insight": "Annual demand was understated in pricing model.",
+  "suggested_learnings": [                          // entries shaped for /cm-compound headless mode
+    {
+      "category": "pricing-strategy",
+      "title": "Annual discount demand higher than expected",
+      "context": "Sprint 14 pricing relaunch.",
+      "finding": "More than 1 in 4 trial users requested an annual option.",
+      "evidence": "27/96 trial-period chats mentioned annual.",
+      "implication": "Default to surfacing annual toggle on pricing page.",
+      "linked_skills": ["pricing-strategy", "copywriting"],
+      "confidence": "medium"
+    }
+  ]
+}
+```
+
+**Exit behavior:**
+
+- Missing input at all three resolution paths → `{status:"error", code:"NO_INPUT"}`. Do **not** prompt.
+- Missing required `scope.*`, `completed`, `missed`, or `metrics` → `INVALID_INPUT` with the specific field path.
+- Empty `metrics` array → `INVALID_INPUT` (a retro without a measurable result should not be auto-generated).
+- On success, the structured retro is emitted. The `suggested_learnings` block is a hint payload — it is **not** auto-written; the caller is expected to pipe it into `/cm-compound mode=headless` for any entry it wants to persist.
+
+Headless mode runs Steps 1–7 of the Process below using only the provided JSON. Step 8 (which suggests running `/cm:compound` interactively) is replaced by the `suggested_learnings` field in the output.
+
 ## Process
 
 ### 1. Set the Scope
