@@ -1,0 +1,99 @@
+{
+  "reviewer": "api-contract",
+  "findings": [
+    {
+      "id": "AC-1",
+      "title": "cm-compound Step 3 lists 7 fields but the contract declares 6",
+      "severity": "P1",
+      "confidence": 100,
+      "check": "Schema vs. writer alignment — field count",
+      "detail": "The schema (`_LEARNINGS_SCHEMA.md` §Required entry structure) declares exactly six required fields: Context, Finding, Evidence, Implication, Linked skills, Confidence. The `What it does` preamble in `cm-compound.md` line 20 also says 'six required fields'. However, Step 3 (`Draft the six required fields`) enumerates seven numbered items: 1.Title, 2.Context, 3.Finding, 4.Evidence, 5.Implication, 6.Linked skills, 7.Confidence. Title is part of the heading line (`## YYYY-MM-DD — <title>`), not a bulleted entry field — but the writer counts it as one of the 'six' while the schema does not. The validation checklist in Step 4 (line 67) correctly lists only six fields (Context through Confidence, omitting Title), creating an internal inconsistency within cm-compound itself and a mismatch with the schema's 'six' count. The practical risk: authors following Step 3 believe they have satisfied the contract after seven inputs; the validation step silently has a different count. Readers expecting exactly six bulleted fields get them — but the writer's UX contract is wrong.",
+      "location": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md lines 20, 48-58, 67",
+      "schema_location": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md lines 36-37, 55-65"
+    },
+    {
+      "id": "AC-2",
+      "title": "Schema claims positional parsing; wired skills and _TEMPLATE implement label-only parsing",
+      "severity": "P1",
+      "confidence": 90,
+      "check": "Schema vs. reader alignment — positional vs. label parsing",
+      "detail": "The schema (`_LEARNINGS_SCHEMA.md` line 55) states: 'Order of fields is fixed — wired skills parse positionally as well as by label, so do not reorder.' The `_TEMPLATE.md` line 45 repeats: 'wired skills parse the file positionally.' However, inspecting the actual Prior Learnings Consulted sections across all five wired skills (copywriting, cold-email, positioning, paid-ads, icp-research) and the `_TEMPLATE.md` Step 2-3 implementation, there is zero instruction to read by position. The consumer instructions say 'Select up to 3 relevant entries' by iterating in reverse-chronological order and matching field labels semantically (e.g., 'the entry's Implication', 'Confidence level'). No wired skill says 'read the 4th bullet as Implication'; all reference the label. The schema's 'do not reorder' constraint is documented as a hard requirement justified by positional parsing that does not actually exist in any consumer. This creates a false contract obligation: future editors of cm-compound are forbidden from reordering for a reason that is not technically enforced. The constraint itself may still be valuable for human readability, but documenting it as a parsing requirement is incorrect.",
+      "location": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md line 55; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md line 45",
+      "consumer_locations": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/copywriting/SKILL.md lines 57-74; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/cold-email/SKILL.md lines 30-48; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/positioning/SKILL.md lines 40-57; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/paid-ads/SKILL.md lines 31-53; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/icp-research/SKILL.md lines 46-67"
+    },
+    {
+      "id": "AC-3",
+      "title": "Output heading literal differs between _TEMPLATE.md and _LEARNINGS_SCHEMA.md",
+      "severity": "P1",
+      "confidence": 90,
+      "check": "Output contract heading — exact text",
+      "detail": "The schema (`_LEARNINGS_SCHEMA.md` line 135) declares the output heading as: `\"Prior learnings considered:\"` (double-quoted in prose, appears as a bold literal). The `_TEMPLATE.md` (line 71) specifies the same heading as a backtick-fenced inline code literal: `Prior learnings considered:`. All five wired skills (copywriting line 68, cold-email line 45, positioning line 53, paid-ads line 49, icp-research line 63) show the heading without bold markers inside a code fence block. So the heading string itself is consistent across all consumers. The contract discrepancy is minor — the heading is unbolded prose inside a fenced code block in wired skills, while the schema describes it as 'the literal heading **\"Prior learnings considered:\"**'. The actual emitted string is identical; the representation in documentation differs. However, neither _TEMPLATE.md nor any wired skill states that this heading must be rendered as a Markdown heading (`##`) vs. a plain bold line — it appears in the wired skills as a plain text label inside a code fence showing a template pattern, not as an actual `##` heading. This is unambiguous enough at runtime because the output instruction is a code block showing the exact format to emit, but the schema prose calling it a 'literal heading' is imprecise.",
+      "location": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md line 135; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md line 71"
+    },
+    {
+      "id": "AC-4",
+      "title": "cm-compound does not write a `schema` field; _TEMPLATE reader checks for `schema: learnings`",
+      "severity": "P1",
+      "confidence": 95,
+      "check": "Schema vs. writer alignment — frontmatter `schema` field",
+      "detail": "The `_TEMPLATE.md` Step 2 instructs reader skills: 'Confirm `schema` is `learnings` (or implicit, for legacy files).' However, cm-compound's Step 5 creates new learnings files with only three frontmatter keys: `category`, `last_updated`, `entries_count`. It does not write a `schema: learnings` field. Therefore every learnings file created by the current writer will hit the '(or implicit, for legacy files)' branch of the reader's check — not the confirmed-`learnings` branch. The `_LEARNINGS_SCHEMA.md` Required YAML frontmatter block (lines 42-46) also lists only the three keys: `category`, `last_updated`, `entries_count` — no `schema` field is required there. The three authoritative definitions are inconsistent: the schema doc says 3 required fields; the writer writes 3 fields; the reader checks for a 4th field that neither of the other two sides produce. The `schema: learnings` field exists only in `_LEARNINGS_SCHEMA.md`'s own frontmatter (which is the schema document itself, not a learnings file). This is a phantom required field in the reader.",
+      "location": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md line 61; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md lines 81-85; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md lines 39-46"
+    },
+    {
+      "id": "AC-5",
+      "title": "Forward compatibility with v1.1 extra fields is undocumented in consumers",
+      "severity": "P2",
+      "confidence": 75,
+      "check": "Versioning policy — forward compatibility for v1.1 readers",
+      "detail": "The v1.8 brainstorm (`docs/brainstorms/2026-05-23-v1.8-ideation.md` item A5) proposes a v1.1 schema adding optional entry-level fields: `tags`, `linked_projects`, `last_referenced`, `success_signals`. The schema doc (`_LEARNINGS_SCHEMA.md`) states at the bottom that 'The schema in this file is forward-compatible' but provides no concrete guidance on what v1.0 readers must do when they encounter an unknown field bullet in an entry. The wired skills instruct readers to 'parse entries' and 'select up to 3 relevant entries' — none state 'ignore unrecognized bullet fields.' An LLM reader following the current wired-skill instructions would encounter entries with a 7th bullet `- **tags:** copywriting, pricing` and has no documented behavior. It may surface the tag line as part of the implication, include it in the summary, or parse it as a malformed Confidence field. The forward-compatibility claim in the schema is asserted but not operationalized in the consumer instructions. The correct fix is a one-line addition to `_TEMPLATE.md` Step 3 and to each wired skill: 'Bullet fields beyond the known six are safe to ignore; do not treat them as Confidence or Implication.'",
+      "location": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md line 172; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md lines 56-66; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/docs/brainstorms/2026-05-23-v1.8-ideation.md (item A5)"
+    },
+    {
+      "id": "AC-6",
+      "title": "First-entry insertion point is ambiguous when a freshly created file has no existing entries",
+      "severity": "P2",
+      "confidence": 75,
+      "check": "First-entry edge case",
+      "detail": "cm-compound Step 6 states: 'The new entry goes immediately after the frontmatter and intro block, above the most-recent existing entry.' When the category file was just created (entries_count: 0, no `## YYYY-MM-DD` headings), there is no 'most-recent existing entry' to insert above. The instruction is not wrong — 'above the most-recent existing entry' degenerates to 'append after the intro block' when there are no entries — but this is not stated explicitly. The schema Authoring rules item 6 says 'Insert the new entry above existing entries (reverse-chronological order)' which is similarly underspecified for the zero-entries case. Both Step 5 (which creates the file with an intro block) and Step 6 (which inserts above existing entries) are described in adjacent steps without a link that makes the new-file case explicit. The intro block template in Step 5 ends with `---` (a horizontal rule), and a model following these instructions literally might append after the horizontal rule or before it. The omission is recoverable at runtime but creates a drift risk on the first entry of every new category file.",
+      "location": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md lines 77-98; /Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md lines 161-163"
+    }
+  ],
+  "residual_risks": [
+    {
+      "id": "RR-1",
+      "description": "The 'positional parsing' claim in the schema and _TEMPLATE may cause future writers to avoid adding a 7th bullet field for v1.1 features, even though no reader actually parses positionally. This false constraint will make schema evolution harder than necessary and may be cited incorrectly in future PRs as justification for a major version bump when only an additive optional field is being added.",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md"
+      ]
+    },
+    {
+      "id": "RR-2",
+      "description": "The `cm-compound` Step 3 enumerates 7 fields (including Title) while calling them 'six required fields'. If a future validation script is built counting Step 3's numbered list to determine the field count for the schema, it will produce 7 instead of 6, creating a machine-readable contract drift. The current manual-LLM-based validation in Step 4 has the correct 6 count, but the two counts are inconsistent within the same file.",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md"
+      ]
+    },
+    {
+      "id": "RR-3",
+      "description": "The validate-skills.js change removes the unconditional `process.exit(1)` on build failure and replaces it with a conditional on `failures.length > 0`. The old code always exited 1 on any validation failure; the new code exits 0 when there are only warnings. This is intentional for the soft rollout of Prior Learnings sections, but it means CI pipelines that relied on a non-zero exit to block merges will pass silently if all failures are converted to warnings. This is a validator contract change, not a learnings schema contract change, but it affects the enforcement strength of the schema.",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js"
+      ]
+    }
+  ],
+  "testing_gaps": [
+    {
+      "id": "TG-1",
+      "description": "No worked example or test fixture demonstrates the cm-compound write output for a freshly created category file (entries_count: 0). The only worked example in _LEARNINGS_SCHEMA.md shows a two-entry file. A fixture showing the exact bytes written on the first entry would close both the first-entry ambiguity (AC-6) and confirm the absence of the `schema` field in the produced file (AC-4)."
+    },
+    {
+      "id": "TG-2",
+      "description": "No worked example demonstrates what a wired skill outputs when a learnings file contains an entry with an extra bullet field (the v1.1 scenario). The forward-compatibility claim (AC-5) is untested — a single worked example in _LEARNINGS_SCHEMA.md showing a v1.0 consumer ignoring a `- **tags:**` bullet would both document and validate the claim."
+    },
+    {
+      "id": "TG-3",
+      "description": "The same-date collision rule (schema rule 7 / cm-compound Step 6 line 114) has no worked example. The disambiguating suffix format ('— part 2') is specified in cm-compound but not in the schema Authoring rules, so the schema doc and the writer doc are not aligned on the exact suffix form. A fixture showing a same-date collision and the exact heading produced would close both the test gap and the documentation inconsistency."
+    }
+  ]
+}

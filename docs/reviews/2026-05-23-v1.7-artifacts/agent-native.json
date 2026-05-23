@@ -1,0 +1,256 @@
+{
+  "reviewer": "agent-native",
+  "findings": [
+    {
+      "id": "cm-compound-step3-title-ambiguity",
+      "title": "Step 3 mislabels Title as the 1st of 'six required fields' — agent may write it as a bullet instead of the entry heading",
+      "severity": "P2",
+      "confidence": 75,
+      "category": "action_parity",
+      "question_addressed": 1,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md"
+      ],
+      "why_it_matters": "The entire agent execution of /cm-compound depends on Step 3. The step heading says 'six required fields' but the body enumerates 7 numbered items with Title as item 1. Title is the H2 heading text (e.g., `## 2026-05-23 — <title>`), not a bulleted field. An LLM following the numbered list literally may emit `- **Title:** Outcome-led H1 beats feature-led H1` as a bullet before the six schema fields, corrupting the entry format that wired skills parse positionally. Step 4's validation list correctly excludes Title from the 'six fields' check — but Step 3 has already created the mismatch. The schema doc is internally consistent (Title is part of the heading, not a bullet); the agent-facing command doc is not.",
+      "evidence": "commands/cm-compound.md lines 48 ('Draft the six required fields'), 52 ('1. **Title**'), 57-58 ('6. Linked skills', '7. Confidence'), 67 ('All six fields (Context, Finding, Evidence, Implication, Linked skills, Confidence)'). The entry format block at lines 101-112 shows Title is the heading, not a bullet — confirming the intent.",
+      "remediation": "Restructure Step 3 to match Step 4's count. Option A: Move Title above the numbered list as a separate note ('First, determine the entry heading title: <one line summary>. Then collect the 6 required bulleted fields:') and number 1-6 for the bullets. Option B: Prefix with '0. **Entry heading title** (not a bullet — this becomes the text after the date in the `## YYYY-MM-DD — <title>` heading).' Either eliminates the 7-vs-6 confusion at the agent-execution layer.",
+      "autofix": "soft"
+    },
+    {
+      "id": "cm-compound-step2-category-requires-user-decision",
+      "title": "Step 2 requires the agent to agree with the user on new cluster names before writing — introduces a human approval gate with no fallback defined",
+      "severity": "P2",
+      "confidence": 75,
+      "category": "action_parity",
+      "question_addressed": 1,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md"
+      ],
+      "why_it_matters": "/cm-compound Step 2 says: 'New cluster names should be agreed on with the user before first use.' The 'What this command will NOT do' section says 'Auto-categorize without confirmation. The user picks the category.' These are correct guardrails — but neither defines what the agent should do if the user is unavailable (headless mode, CI trigger, sub-agent dispatch). Without a fallback (e.g., 'if running headless, default to the nearest skill name and flag for review'), an agent running non-interactively will either stall, hallucinate a category, or silently write to an undocumented cluster. The v1.8 brainstorm (section A1) proposes headless mode on cm-compound. This gap will be hit the moment that ships.",
+      "evidence": "commands/cm-compound.md lines 35-37 (category rules), line 147 ('Auto-categorize without confirmation. The user picks the category.'). docs/brainstorms/2026-05-23-v1.8-ideation.md section A1 (headless mode on cm-compound).",
+      "remediation": "Add a headless fallback rule to Step 2: 'If running without interactive input (headless mode, sub-agent context), default to the skill name that most closely matches the learning's Linked skills field. Log the chosen category and emit a warning: [headless] category auto-selected as <name> — review before committing.' This makes the flow agent-executable end-to-end and leaves a clear audit trail.",
+      "autofix": "soft"
+    },
+    {
+      "id": "prior-learnings-step3-relevance-selection-determinism",
+      "title": "Step 3 relevance selection ('select up to 3 relevant entries') is intentionally model-discretion — reproducibility across runs is not guaranteed",
+      "severity": "P3",
+      "confidence": 75,
+      "category": "context_parity",
+      "question_addressed": 7,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/copywriting/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/cold-email/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/positioning/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/paid-ads/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/icp-research/SKILL.md"
+      ],
+      "why_it_matters": "Each wired skill's Step 3 provides per-skill relevance signals (page type, ICP, framework, channel, etc.) that meaningfully constrain selection for that skill — the icp-research list and paid-ads list are materially different. This is the right design; it makes an agent's relevance judgment as deterministic as possible given natural language matching. However, 'up to 3' is still a ceiling, not a deterministic count. The same skill run twice on the same learnings file with the same request will likely — but not guaranteed — produce the same selection if there is no temperature drift or context window difference. This is acceptable behavior: the per-skill relevance signals reduce variance substantially, and the output heading being literal (`Prior learnings considered:`) ensures any variation is visible to the user. The design choice is sound for v1.7. The risk materializes if learnings files grow to 30+ entries and semantic drift between entries increases selection variance. v1.8 item S3 (cm-learnings-researcher) directly addresses this with deterministic frontmatter-first scoring. No fix required in v1.7; documenting for awareness.",
+      "evidence": "_TEMPLATE.md lines 58-63 (Step 3 relevance signals), skills/copywriting/SKILL.md lines 60-65 (per-skill matching criteria — 5 distinct axes), skills/paid-ads/SKILL.md lines 43-48 (7 distinct axes). docs/brainstorms/2026-05-23-v1.8-ideation.md section S3.",
+      "remediation": "Document the variance caveat in _LEARNINGS_SCHEMA.md under 'How skills consume this': 'Step 3 selection is best-effort relevance matching. Two runs on the same input may surface different entries when multiple entries score closely. This is intentional for v1.7; v1.8 S3 introduces a deterministic researcher agent to eliminate variance at scale.' No code change required in v1.7.",
+      "autofix": "soft"
+    },
+    {
+      "id": "prior-learnings-heading-literal-contract",
+      "title": "Literal heading `Prior learnings considered:` is consistently specified and consistently implemented across all 5 wired skills — no agent ambiguity",
+      "severity": "PASS",
+      "confidence": 95,
+      "category": "action_parity",
+      "question_addressed": 3,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/AGENTS.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md"
+      ],
+      "why_it_matters": "All 5 wired skills, _TEMPLATE.md, _LEARNINGS_SCHEMA.md, and AGENTS.md agree on the exact heading string: `Prior learnings considered:` (lowercase 'l', colon, no trailing space). The schema doc (line 135) calls it a 'literal heading.' _TEMPLATE.md Step 4 wraps it in backticks as `Prior learnings considered:` and repeats it in the null case. No variation was found across the 5 wired skill files. This is working correctly — noting as positive finding.",
+      "evidence": "grep across all 5 wired skills + _TEMPLATE.md + _LEARNINGS_SCHEMA.md + AGENTS.md found identical string in all locations. All wired skill Step 4 blocks show the heading in a fenced code block, then repeat it in the null-case sentence.",
+      "remediation": "None required. Consider adding the string to the validator's wired-skill check (beyond just the H2 heading) to prevent future drift — see correctness.json testing_gaps item 2.",
+      "autofix": null
+    },
+    {
+      "id": "entries-count-computation-ambiguity",
+      "title": "entries_count counting rule (`## YYYY-MM-DD` heading pattern) is deterministic for agents — no ambiguity",
+      "severity": "PASS",
+      "confidence": 85,
+      "category": "context_parity",
+      "question_addressed": 4,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md"
+      ],
+      "why_it_matters": "cm-compound Step 5 specifies: 'If entries_count does not match the actual number of `## YYYY-MM-DD` headings.' _TEMPLATE.md Step 2 and the schema doc both reference the same pattern. An agent can count level-2 headings matching a date pattern with high reliability — it is a syntactic check, not a semantic one. The pattern `^## \\d{4}-\\d{2}-\\d{2}` is unambiguous and will not false-positive on skill section headings (which are descriptive text, not dates). The disambiguating suffix case (`— part 2`) preserves the date prefix, so the count remains correct. Positive finding.",
+      "evidence": "commands/cm-compound.md line 93 and line 114 (same-date suffix logic preserves the `## YYYY-MM-DD` prefix). _LEARNINGS_SCHEMA.md lines 45-51. Worked example at lines 92-133 shows two entries with distinct date headings.",
+      "remediation": "None required for v1.7. For v1.8, the validator extension for instance files should use this same regex rather than a custom one to ensure counting parity.",
+      "autofix": null
+    },
+    {
+      "id": "no-setup-wizard-agent-path-for-learnings",
+      "title": "bin/setup.js has no code path to create or scaffold `.agents/learnings/` — agent must rely entirely on /cm-compound prose instructions",
+      "severity": "P3",
+      "confidence": 80,
+      "category": "shared_workspace",
+      "question_addressed": 5,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/bin/setup.js"
+      ],
+      "why_it_matters": "The wizard installs skills, commands, MCP configs, and writes product-marketing-context.md — but creates no `.agents/learnings/` directory and writes no initial learnings files. This is a deliberate design (learnings are runtime artifacts, not plugin files), but it means the learnings directory appears on first `/cm-compound` run via agent instruction, not via the wizard. The agent-callable path IS present: /cm-compound Step 5 creates the file if it does not exist. So agent execution is not blocked — it is just undiscoverable until a user runs /cm-compound. A user opening a fresh install and asking 'what does the learnings system look like?' has no file to inspect. Consider adding a wizard prompt that creates an example learnings file (matching the worked example in _LEARNINGS_SCHEMA.md) so the directory and schema are visible immediately after install.",
+      "evidence": "grep for 'agents/learnings' in bin/setup.js returns zero results. commands/cm-compound.md Step 5 (lines 73-93) is the only write path.",
+      "remediation": "Low priority for v1.7 (the on-demand creation model is architecturally sound). For v1.8: add an optional wizard prompt — 'Create an example learnings file so you can see the schema? (y/N)' — that writes `.agents/learnings/copywriting.md` with the worked example from _LEARNINGS_SCHEMA.md. This makes the system discoverable without blocking any agent flow.",
+      "autofix": "soft"
+    },
+    {
+      "id": "cm-compound-fully-agent-executable",
+      "title": "/cm-compound is executable end-to-end by an agent without human-only knowledge — with one soft caveat on category confirmation",
+      "severity": "PASS",
+      "confidence": 80,
+      "category": "action_parity",
+      "question_addressed": 1,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md"
+      ],
+      "why_it_matters": "Reviewing the 8-step flow for agent executability: Step 1 (elicit a real learning) — agent can apply the evidence bar heuristic; Step 2 (pick category) — agent can derive from Linked skills and existing skill names under skills/, but requires user confirmation for NEW cluster names (see finding cm-compound-step2-category-requires-user-decision for the headless gap); Step 3 (draft six fields) — agent can draft and validate against user input; Step 4 (validate) — purely syntactic checks an agent can perform reliably; Step 5 (locate/create file) — file read/write with frontmatter parse, fully agent-executable; Step 6 (insert above) — insertion point instruction is slightly ambiguous (see correctness.json finding 'above-vs-immediately-after'), but sufficient for an interactive session; Step 7 (update frontmatter) — two deterministic field updates; Step 8 (confirm) — agent generates a summary. No step requires human-only knowledge (biometrics, CAPTCHA, consent). The category-confirmation requirement in Step 2 is by design (the user owns the taxonomy) — it is not a human-only action, it is a human-approval gate, which is acceptable for a write operation. Overall: the flow is agent-native and interactive. Headless execution has the gap described in cm-compound-step2-category-requires-user-decision.",
+      "evidence": "commands/cm-compound.md full diff reviewed. All 8 steps analyzed above.",
+      "remediation": "None required for v1.7 interactive execution. See cm-compound-step2-category-requires-user-decision for the headless-mode gap.",
+      "autofix": null
+    },
+    {
+      "id": "prior-learnings-contract-agent-executable",
+      "title": "Prior Learnings Consulted 5-step contract is fully agent-executable — relevance is judgable against entry frontmatter + Implication fields",
+      "severity": "PASS",
+      "confidence": 80,
+      "category": "context_parity",
+      "question_addressed": 2,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md"
+      ],
+      "why_it_matters": "Step 3 asks the agent to 'judge relevance against the current request: page type, channel, ICP, copy framework, stage, persona, deliverable type.' Each wired skill provides a per-skill relevance signal list (copywriting has 5 axes, paid-ads has 7, icp-research has 6). Each learning entry carries Context (what project/channel), Linked skills (which skills it should inform), and Implication (actionable guidance) — all machine-readable fields. An agent can match the current request's page type, channel, and ICP against the entry's Context and Linked skills fields with reasonable accuracy. The 'up to 3' ceiling and recency-then-confidence tiebreak are deterministic rules that constrain the decision. Relevance judgment is not perfectly deterministic (see finding prior-learnings-step3-relevance-selection-determinism) but it is agent-executable — the information required to make the judgment is all in the file.",
+      "evidence": "skills/_LEARNINGS_SCHEMA.md lines 60-88 (field definitions sufficient for relevance matching). _TEMPLATE.md lines 58-63 (match criteria). The worked example shows entries with sufficient context for an agent to judge: '50-200 employee SaaS ICP', 'pricing page', 'A/B test over 14 days' are matchable signals.",
+      "remediation": "None required for v1.7.",
+      "autofix": null
+    },
+    {
+      "id": "v18-learnings-files-forward-compatible",
+      "title": "v1.7 `.agents/learnings/<category>.md` files are forward-compatible with the v1.8 cm-learnings-researcher agent proposal",
+      "severity": "PASS",
+      "confidence": 75,
+      "category": "context_parity",
+      "question_addressed": 6,
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/docs/brainstorms/2026-05-23-v1.8-ideation.md"
+      ],
+      "why_it_matters": "v1.8 item S3 proposes a cm-learnings-researcher agent using 'frontmatter-first search' — read only YAML frontmatter, score entries, full-read only top 3. The v1.7 schema supports this: the YAML frontmatter includes entries_count (enables fast skip if count is 0), each entry has Linked skills and Confidence in the body, and v1.8 item A5 proposes adding tags/linked_projects/last_referenced as optional fields to enable richer frontmatter scoring. The v1.7 schema's 'backward-compatible additions are minor bumps' rule explicitly anticipates this. A researcher agent reading v1.7 files without modification can perform a full-read scan (50 entries is not a prohibitive context window cost at the 5-skill, early-adoption stage). No migration required on the files themselves. Positive finding.",
+      "evidence": "skills/_LEARNINGS_SCHEMA.md lines 167-172 (schema evolution: backward-compatible additions are minor bumps). docs/brainstorms/2026-05-23-v1.8-ideation.md section S3 ('can fall back to direct read if researcher not available'), A5 ('add optional tags, linked_projects, last_referenced fields... Backward compatible (v1.0 entries continue to work)').",
+      "remediation": "None required. One recommendation for v1.8 A5: when adding optional frontmatter fields to entry bodies, keep them YAML-like comment blocks rather than changing the H2-plus-6-bullets format, so the positional parse contract stays intact.",
+      "autofix": null
+    }
+  ],
+  "capability_map": [
+    {
+      "action": "Capture a learning (write a schema-valid entry to .agents/learnings/<category>.md)",
+      "location": "commands/cm-compound.md",
+      "agent_tool": "/cm-compound (8-step prose instruction)",
+      "in_prompt": "Yes — AGENTS.md §Prior Learnings System (v1.7), CLAUDE.md (partially — see finding in correctness.json)",
+      "priority": "must-have",
+      "status": "agent-accessible — interactive; headless gap exists (see P2 finding)"
+    },
+    {
+      "action": "Read prior learnings before producing copywriting output",
+      "location": "skills/copywriting/SKILL.md §Prior Learnings Consulted",
+      "agent_tool": "Prior Learnings Consulted section (5-step inline contract)",
+      "in_prompt": "Yes — AGENTS.md §Prior Learnings System",
+      "priority": "must-have",
+      "status": "agent-accessible"
+    },
+    {
+      "action": "Read prior learnings before producing cold email output",
+      "location": "skills/cold-email/SKILL.md §Prior Learnings Consulted",
+      "agent_tool": "Prior Learnings Consulted section",
+      "in_prompt": "Yes",
+      "priority": "must-have",
+      "status": "agent-accessible"
+    },
+    {
+      "action": "Read prior learnings before producing positioning output",
+      "location": "skills/positioning/SKILL.md §Prior Learnings Consulted",
+      "agent_tool": "Prior Learnings Consulted section",
+      "in_prompt": "Yes",
+      "priority": "must-have",
+      "status": "agent-accessible"
+    },
+    {
+      "action": "Read prior learnings before producing paid ads plan",
+      "location": "skills/paid-ads/SKILL.md §Prior Learnings Consulted",
+      "agent_tool": "Prior Learnings Consulted section",
+      "in_prompt": "Yes",
+      "priority": "must-have",
+      "status": "agent-accessible"
+    },
+    {
+      "action": "Read prior learnings before running ICP research",
+      "location": "skills/icp-research/SKILL.md §Prior Learnings Consulted",
+      "agent_tool": "Prior Learnings Consulted section",
+      "in_prompt": "Yes",
+      "priority": "must-have",
+      "status": "agent-accessible"
+    },
+    {
+      "action": "Create learnings directory + category file on first use",
+      "location": "commands/cm-compound.md Step 5",
+      "agent_tool": "/cm-compound Step 5 (create file if missing)",
+      "in_prompt": "Indirectly via /cm-compound description",
+      "priority": "must-have",
+      "status": "agent-accessible — not wizard-scaffolded (low priority gap)"
+    },
+    {
+      "action": "Validate skill structure including Prior Learnings section presence",
+      "location": "scripts/validate-skills.js",
+      "agent_tool": "node scripts/validate-skills.js (CLI, soft warning only)",
+      "in_prompt": "No direct prompt mention; CLAUDE.md §Adding a New Skill references the validator",
+      "priority": "should-have",
+      "status": "agent-accessible via CLI"
+    }
+  ],
+  "noun_test": [
+    {
+      "noun": "learning entry",
+      "agent_knows_what_it_is": true,
+      "agent_has_tool": true,
+      "agent_sees_in_prompt": "Yes (AGENTS.md, partially CLAUDE.md)",
+      "result": "PASS"
+    },
+    {
+      "noun": "learnings file (.agents/learnings/<category>.md)",
+      "agent_knows_what_it_is": true,
+      "agent_has_tool": true,
+      "agent_sees_in_prompt": "Yes (AGENTS.md §Prior Learnings System)",
+      "result": "PASS"
+    },
+    {
+      "noun": "category",
+      "agent_knows_what_it_is": true,
+      "agent_has_tool": "Partially — agent can select but cannot confirm new cluster names without user",
+      "agent_sees_in_prompt": "Yes",
+      "result": "PARTIAL — headless gap"
+    },
+    {
+      "noun": "Prior Learnings Consulted section (in wired skills)",
+      "agent_knows_what_it_is": true,
+      "agent_has_tool": "Yes — inline in each wired skill",
+      "agent_sees_in_prompt": "Yes (AGENTS.md)",
+      "result": "PASS"
+    }
+  ],
+  "summary": "The v1.7 Prior Learnings system is well-architected for agent-native execution. The write side (/cm-compound) provides 8 deterministic steps sufficient for interactive agent execution. The read side (5 wired skills) provides per-skill relevance signals that make the selection judgment agent-executable with acceptable variance. The literal `Prior learnings considered:` heading is specified and implemented consistently across all 5 wired skills with no variation. The entries_count computation rule (count `## YYYY-MM-DD` headings) is syntactically unambiguous. The schema is forward-compatible with the v1.8 cm-learnings-researcher agent without file migration. Two P2 agent-native gaps exist: (1) cm-compound Step 3 mislabels Title as a 'field' in the 6-field enumeration, risking an agent writing it as a bullet and corrupting the positionally-parsed schema; (2) Step 2's category-confirmation requirement has no fallback for headless/sub-agent execution, which will be hit immediately when v1.8's headless mode ships. Three P3 observations: relevance selection variance is acceptable in v1.7 but undocumented; the wizard does not scaffold the learnings directory (intentional but reduces discoverability); the malformed-file case in wired skills does not specify whether the literal heading should still be emitted (see correctness.json for details). 7/8 high-priority agent capabilities are fully accessible; the interactive /cm-compound flow is agent-native, with one known headless gap.",
+  "score": {
+    "high_priority_agent_accessible": "7/8",
+    "verdict": "NEEDS WORK",
+    "blocker_count": 0,
+    "p2_count": 2,
+    "p3_count": 1,
+    "pass_count": 5,
+    "notes": "No hard blockers. Two P2 issues prevent clean headless/sub-agent execution and create a schema corruption risk via the 7-vs-6 field miscount. Both are documentation fixes, not code changes. Safe to ship v1.7 as an interactive-only release; resolve both P2s before v1.8 headless mode lands."
+  }
+}

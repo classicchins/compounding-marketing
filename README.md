@@ -4,6 +4,8 @@
 
 A cross-platform AI plugin — 61 marketing skills and 16 workflow commands for B2B SaaS. Built for Claude Code, Claude Cowork, Cursor, OpenAI Codex, ChatGPT, Zed, and any other AGENTS.md-compatible tool.
 
+> **v1.7.0** — The **Prior Learnings system**. A versioned schema for `.agents/learnings/<category>.md`, a default-on consumption contract wired into 5 high-leverage skills (`copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`), and a rewritten `/cm-compound` that enforces the schema on every write. The read/write loop that makes "marketing knowledge compounds" structural instead of aspirational.
+
 > **v1.6.0** — Marketplace-first install for Claude Code. Hardened `npx` wizard with `--dry-run` / `--uninstall` / per-tool target paths. Writes real MCP config files at each tool's documented location. All 61 skills brought up to gold-standard structure, enforced by a built-in validator.
 
 > **Safety contract.** No silent overwrites, no postinstall hooks, full rollback. Every install writes a manifest at `.compounding-marketing-install.json`; `--uninstall` reverses it exactly — `.bak` backups are restored byte-identical and marker blocks are stripped.
@@ -16,7 +18,7 @@ A cross-platform AI plugin — 61 marketing skills and 16 workflow commands for 
 
 **Research before execution.** Most marketing plugins jump straight to "write a landing page." Compounding Marketing forces clarity first: `cm-context` → `positioning` → `messaging-framework` → only then `copywriting`. 80% of marketing success is clarity. These skills make it systematic.
 
-**Built to compound.** The `/cm-compound` workflow captures what worked, what didn't, and what surprised you after every project. Over time your `.agents/learnings/` directory becomes a library specific to *your* business, *your* audience, *your* market.
+**Built to compound (v1.7).** Knowledge compounds through a real read/write loop. `/cm-compound` writes one schema-valid entry to `.agents/learnings/<category>.md` after every project — six required fields, lowercase-only confidence, validation-on-write, no silent corrections. Five high-leverage skills (`copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`) read those learnings *before* they produce output and surface what applies under a literal `Prior learnings considered:` heading, with explicit apply-or-override semantics. The schema is versioned (`skills/_LEARNINGS_SCHEMA.md`) and forward-compatible — future releases roll the read side out to all 61 skills.
 
 **Safety-first install.** Every existing-file collision prompts you. `npm install` writes zero files outside `node_modules/`. Roll back any install with one command.
 

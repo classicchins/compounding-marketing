@@ -1,0 +1,75 @@
+{
+  "reviewer": "maintainability",
+  "findings": [
+    {
+      "id": "M-01",
+      "severity": "P2",
+      "confidence": 90,
+      "title": "Steps 1, 2, 4, and 5 of the consumption contract are near-identical boilerplate copied into all 5 wired skill files",
+      "file": "skills/copywriting/SKILL.md, skills/cold-email/SKILL.md, skills/positioning/SKILL.md, skills/paid-ads/SKILL.md, skills/icp-research/SKILL.md",
+      "description": "Each wired skill embeds a compressed version of the 5-step consumption contract. Steps 1 ('Resolve the file'), 2 ('Parse the schema'), 4 ('Surface to user' with the identical code-block format), and the 'If nothing applies' fallback text are copied verbatim or near-verbatim across all five files. Only step 3 ('Select relevant entries') and step 5's override rationale differ per skill. When the contract changes — e.g. surfacing format, the malformed-file handling, the 'no entries' state message — all 5 files must be updated in lockstep with _TEMPLATE.md and _LEARNINGS_SCHEMA.md (7 locations total). The per-skill value is in step 3's match-criteria bullets and the 'Common high-leverage learnings' coda, both of which are genuinely skill-specific.",
+      "suggested_fix": "Restructure each wired skill's Prior Learnings Consulted section to contain only the skill-specific parts: the opening rationale sentence, the step 3 match-criteria bullets, and the 'Common high-leverage learnings' coda. Replace steps 1, 2, 4, and 5 with a single reference line: 'Follow the 5-step consumption contract in skills/_LEARNINGS_SCHEMA.md verbatim — only the relevance criteria in step 3 are skill-specific (listed above).' This cuts approximately 15 lines of duplicated prose per skill (75 lines total) and makes contract updates single-source. The LLM consuming the skill will follow the reference because the schema doc is in the same context window."
+    },
+    {
+      "id": "M-02",
+      "severity": "P2",
+      "confidence": 85,
+      "title": "PRIOR_LEARNINGS_WIRED hardcoded Set in validator is out-of-band with the actual skill files — no structural coupling",
+      "file": "scripts/validate-skills.js (line 31-37)",
+      "description": "The validator maintains a hardcoded Set of 5 skill names to drive the soft-check. This list has no structural relationship to which SKILL.md files actually contain the '## Prior Learnings Consulted' heading. Adding or removing the section from a skill file will silently desync the Set unless the developer also edits the JS. The code itself acknowledges this with a comment ('Future releases roll this out to all 61 skills'), but there is no mechanical guard against the Set and the file population diverging. The skillName resolution at line 256 also has a path.basename fallback for missing frontmatter name, which is reachable but would only match a wired skill that also fails the mandatory 'frontmatter missing name' error — making the fallback path confusingly dead for the wired check specifically.",
+      "suggested_fix": "Replace the hardcoded Set with a grep-based approach: after collecting all SKILL.md files in main(), scan each for the PRIOR_LEARNINGS_HEADING regex before validating it — any skill that has ever had the section and then loses it will emit the warning automatically, regardless of rollout state. The constant PRIOR_LEARNINGS_WIRED and its maintenance burden disappear entirely. The regex PRIOR_LEARNINGS_HEADING already exists (line 38) and can be reused. The soft-check logic in validate() becomes: if the file contains the heading it is 'wired' by definition; if PRIOR_LEARNINGS_HEADING matches on a previous run but not on this one, the warning fires. This inverts the coupling: the source of truth is the file content, not a parallel list."
+    },
+    {
+      "id": "M-03",
+      "severity": "P2",
+      "confidence": 80,
+      "title": "cm-compound.md Step 3 header names 'six required fields' but enumerates 7 items — Title is counted as a field",
+      "file": "commands/cm-compound.md (line 48 header, lines 52-61 body)",
+      "description": "Step 3 is headed 'Draft the six required fields' but its numbered list has 7 items: Title (item 1) plus the 6 bulleted fields (Context, Finding, Evidence, Implication, Linked skills, Confidence). _LEARNINGS_SCHEMA.md consistently uses 'six required bulleted fields' and treats Title as the H2 heading component, not a field. Step 4 validation correctly lists 6 fields plus Title as a separate constraint ('Title is non-empty and ≤120 characters'). The mismatch in Step 3 means an LLM or human author following cm-compound.md step-by-step will see 7 items under a 'six fields' header and either miscount or assume Title is one of the six. When the schema adds an optional field, the count description will be wrong in at least one direction.",
+      "suggested_fix": "Rename the Step 3 header to 'Draft the entry — title plus six required fields' (or 'Draft the seven components'). Alternatively, pull Title out of the numbered list into a short paragraph above it ('First, establish the entry title: one line, concrete, specific — this becomes the H2 heading. Then work through the six required bulleted fields in order:') so the structure matches the schema's own model. Either change eliminates the 7-under-6 ambiguity."
+    },
+    {
+      "id": "M-04",
+      "severity": "P2",
+      "confidence": 75,
+      "title": "_TEMPLATE.md Prior Learnings Consulted section hardcodes the v1.7 wired-skill list as an informational note, creating a third maintenance point for that list",
+      "file": "skills/_TEMPLATE.md (lines 44-45)",
+      "description": "The blockquote at the top of the Prior Learnings Consulted section in _TEMPLATE.md reads: 'Wired in v1.7 for: copywriting, cold-email, positioning, paid-ads, icp-research.' This is a third place (alongside PRIOR_LEARNINGS_WIRED in the validator and the list in _LEARNINGS_SCHEMA.md's 'Wired skills in v1.7' section) that must be updated when skills are added to or removed from the wired set. The template is supposed to be the canonical copy authors use when adding new skills — if a new author copies this section into their skill file they will embed a stale list of which other skills are wired. The note does not serve the author of the new skill; it only serves as change-log prose.",
+      "suggested_fix": "Delete the 'Wired in v1.7 for' blockquote from _TEMPLATE.md entirely. The section that follows it is already self-contained. Move the wired-skill roster to exactly one place: _LEARNINGS_SCHEMA.md's 'Wired skills in v1.7' section, which is already the declared source of truth. The validator's PRIOR_LEARNINGS_WIRED Set (if retained) already provides the machine-readable version. Three locations for the same list is two too many."
+    },
+    {
+      "id": "M-05",
+      "severity": "P3",
+      "confidence": 75,
+      "title": "warned array and the WARNINGS block in validate-skills.js are currently unreachable in normal operation",
+      "file": "scripts/validate-skills.js (lines 283, 298, 321-330)",
+      "description": "The warned array collects passing files that have warnings. Today the only warning path for passing files is the metadata.version missing check (line 224) and the PRIOR_LEARNINGS_WIRED check (line 258). The 5 wired skills all have the section and all have metadata.version set, so warned is empty on every run. The PRIOR_LEARNINGS_WIRED check only fires if a wired skill drops its section — that is a regression scenario that has never happened yet. The WARNINGS block adds 9 lines of output code for a code path that only activates on regression. This is not dead code by definition (it will fire if a wired skill regresses), but it is zero-coverage today and will remain so until a regression occurs or more warnings are added. The pre-existing warning path (metadata.version) does appear inside the failures block for failing files, not the warned block, so existing warning output is unchanged.",
+      "suggested_fix": "No immediate deletion is warranted — the regression-guard value is real. But consider adding a comment at the warned declaration noting that the only current trigger is a wired-skill regression, so CI seeing this block fire is a signal to investigate before merging. This makes the 'why does this exist' legible without adding complexity."
+    },
+    {
+      "id": "M-06",
+      "severity": "P3",
+      "confidence": 70,
+      "title": "AGENTS.md and CLAUDE.md both carry a full 5-step contract summary — near-identical prose at two more doc locations",
+      "file": "AGENTS.md (Prior Learnings System section), CLAUDE.md (Prior Learnings System section)",
+      "description": "Both AGENTS.md and CLAUDE.md added a 'Prior Learnings System (v1.7)' section that reproduces the 5-step contract in compressed form. The wording is not identical across the two files (AGENTS.md uses 'Resolve ... If absent, state so and proceed' while CLAUDE.md uses 'If absent or empty, state so and proceed'), introducing a minor but observable divergence at the point where both docs serve as orientation references. Combined with _LEARNINGS_SCHEMA.md and _TEMPLATE.md, the contract now lives in 6 locations with varying levels of completeness and subtle wording differences.",
+      "suggested_fix": "Reduce AGENTS.md and CLAUDE.md to a 2-3 sentence summary of the system plus a pointer to _LEARNINGS_SCHEMA.md for the authoritative contract. 'Five skills consult .agents/learnings/<skill>.md before producing output and surface up to 3 prior entries under a Prior learnings considered: heading. /cm-compound enforces the write schema. Full contract: skills/_LEARNINGS_SCHEMA.md.' This keeps the orientation value without duplicating the contract text that will drift."
+    }
+  ],
+  "residual_risks": [
+    {
+      "description": "When v1.8 rolls the Prior Learnings section out to additional skills, the PRIOR_LEARNINGS_WIRED Set in validate-skills.js will need to be updated manually in parallel with the skill files. If the Set grows to cover all 61 skills, it becomes purely redundant with the heading grep. Plan a cutover point where the Set is replaced by the self-describing grep approach (see M-02) before the rollout reaches double-digit skills."
+    },
+    {
+      "description": "The entry format in cm-compound.md Step 6 says 'parsed positionally by wired skills, do not vary' — but the actual wired skill sections parse by label (bold field names) in the prose, not by byte offset. If the claim of positional parsing is load-bearing for some future automated reader, that reader doesn't exist yet and the claim is over-specified. If it's not load-bearing, the warning 'do not reorder' is correct but the 'positionally' qualifier could mislead a future skill author into thinking reordering would break live code."
+    }
+  ],
+  "testing_gaps": [
+    {
+      "description": "No test covers the PRIOR_LEARNINGS_WIRED regression path: a skill in the Set that has its '## Prior Learnings Consulted' heading removed should trigger a warning. Running node scripts/validate-skills.js manually after temporarily removing the heading from one wired skill would confirm the path is live."
+    },
+    {
+      "description": "The entries_count drift-detection in cm-compound.md Step 5 ('flag the drift and ask the user before writing') has no validator equivalent. If a learnings file is manually edited out of sync with entries_count, the discrepancy is only caught at write-time by the LLM following cm-compound — there is no static check."
+    }
+  ]
+}
