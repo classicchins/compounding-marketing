@@ -26,7 +26,8 @@ Before producing any output, gather context. **Do not skip this.**
 
 1. **Check for `.agents/product-marketing-context.md`.** Load it if it exists. This skill assumes the longer context document is already in place — `STRATEGY.md` cites it, doesn't replace it. If the context doc is missing, **stop and ask the user to run `/cm-context` first**. Strategy without context is hand-waving.
 2. **Check for existing `.agents/STRATEGY.md`.** If it exists, this run is a *maintenance* run: read it, identify which tracks have moved status, which goals have been hit, which key metrics need refreshed baselines. If it does not exist, this run is a *bootstrap* run: walk the user through every section from scratch.
-3. **Check for recent learnings.** Skim `.agents/learnings/` filenames (if the directory exists). Past learnings about which tracks compounded and which fizzled should inform how you scope new tracks.
+3. **Check for recent learnings.** Skim `.agents/learnings/` filenames (if the directory exists). Past learnings about which tracks compounded and which fizzled should inform how you scope new tracks. For deeper cross-category retrieval — e.g., "what have we learned about Series-B fintech ICPs across copywriting, paid-ads, and cold-email categories?" — delegate to the v1.8 [`cm-learnings-researcher`](../cm-learnings-researcher/SKILL.md) specialist.
+4. **Check for `.agents/integrations.md`.** Optional. If the v1.8 integration auto-detection has run, this file enumerates connected MCP servers and data sources (analytics, CRM, search). Tracks whose `Linked skills` depend on a particular integration should reference it explicitly so the dependency is visible.
 
 ### Diagnostic Questions
 
@@ -137,7 +138,7 @@ The divergence-check section is what makes `STRATEGY.md` actually function as a 
 
 **How to do it:**
 - Write a short paragraph (3-6 lines) that names the rule: *when another skill is invoked, it should resolve the request to one of the active tracks. If it cannot, it should flag the divergence and ask the user to either add a new track or recategorize.*
-- List the explicit prompts a divergence flag should use: "This request doesn't map to any active track. Add as a new track, or fold into <closest existing>?"
+- List the explicit prompt a divergence flag should use, verbatim (this is the consumption contract — other skills parse it positionally): `"This request doesn't map to any active track. Add as a new track, or fold into <closest existing track>?"`
 - Note the maintenance cadence: how often the user re-reads `STRATEGY.md` and updates statuses.
 
 **Decision criteria:**

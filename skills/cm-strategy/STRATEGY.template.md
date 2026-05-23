@@ -73,7 +73,7 @@ Things we considered this quarter and explicitly decided *not* to do. Naming the
 
 When another skill in the Compounding Marketing plugin receives a request, it should resolve that request to one of the **Active tracks** above. If it cannot, it must flag the divergence — surface it to the user with the explicit prompt:
 
-> *"This request doesn't map to any active track in STRATEGY.md. Add as a new track, fold into <closest existing track>, or defer to next quarter?"*
+> *"This request doesn't map to any active track. Add as a new track, or fold into <closest existing track>?"*
 
 The skill never silently absorbs divergent work. The user decides whether to expand the strategy, recategorize the request, or push it out. This file is re-read at the start of every planning skill and at the maintenance cadence below.
 

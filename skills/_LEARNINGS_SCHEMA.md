@@ -1,12 +1,12 @@
 ---
 # This file is a SCHEMA TEMPLATE, not a runnable skill. It defines the
 # canonical structure that `.agents/learnings/<category>.md` files must
-# follow. `/cm-compound` writes against this schema; "wired" skills read
+# follow. `/cm-flow-compound` writes against this schema; "wired" skills read
 # from it before executing. Update this file when the schema evolves.
 schema: learnings
 version: 1.0.0
 applies_to: ".agents/learnings/<category>.md"
-enforced_by: "commands/cm-compound.md"
+enforced_by: "skills/cm-flow-compound/SKILL.md"
 consumed_by: "skills/_TEMPLATE.md → Prior Learnings Consulted section"
 ---
 
@@ -14,7 +14,7 @@ consumed_by: "skills/_TEMPLATE.md → Prior Learnings Consulted section"
 
 This document defines the **canonical schema** for every file at
 `.agents/learnings/<category>.md`. It is the source of truth that
-`/cm-compound` enforces on write, and that wired skills read on
+`/cm-flow-compound` enforces on write, and that wired skills read on
 execution.
 
 A "learning" is one captured insight from completed marketing work:
@@ -47,8 +47,8 @@ entries_count: <integer>               # number of entries below; must match
 ```
 
 - `category` must be lowercase, hyphenated, and match an existing skill name OR a documented cluster name (e.g., `landing-pages`, `lifecycle-email`). New cluster names should be agreed on before the first entry is written.
-- `last_updated` is the calendar date of the most recent entry. `/cm-compound` updates this on every append.
-- `entries_count` is a sanity check. `/cm-compound` increments it on every append and the validator (future, parallel work) will confirm it matches the actual entry count.
+- `last_updated` is the calendar date of the most recent entry. `/cm-flow-compound` updates this on every append.
+- `entries_count` is a sanity check. `/cm-flow-compound` increments it on every append and the validator (future, parallel work) will confirm it matches the actual entry count.
 
 ### Required entry structure
 
@@ -77,7 +77,7 @@ Each entry is a level-2 heading followed by six required bulleted fields. Wired 
   - **medium** — One strong signal (one good test, one decisive project outcome). Worth defaulting to, but worth re-testing.
   - **low** — Hypothesis-grade. One observation, one anecdote, or extrapolation. Worth recording so a future entry can confirm or refute it.
 
-A learning entry is only complete when all six fields are filled. `/cm-compound` rejects writes missing any field.
+A learning entry is only complete when all six fields are filled. `/cm-flow-compound` rejects writes missing any field.
 
 ---
 
@@ -127,7 +127,7 @@ executing and surface relevant entries to the user.
 
 ## How skills consume this
 
-Skills that have been "wired" for v1.7 include a default-on **Prior Learnings Consulted** section (defined in `skills/_TEMPLATE.md`) that performs the following sequence before producing output:
+Skills that have been "wired" (the v1.7 set of five, unchanged in v1.8) include a default-on **Prior Learnings Consulted** section (defined in `skills/_TEMPLATE.md`) that performs the following sequence before producing output:
 
 1. **Resolve category file.** Look for `.agents/learnings/<this-skill-name>.md`. If it does not exist, state "No prior learnings in this category yet" and proceed.
 2. **Parse entries.** Read the YAML frontmatter to confirm schema version and entries_count. Iterate the level-2 dated entries in reverse-chronological order.
@@ -137,9 +137,9 @@ Skills that have been "wired" for v1.7 include a default-on **Prior Learnings Co
 
 This is the consumption contract. Authors of new skills can copy/paste the "Prior Learnings Consulted" section from `_TEMPLATE.md` and rely on this schema being stable.
 
-### Wired skills in v1.7
+### Wired skills (v1.7 default, unchanged in v1.8)
 
-The following skills ship with the Prior Learnings Consulted section wired by default in v1.7:
+The following five skills ship with the Prior Learnings Consulted section wired by default. v1.8 did **not** expand this list — the wired set is intentionally tight so each addition is a deliberate, audited decision:
 
 - `copywriting`
 - `cold-email`
@@ -147,13 +147,18 @@ The following skills ship with the Prior Learnings Consulted section wired by de
 - `paid-ads`
 - `icp-research`
 
-Future releases will roll the section out to all 61 skills. The schema in this file is forward-compatible.
+v1.8 added the opt-in `cm-learnings-researcher` specialist for ad-hoc, frontmatter-first cross-category retrieval when a user (or another skill) explicitly wants to query the learnings library beyond what the wired skills surface automatically. `cm-learnings-researcher` is a *delegation target*, not a default wiring — invoking it does not change the in-skill consumption contract above.
+
+Future releases may roll the in-skill section out to additional skills across the 91-skill catalog. The schema in this file is forward-compatible.
 
 ---
 
-## Authoring rules (for `/cm-compound`)
+## Authoring rules (for `/cm-flow-compound`)
 
-When `/cm-compound` writes to a learnings file, it must:
+When `/cm-flow-compound` writes to a learnings file, it must:
+
+(Source: `skills/cm-flow-compound/SKILL.md` — the v1.8 workflow skill that replaces v1.7's `commands/cm-compound.md`.)
+
 
 1. Validate that the proposed entry has all six required fields, non-empty.
 2. Validate that `Confidence` is one of `low | medium | high` (lowercase).

@@ -61,7 +61,7 @@ Knowledge compounds through a strict read/write loop.
 4. Surface them under the literal heading **`Prior learnings considered:`** before producing the deliverable — never hidden.
 5. Apply by default; override explicitly by date and reason if deviating.
 
-Future releases will roll the read side out to additional skills. The schema is forward-compatible; the validator warns (non-blocking) when a wired skill drops the section.
+v1.8 factors the read side into a dedicated skill — **`cm-learnings-researcher`** — that does the same 7-step retrieval as a callable specialist. The five wired skills still run the in-line contract by default; delegation to `cm-learnings-researcher` is opt-in until v1.8.1+. The schema is forward-compatible; the validator warns (non-blocking) when a wired skill drops the section.
 
 ## v1.8 architecture changes
 
@@ -77,6 +77,46 @@ Future releases will roll the read side out to additional skills. The schema is 
 - **`cm-strategy` + STRATEGY.template.md.** A focus layer above context — `.agents/STRATEGY.md` names the current strategic bet (audience, motion, primary lever, anti-goals). Skills read it after `product-marketing-context.md`.
 - **`when_to_use:` frontmatter on every skill.** Aligns with the 2026 Agent Skills spec — clearer routing for any agent reading the catalog.
 
+## Cross-platform install targets
+
+The wizard writes the same skill content into the surface each tool reads natively. No tool-specific forks.
+
+| Tool | Canonical surface | Notes |
+|------|-------------------|-------|
+| Claude Code / Cowork | `.claude/skills/<name>/` (per-project) or `~/.claude/skills/` (global) | `.claude/commands/cm-*.md` carries 14 workflow shims for `/cm-<name>` backward-compat (through v2.0). |
+| Cursor | `.cursor/rules/cm-*.mdc` (agent-requested rules) | `.cursor-plugin/` package staged for Marketplace publication in v1.8.1. |
+| Codex (OpenAI) | `~/.agents/skills/<name>/SKILL.md` (global) or `./.agents/skills/<name>/` (project) | Matches via trigger keywords in description frontmatter. |
+| ChatGPT (Custom GPT) | `AGENTS.md` pasted into Instructions + `skills/<name>/SKILL.md` uploaded as Knowledge | Wizard prints paste-block + upload list. |
+| Zed | Project-root `AGENTS.md` | Zed reads it directly; assistant picks the skill from context. |
+| Other / generic | `./.agents/skills/<name>/SKILL.md` | Plain SKILL.md works in any tool that can read structured markdown. |
+
+## MCP integration
+
+Research-heavy skills (`icp-research`, `competitive-analysis`, `market-sizing`, `competitor-content-monitoring`, `ai-seo`) benefit from live web search via MCP. Two servers ship pre-configured under `mcp/`:
+
+- **Perplexity** — `perplexity_search`, `perplexity_ask`, `perplexity_reason`, `perplexity_research`.
+- **Exa** — `company_research_exa`, `people_search_exa`, `web_search_exa`, `deep_researcher_start/check`.
+
+The wizard writes the right config file per tool (`.mcp.json` for Claude Code, `.cursor/mcp.json` for Cursor, `~/.codex/config.toml` for Codex) and stores API keys in gitignored `.cm-config.json`. The v1.8 opt-in integration auto-detection step scans existing MCP configs for additional providers (Linear, GA4, Search Console, Mixpanel, Meta Ads, …) and records what's available in `.agents/integrations.md` so skills can degrade gracefully when an integration is missing.
+
+## `.agents/` directory — runtime state
+
+Everything the plugin writes about a project lives under `.agents/`. The plugin itself ships no project state; these files appear as you run skills.
+
+| File | Written by | Purpose |
+|------|------------|---------|
+| `.agents/product-marketing-context.md` | `cm-context` | Foundation: product, audience, positioning, competitors, brand voice. Every skill reads this first. |
+| `.agents/STRATEGY.md` | `cm-strategy` (v1.8) | Focus layer: current strategic bet — audience, motion, primary lever, anti-goals, divergence policy. Read after context. |
+| `.agents/learnings/<category>.md` | `cm-flow-compound` | Schema-valid prior learnings (v1.7 schema 1.0.0). Read by the 5 wired skills and `cm-learnings-researcher`. |
+| `.agents/integrations.md` | Setup wizard (v1.8 opt-in) | 15-entry mapping of detected MCP integrations to skills that can use them. |
+
+## Adding a new skill
+
+1. Run `cm-skill-author` (v1.8) — it scaffolds a validator-passing `SKILL.md` with the 7-section structure, the right `kind:`, a `when_to_use:` line, and (for specialists) a `Sub-agent contract` section with structured input/output JSON.
+2. Or copy `skills/_TEMPLATE.md` manually. Required frontmatter: `name`, `description`, `when_to_use` (single line, ≤240 chars, starts with "When" or "Use when"), `kind: skill | workflow | lifecycle`, `metadata.version`. Specialists meant to be fanned out by an orchestrator also need a `Sub-agent contract` H2 with explicit input/output JSON shapes — see `references/sub-agent-dispatch.md`.
+3. Validate: `node scripts/validate-skills.js` (or `npm run validate`). `kind: skill` must clear the full check (≥300 lines, role prompt, all 7 sections, ≥5 mistakes, ≥2 examples, ≥3 related); `kind: workflow` and `kind: lifecycle` clear the lite check (frontmatter + role prompt + ≥1 H2 + `when_to_use` ≤240 chars).
+4. Regenerate the Skills index in `CLAUDE.md`: `node scripts/generate-claude-md.js`. Update counts in `README.md` and this file if you change the total.
+
 ## Skill Categories (75 content skills)
 
 | Category | # | Example skills |
@@ -86,7 +126,7 @@ Future releases will roll the read side out to additional skills. The schema is 
 | Content & Copy | 8 | copywriting, copy-editing, content-strategy, case-study, social-content, social-media-strategy, video-marketing, lead-magnets |
 | SEO & Discovery | 6 | seo-audit, ai-seo, programmatic-seo, site-architecture, schema-markup, competitor-alternatives |
 | CRO | 7 | page-cro, signup-flow-cro, onboarding-cro, form-cro, popup-cro, paywall-upgrade-cro, pricing-strategy |
-| Outreach & Email | 6 | abm-strategy, cold-email, email-sequence, email-deliverability, marketing-automation, testimonial-collection |
+| Outreach & Email | 6 | cold-email, email-sequence, email-deliverability, marketing-automation, abm-strategy, testimonial-collection |
 | Paid Acquisition | 3 | paid-ads, linkedin-ads, ad-creative |
 | Measurement | 4 | analytics-tracking, ab-test-setup, attribution-modeling, content-performance-scoring |
 | GTM & Launch | 5 | launch-strategy, gtm-strategy, channel-strategy, product-hunt-launch, press-pr |

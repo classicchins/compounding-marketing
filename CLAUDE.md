@@ -91,7 +91,7 @@ The full alphabetical catalog is at the bottom of this file (auto-generated).
 
 The read/write loop that makes knowledge compound. Source of truth: [`skills/_LEARNINGS_SCHEMA.md`](skills/_LEARNINGS_SCHEMA.md) (schema version 1.0.0).
 
-**Write side.** `/cm-compound` appends a single schema-valid entry to `.agents/learnings/<category>.md`. Six required fields per entry — `Context`, `Finding`, `Evidence`, `Implication`, `Linked skills`, `Confidence` (lowercase `low | medium | high` only). Validation rejects writes that fail the schema rather than silently correcting them. Append-only, reverse-chronological, with frontmatter (`category`, `last_updated`, `entries_count`) updated on each write.
+**Write side.** `/cm-flow-compound` (legacy `/cm-compound` shim still works) appends a single schema-valid entry to `.agents/learnings/<category>.md`. Six required fields per entry — `Context`, `Finding`, `Evidence`, `Implication`, `Linked skills`, `Confidence` (lowercase `low | medium | high` only). Validation rejects writes that fail the schema rather than silently correcting them. Append-only, reverse-chronological, with frontmatter (`category`, `last_updated`, `entries_count`) updated on each write.
 
 **Read side — wired in 5 skills in v1.7.** A new H2 section, **Prior Learnings Consulted**, runs before the Process in: `copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`. The contract:
 
@@ -134,10 +134,14 @@ A few skills (research-heavy ones — `icp-research`, `competitive-analysis`, `m
 
 Install via `/cm-setup` (it offers MCP wiring) or `npx compounding-marketing` (writes the right config file per tool: `.mcp.json`, `.cursor/mcp.json`, or `~/.codex/config.toml`). API keys are stored in `.cm-config.json` (gitignored).
 
+**v1.8 integration auto-detection (opt-in, Phase 1).** The setup wizard offers to scan your MCP config for additional servers (Notion, Linear, HubSpot, Slack, GA4, Posthog, Stripe, Figma, etc.) and writes a 15-entry capability mapping to `.agents/integrations.md` so skills know what's available without prompting. Per-skill integration-aware behavior (Phase 2) lands in v1.9.
+
 ## Important Conventions
 
 - **Run `/cm-context` then `/cm-strategy` first on every new project.** Skills are designed to read `.agents/product-marketing-context.md` and `.agents/STRATEGY.md` and degrade gracefully when they're missing — but quality is much higher with both.
-- **Slash command syntax is `/cm-{name}` with a hyphen.** Workflows are canonical as `/cm-flow-{name}` in v1.8+ (legacy `/cm-{name}` short forms still work via backward-compat shims).
+- **Slash command syntax is `/cm-{name}` with a hyphen.** Workflows are canonical as `/cm-flow-{name}` in v1.8+ (legacy `/cm-{name}` short forms still work via backward-compat shims through v2.0).
+- **Every SKILL.md carries a `kind:` field** — `skill` (75 content skills, full 7-section validation), `workflow` (14 `cm-flow-*` orchestrators, lite validation), or `lifecycle` (`cm-setup` / `cm-uninstall`, lite validation). The validator dispatches on `kind`.
+- **`.agents/` runtime files.** `product-marketing-context.md` (foundation, `/cm-context`), `STRATEGY.md` (current bet, `/cm-strategy`), `learnings/<category>.md` (compound memory, `/cm-flow-compound`), and `integrations.md` (v1.8 capability map, written by setup).
 - **Learnings live in `.agents/learnings/{category}.md`.** Written by `/cm-flow-compound`. Retrieved by `cm-learnings-researcher`.
 - **Edits to `CLAUDE.md` / `AGENTS.md` are wrapped in `<!-- COMPOUNDING-MARKETING-START/END -->` markers.** Re-running setup is idempotent — never duplicates the block.
 - **No file write happens without confirmation.** The wizard prompts for every collision (merge / overwrite-with-`.bak` / skip). `--dry-run` previews everything; `--uninstall` reverses it.

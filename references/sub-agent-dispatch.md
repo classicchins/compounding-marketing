@@ -1,8 +1,18 @@
 # Sub-agent Dispatch Contract
 
-> Cross-platform contract for the orchestrator → specialist → merge pattern piloted in v1.8 (`/cm-research`, `/cm-audit`, `/cm-position`).
+> Cross-platform contract for the orchestrator → specialist → merge pattern piloted in v1.8. Three orchestrators (`cm-flow-research`, `cm-flow-audit`, `cm-flow-position`) dispatch a pool of 11 specialists. The user-facing slash commands are `/cm-flow-research`, `/cm-flow-audit`, `/cm-flow-position` (the older `/cm-research` etc. forms were retired when `commands/` collapsed into `skills/cm-flow-*/SKILL.md` in v1.8).
 
 This document defines **how orchestrator skills dispatch specialist sub-agents in parallel, what each side must provide, and how outputs are merged**. It is the canonical reference. Any new orchestrator skill (workflow with multiple parallel specialists) must conform to this contract.
+
+## The 3 orchestrators and 11 specialists (v1.8)
+
+| Orchestrator | Specialists dispatched |
+|---|---|
+| `cm-flow-research` | `cm-icp-finder`, `cm-competitor-mapper`, `cm-customer-voice-miner`, `cm-market-sizing-runner` |
+| `cm-flow-audit` | `cm-seo-auditor`, `cm-content-auditor`, `cm-conversion-auditor`, `cm-funnel-auditor` |
+| `cm-flow-position` | `cm-canvas-runner`, `cm-alternatives-mapper`, `cm-category-tester` |
+
+The opt-in `cm-learnings-researcher` specialist exists outside this matrix — it is invoked on demand (by a user or another skill) rather than fanned-out from a flow orchestrator.
 
 ## Why this exists
 
@@ -14,7 +24,15 @@ v1.8 pilots that pattern in three workflows. This file is what the orchestrators
 
 ## 1. The dispatch primitive per platform
 
-The mechanism differs by host. Orchestrators must detect the platform and invoke the right primitive. If detection fails, fall back to the serial path (§5).
+There are **five dispatch primitives** orchestrators must understand — one per supported host plus the universal fallback. The mechanism differs by host; orchestrators detect the platform and invoke the right primitive. If detection fails, fall back to the inline-serial path (§5).
+
+| Host | Primitive | Parallel? |
+|---|---|---|
+| Claude Code | `Agent` tool (also surfaced as `Task` in some builds) | yes |
+| Codex | `spawn_agent` | yes |
+| Cursor | `Subagent` (also surfaced as `subagent.run`) | yes |
+| Zed | `external-agents` config in `.zed/config.json` | only if `external-agents.parallel: true` |
+| Fallback (ChatGPT / Claude.ai web / any unrecognized host) | **Inline-serial** (run specialists sequentially inside the orchestrator's own context — see §5) | no |
 
 ### Claude Code
 
@@ -190,7 +208,7 @@ After fan-out, the orchestrator has N structured payloads. The merge step is **n
 2. **Resolve conflicts.** Where two specialists disagree (e.g., `cm-icp-finder` says Series B is primary, `cm-market-sizing-runner` says Series A has bigger SAM), surface the conflict explicitly in the final output under a `## Conflicts` heading. Do not silently pick one.
 3. **Consolidate recommendations.** Group by `for_skill`. Where multiple specialists recommend the same downstream skill, merge into one consolidated recommendation.
 4. **Aggregate open questions.** Deduplicate and prioritize. Open questions become the orchestrator's "before you proceed, decide:" list.
-5. **Produce the synthesized deliverable.** The deliverable structure is defined by each orchestrator (see `commands/cm-research.md` etc.) and uses the merged inputs.
+5. **Produce the synthesized deliverable.** The deliverable structure is defined by each orchestrator (see `skills/cm-flow-research/SKILL.md`, `skills/cm-flow-audit/SKILL.md`, `skills/cm-flow-position/SKILL.md`) and uses the merged inputs.
 
 Merge output structure (orchestrator's final deliverable always includes these three sections):
 
@@ -230,9 +248,9 @@ There is **no behavior loss** in the fallback path — only added latency. The o
 
 ---
 
-## 6. Example: `/cm-research` dispatching four specialists
+## 6. Example: `/cm-flow-research` dispatching four specialists
 
-The orchestrator (`commands/cm-research.md`) gathers minimal user inputs (industry, stage, primary geo, existence of customer-interview transcripts), loads `.agents/product-marketing-context.md`, then fans out:
+The orchestrator (`skills/cm-flow-research/SKILL.md`) gathers minimal user inputs (industry, stage, primary geo, existence of customer-interview transcripts), loads `.agents/product-marketing-context.md`, then fans out:
 
 ```jsonc
 // Turn 1 of the orchestrator — four Agent tool calls in one message

@@ -11,23 +11,54 @@ Headline release: **one paradigm, parallel execution, multi-surface distribution
 
 ### Added
 
-**Sub-agent tier (S2).** 11 new specialist skills designed to be dispatched in parallel by orchestrator workflows: `cm-icp-finder`, `cm-competitor-mapper`, `cm-customer-voice-miner`, `cm-market-sizing-runner`, `cm-seo-auditor`, `cm-conversion-auditor`, `cm-funnel-auditor`, `cm-content-auditor`, `cm-canvas-runner`, `cm-category-tester`, `cm-alternatives-mapper`. Three orchestrator workflows fan them out: `cm-flow-research`, `cm-flow-audit`, `cm-flow-position`. Cross-platform dispatch contract documented at `references/sub-agent-dispatch.md` — Claude Code uses the Task tool for true parallel execution; other platforms fall back to explicit sequencing.
+**Sub-agent tier (S2).** 11 new specialist skills designed to be dispatched in parallel by orchestrator workflows: `cm-icp-finder`, `cm-competitor-mapper`, `cm-customer-voice-miner`, `cm-market-sizing-runner`, `cm-seo-auditor`, `cm-conversion-auditor`, `cm-funnel-auditor`, `cm-content-auditor`, `cm-canvas-runner`, `cm-category-tester`, `cm-alternatives-mapper`. Three orchestrator workflows fan them out: `cm-flow-research`, `cm-flow-audit`, `cm-flow-position`. On Claude Code each specialist runs in its own sub-agent context via the Agent / Task primitive; other hosts fall back to explicit sequencing.
+
+**`references/sub-agent-dispatch.md`.** New canonical cross-platform dispatch contract for the orchestrator → specialist → merge pattern. Defines the per-host primitive (Claude Code Agent/Task, Codex sub-prompts, Cursor + Zed serial fallback), the required specialist input/output JSON shape, the merge contract, and graceful-degradation rules. Every new multi-specialist orchestrator must conform.
 
 **`cm-learnings-researcher` (S3).** Frontmatter-first 7-step retrieval skill that scans `.agents/learnings/<category>.md` for the entries most relevant to the current run. The factored-out read side for the v1.7 Prior Learnings system. Wired skills can delegate to it as the learnings library grows.
 
 **`cm-skill-author` (A2).** Meta-skill that scaffolds a structurally valid SKILL.md (7-section gold-standard) and emits the `node scripts/validate-skills.js skills/<slug>/SKILL.md` command to confirm. Does not declare success until validation passes. Replaces the read-template-and-hope path for new contributors.
 
-**`cm-strategy` (A3) + `STRATEGY.template.md`.** A focus layer above context. `.agents/STRATEGY.md` names the current strategic bet — audience, motion, primary lever, anti-goals — in a structured shape every skill reads after `product-marketing-context.md`. The template ships in the plugin; the runtime file is per-project (gitignored).
+**`cm-strategy` (A3) + `skills/cm-strategy/STRATEGY.template.md`.** A focus layer above context. `.agents/STRATEGY.md` names the current strategic bet — audience, motion, primary lever, anti-goals — in a structured shape every skill reads after `product-marketing-context.md`. The template ships in the plugin at `skills/cm-strategy/STRATEGY.template.md`; the runtime `.agents/STRATEGY.md` is per-project (gitignored).
 
-**`.cursor-plugin/` package (S4).** A Cursor-Marketplace-ready package directory ships alongside `.claude-plugin/`. v1.8 keeps `npx compounding-marketing --tool=cursor` as the supported install path; Marketplace publication targets v1.8.1.
+**`.cursor-plugin/` package (S4).** A Cursor-Marketplace-ready package directory ships alongside `.claude-plugin/`. File inventory:
 
-**Integration auto-detection — Phase 1 (S6).** Opt-in setup step that scans the user's MCP config for known integrations (Perplexity, Exa, Linear, GA4, Search Console, Mixpanel, Meta Ads, …) and writes `.agents/integrations.md` so skills know what's available. Per-skill integration-aware behavior is the v1.9 milestone.
+- `.cursor-plugin/marketplace.json` — Cursor Marketplace metadata (name, version, components, `defaultActivation: "default-off"`, team-controls support for `default-off | default-on | required`).
+- `.cursor-plugin/plugin.json` — plugin manifest.
+- `.cursor-plugin/mcp.json` — pre-wired Perplexity + Exa MCP servers.
+- `.cursor-plugin/rules/cm-*.mdc` — 16 auto-generated Cursor rule files (14 workflows + 2 lifecycle).
+- `.cursor-plugin/skills/README.md` — pointer to the canonical source-of-truth `skills/` directory.
+- `.cursor-plugin/README.md` — install + team-controls instructions.
+
+v1.8 keeps `npx compounding-marketing --tool=cursor` as the supported install path; Marketplace publication targets v1.8.1.
+
+**Integration auto-detection — Phase 1 (S6).** Opt-in setup step (`runIntegrationScan()` in `bin/setup.js`) that scans the user's MCP configs (`.mcp.json`, `.cursor/mcp.json`, `~/.codex/config.toml`) via `scanMcpConfigs()`, classifies hits against a 15-entry catalog via `classifyIntegrations()`, renders the result through `renderIntegrationsMarkdown()`, and writes `.agents/integrations.md` so skills know what's available. If `.agents/product-marketing-context.md` exists, an "Available integrations" pointer is appended. Detected integrations:
+
+| Integration | Tags |
+|---|---|
+| Slack | messaging |
+| Notion | docs |
+| Linear | tickets |
+| HubSpot | crm, email, marketing-automation |
+| Salesforce | crm |
+| Stripe | billing |
+| Gmail | email |
+| Google Calendar | calendar |
+| Google Drive | docs, storage |
+| Mixpanel | analytics |
+| Amplitude | analytics |
+| PostHog | analytics, feature-flags |
+| GitHub | code, tickets |
+| Perplexity | search, research |
+| Exa | search, research |
+
+Per-skill integration-aware behavior (skills branching on what's available) is the v1.9 milestone.
 
 **`when_to_use:` frontmatter on every skill.** Aligns with the 2026 Agent Skills spec — every `SKILL.md` now declares both a description (for trigger matching) and a `when_to_use:` directive (for routing). Improves discovery in every host (Claude Code, Cursor, Codex, Zed, ChatGPT).
 
-**Kind-aware validator.** `scripts/validate-skills.js` now reads the `kind:` frontmatter and applies the right ruleset: full structural + content check for `kind: skill` (≥300 lines, role prompt, all 7 sections, ≥5 common mistakes, ≥2 examples, ≥3 related skills); lite check for `kind: workflow | lifecycle` (frontmatter + section presence — orchestrator content is the point, not bulk). Reports `75 skills passed, 14 workflows passed, 2 lifecycle passed, 0 failed, 0 warnings`.
+**Kind-aware validator.** `scripts/validate-skills.js` now reads the `kind:` frontmatter and applies the right ruleset: full structural + content check for `kind: skill` (≥300 lines, role prompt, all 7 sections, ≥5 common mistakes, ≥2 examples, ≥3 related skills); a new `validateLite()` path for `kind: workflow | lifecycle` (frontmatter + section presence — orchestrator content is the point, not bulk). Reports `75 skills passed, 14 workflows passed, 2 lifecycle passed, 0 failed, 0 warnings`.
 
-**Headless mode (A1).** `cm-flow-compound`, `cm-flow-audit`, `cm-flow-retro`, and `cm-flow-weekly` accept structured JSON input and emit structured JSON output with documented input/output schemas. The retro → compound chain is the headline use case: retro output becomes compound input directly, no human re-keying.
+**Headless mode (A1).** `cm-flow-compound`, `cm-flow-audit`, `cm-flow-retro`, and `cm-flow-weekly` ship a new `## Modes` section that accepts structured JSON input and emits structured JSON output with documented schemas. Chain semantics: `cm-flow-retro` → `cm-flow-compound` and `cm-flow-weekly` → `cm-flow-compound` — the upstream skill's JSON output is a drop-in input for compound, no human re-keying. Opens the door to scheduled / CI-driven marketing ops.
 
 ### Changed
 
@@ -69,6 +100,18 @@ Headline release: **one paradigm, parallel execution, multi-surface distribution
 ### Why this matters
 
 v1.7 made marketing **knowledge** compound through a structural read/write loop on `.agents/learnings/`. v1.8 makes the **orchestration** compound. The collapse to one skill paradigm removes the second authoring contract (a separate `commands/` shape) that every new contributor had to learn — and removes the validator carve-out that let workflow files drift. The sub-agent tier turns the highest-leverage workflows (research, audit, position) from sequential 2-3 hour passes into parallel 20-30 minute fan-outs on Claude Code, with documented graceful degradation on every other host. `.claude/skills/` as the canonical surface puts the plugin where Claude Code's native loader looks first. Headless mode on `cm-flow-{compound,audit,retro,weekly}` opens the door to scheduled / CI-driven marketing ops. Together: every artifact gets faster to produce, every artifact gets richer because parallel sub-agents bring more evidence, and every project's learnings flow into the next run without the human re-keying anything.
+
+### Out of v1.8
+
+Explicitly deferred or declined so the scope stayed honest:
+
+- **Per-skill integration-aware behavior → v1.9.** v1.8 ships detection + `.agents/integrations.md`. Skills branching their output on "is Linear available? then file a ticket" is v1.9.
+- **Cursor Marketplace publish → v1.8.1.** The `.cursor-plugin/` package is ready; the actual Marketplace submission is a follow-up.
+- **`cm-learnings-researcher` as the default read path for wired skills → v1.8.1+.** The researcher is shipped and opt-in; the five v1.7 wired skills still run the in-line Prior Learnings Consulted contract unchanged.
+- **Workspace-scoped learnings (cross-project) → v1.9.** Still per-project under `.agents/learnings/` in v1.8.
+- **Semantic search over learnings → not pursued.** Frontmatter-first retrieval in `cm-learnings-researcher` is the chosen path; a vector index is unnecessary at current corpus sizes.
+- **Native Claude Code hooks → declined.** Cron / shell hooks remain out of scope; headless mode is the supported automation surface.
+- **Claude Desktop MCP packaging → deferred.** Desktop reads a different config shape; revisit after Cursor Marketplace ships.
 
 ---
 

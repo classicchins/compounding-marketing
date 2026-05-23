@@ -44,7 +44,7 @@ A cross-platform AI plugin — **91 skills (75 content + 14 workflows + 2 lifecy
 ## Who It's For
 
 - **Technical founders** who need to ship marketing without hiring a marketer.
-- **Solo marketers** who want 61 specialized playbooks in their corner.
+- **Solo marketers** who want 91 specialized playbooks in their corner.
 - **Marketing managers** accelerating their team with AI and needing a quality bar AI outputs can be measured against.
 - **Growth engineers** who think in systems, processes, and measurable outcomes.
 
