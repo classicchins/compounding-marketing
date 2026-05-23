@@ -1,12 +1,12 @@
 # CLAUDE.md — Compounding Marketing
 
-The Compounding Marketing plugin: 61 marketing skills + 16 workflow commands for SaaS marketing, available to Claude Code, Claude Cowork, Cursor, Codex, ChatGPT, and Zed.
+The Compounding Marketing plugin: **91 skills (75 content + 14 workflows + 2 lifecycle)** for SaaS marketing, available to Claude Code, Claude Cowork, Cursor, Codex, ChatGPT, and Zed.
 
 ## What This Is
 
-Compounding Marketing is a cross-platform AI plugin providing **61 marketing skills** and **16 workflow commands** for SaaS marketing — positioning, messaging, copy, CRO, SEO, GTM, lifecycle, growth.
+Compounding Marketing is a cross-platform AI plugin providing **91 skills** for SaaS marketing — positioning, messaging, copy, CRO, SEO, GTM, lifecycle, growth.
 
-It is **not a traditional codebase**. It's a structured knowledge system: skills are `SKILL.md` files, workflows are command `.md` files. The setup wizard (`bin/setup.js`) installs them into your AI tool of choice with safe, prompt-driven file writes.
+It is **not a traditional codebase**. It's a structured knowledge system: everything is a skill (`skills/<name>/SKILL.md`) with a `kind: skill | workflow | lifecycle` frontmatter that routes the validator. The setup wizard (`bin/setup.js`) installs skills into your AI tool of choice with safe, prompt-driven file writes.
 
 Philosophy: **Make each unit of marketing work easier than the last.** 80% research and planning, 20% execution. Core loop: **Research → Position → Message → Execute → Compound.**
 
@@ -14,24 +14,29 @@ Philosophy: **Make each unit of marketing work easier than the last.** 80% resea
 
 | You want to… | Invoke it as | Notes |
 |---|---|---|
-| Use a single skill (e.g., write copy) | Natural language ("write landing page copy for…") **or** `/cm-{skill}` (e.g., `/cm-copywriting`) | All 61 skills are registered as slash commands. Natural language also works — the right skill is matched by trigger keywords. |
-| Run a multi-step workflow | `/cm-{workflow}` (e.g., `/cm-research`, `/cm-copy`, `/cm-launch`) | 16 workflows orchestrate multiple skills end-to-end. |
-| Establish project context (do this first) | `/cm-context` | Creates `.agents/product-marketing-context.md` — every other skill reads from this. |
+| Use a single content skill (e.g., write copy) | Natural language ("write landing page copy for…") **or** `/cm-{skill}` (e.g., `/cm-copywriting`) | All 75 content skills are registered as slash commands. Natural language also works — the right skill is matched by trigger keywords. |
+| Run a multi-step workflow | `/cm-flow-{name}` (e.g., `/cm-flow-research`, `/cm-flow-copy`, `/cm-flow-launch`) | 14 workflows orchestrate multiple skills end-to-end. Legacy `/cm-{name}` short forms still work via backward-compat shims through v2.0. |
+| Establish project foundation (do this first) | `/cm-context`, then `/cm-strategy` | Creates `.agents/product-marketing-context.md` and `.agents/STRATEGY.md` — every other skill reads both. |
 | Install / update / remove the plugin | `/cm-setup`, `/cm-uninstall`, or `npx compounding-marketing` | The npx wizard supports `--dry-run`, `--yes`, `--scope`, `--tool`. |
 
-> Slash commands use **`/cm-{name}`** (hyphen, not colon). The legacy colon-form is no longer supported.
+> Slash commands use **`/cm-{name}`** (hyphen, not colon). Workflows are canonical as `/cm-flow-{name}` in v1.8+.
 
 ## Repository Structure
 
 ```
-skills/           # 61 self-contained marketing skills (each a SKILL.md with YAML frontmatter)
-commands/         # 16 workflow commands (cm-*.md, invoked as /cm-{name})
+skills/           # 91 SKILL.md files. Each carries kind: skill | workflow | lifecycle.
+                  # Workflows: skills/cm-flow-*/SKILL.md
+                  # Lifecycle: skills/cm-{setup,uninstall}/SKILL.md
+                  # Everything else: kind: skill (75 content skills)
 bin/setup.js      # npx setup wizard — readline-only CLI, no external deps, ~1260 lines
 scripts/          # generate-claude-md.js (refreshes the Skills section below)
-                  # validate-skills.js  (enforces the 7-section skill structure)
+                  # validate-skills.js  (kind-aware structural validator)
+references/       # sub-agent-dispatch.md — v1.8 orchestrator → sub-agent contract
 mcp/              # Pre-configured MCP servers (Perplexity, Exa) for research enhancement
 integrations/     # Optional tool integrations (Linear, GA4, etc.)
-.agents/          # Runtime: product-marketing-context.md + learnings/<category>.md
+.cursor-plugin/   # Cursor Marketplace package (v1.8.1 publish target)
+.agents/          # Runtime: product-marketing-context.md + STRATEGY.md
+                  # + learnings/<category>.md + integrations.md
 ```
 
 There are no tests or builds. This is a content/knowledge repo. Use:
@@ -42,24 +47,24 @@ node scripts/validate-skills.js              # enforce skill structure
 node scripts/generate-claude-md.js           # regenerate the Skills section below
 ```
 
-## Workflow Commands by Category
+## Workflow & Lifecycle Commands by Category
 
-All 16 workflows live in `commands/` and are invoked as `/cm-{name}`.
+The 14 workflows live at `skills/cm-flow-<name>/SKILL.md` (`kind: workflow`); the 2 lifecycle commands at `skills/cm-{setup,uninstall}/SKILL.md` (`kind: lifecycle`). Invoke via `/cm-flow-<name>` (legacy `/cm-<name>` short forms still work via backward-compat shims).
 
 | Category | Commands | When |
 |---|---|---|
-| **Install / Lifecycle** | `/cm-setup`, `/cm-uninstall` | Bootstrap or remove the plugin in a project (safe, prompt-driven). |
-| **Project workflows** | `/cm-research`, `/cm-position`, `/cm-copy`, `/cm-launch`, `/cm-social`, `/cm-email`, `/cm-compound` | Multi-step projects (deep research, positioning, end-to-end copy, launch, social/email campaigns, post-project learning capture). |
-| **Sprint & review** | `/cm-sprint`, `/cm-retro`, `/cm-audit` | 2-week sprint planning, retrospective, quarterly marketing health check. |
-| **Daily ops** | `/cm-daily`, `/cm-standup`, `/cm-eod`, `/cm-weekly` | Morning orientation, async standup, end-of-day wrap, Friday review/plan. |
+| **Lifecycle** | `/cm-setup`, `/cm-uninstall` | Bootstrap or remove the plugin in a project (safe, prompt-driven). |
+| **Project workflows** | `/cm-flow-research`, `/cm-flow-position`, `/cm-flow-audit`, `/cm-flow-copy`, `/cm-flow-launch`, `/cm-flow-social`, `/cm-flow-email`, `/cm-flow-compound` | Multi-step projects. `cm-flow-research`, `cm-flow-position`, and `cm-flow-audit` are v1.8 orchestrators that fan out parallel sub-agents on Claude Code. |
+| **Sprint & review** | `/cm-flow-sprint`, `/cm-flow-retro` | 2-week sprint planning, retrospective. `cm-flow-retro` supports headless JSON input/output and chains into `cm-flow-compound`. |
+| **Daily ops** | `/cm-flow-daily`, `/cm-flow-standup`, `/cm-flow-eod`, `/cm-flow-weekly` | Morning orientation, async standup, end-of-day wrap, Friday review/plan. `cm-flow-weekly` and `cm-flow-audit` also support headless mode. |
 
 ## Skill Categories
 
-61 skills across 12 categories.
+75 content skills across 13 categories.
 
 | Category | Count | Sample skills |
 |---|---|---|
-| Foundation | 5 | cm-context, positioning, messaging-framework |
+| Foundation | 6 | cm-context, cm-strategy, positioning, messaging-framework |
 | Research | 7 | icp-research, customer-research, competitive-analysis |
 | Content & Copy | 8 | copywriting, copy-editing, content-strategy |
 | SEO & Discovery | 6 | seo-audit, ai-seo, programmatic-seo |
@@ -70,16 +75,17 @@ All 16 workflows live in `commands/` and are invoked as `/cm-{name}`.
 | GTM & Launch | 5 | launch-strategy, gtm-strategy, product-hunt-launch |
 | Growth & Retention | 6 | referral-program, churn-prevention, partnership-marketing |
 | Sales & RevOps | 3 | sales-enablement, revops, webinar-strategy |
-| Meta | 1 | marketing-ideas (140+ SaaS tactics) |
+| Meta | 3 | marketing-ideas (140+ SaaS tactics), cm-skill-author, cm-learnings-researcher |
+| Sub-agent specialists (v1.8) | 11 | cm-icp-finder, cm-competitor-mapper, cm-customer-voice-miner, cm-canvas-runner, cm-category-tester, cm-conversion-auditor, cm-funnel-auditor, cm-seo-auditor, cm-content-auditor, cm-market-sizing-runner, cm-alternatives-mapper |
 
 The full alphabetical catalog is at the bottom of this file (auto-generated).
 
 ## How to Use This Plugin
 
-1. **Foundation — `/cm-context`.** Always run first on a new project. Captures product, audience, positioning, competitors, brand voice into `.agents/product-marketing-context.md`. Every other skill reads it.
-2. **Position before tactics — `/cm-position`.** Run a Dunford-style positioning workshop before writing copy, planning channels, or building pages. Outputs feed `messaging-framework` and `value-proposition`.
-3. **Execute — per skill or via workflow.** For one-off work, invoke the skill directly ("write a case study for…" or `/cm-case-study`). For multi-step projects, use `/cm-copy`, `/cm-launch`, `/cm-research`, `/cm-social`, `/cm-email`.
-4. **Compound — `/cm-compound`.** After completing each project, capture one schema-valid learning entry into `.agents/learnings/<category>.md`. v1.7 makes this a strict contract: six required fields (`Context`, `Finding`, `Evidence`, `Implication`, `Linked skills`, `Confidence`), validated on write, rejected if missing evidence. Five skills now read these entries before producing output — see "Prior Learnings System" below.
+1. **Foundation — `/cm-context` then `/cm-strategy`.** Always run first on a new project. `cm-context` captures product, audience, positioning, competitors, brand voice into `.agents/product-marketing-context.md`. `cm-strategy` (v1.8) names the current strategic bet — audience, motion, primary lever, anti-goals — into `.agents/STRATEGY.md`. Every other skill reads both.
+2. **Position before tactics — `/cm-flow-position`.** Run a Dunford-style positioning workshop before writing copy, planning channels, or building pages. v1.8 orchestrator fans out canvas-runner, category-tester, alternatives-mapper sub-agents in parallel and folds outputs into `messaging-framework` and `value-proposition`.
+3. **Execute — per skill or via workflow.** For one-off work, invoke the skill directly ("write a case study for…" or `/cm-case-study`). For multi-step projects, use `/cm-flow-copy`, `/cm-flow-launch`, `/cm-flow-research`, `/cm-flow-social`, `/cm-flow-email`.
+4. **Compound — `/cm-flow-compound`.** After completing each project, capture one schema-valid learning entry into `.agents/learnings/<category>.md`. v1.7 makes this a strict contract: six required fields (`Context`, `Finding`, `Evidence`, `Implication`, `Linked skills`, `Confidence`), validated on write, rejected if missing evidence. Five skills read these entries before producing output — see "Prior Learnings System" below. v1.8's `cm-learnings-researcher` handles retrieval as the library grows.
 
 ## Prior Learnings System (v1.7)
 
@@ -99,14 +105,25 @@ The literal heading is the consumption contract — wired skills parse positiona
 
 **Validator.** `scripts/validate-skills.js` emits a non-blocking warning when a skill listed in `PRIOR_LEARNINGS_WIRED` is missing the section. Warnings print in their own block; only errors fail the build.
 
-**Future releases.** The schema is forward-compatible. v1.8 will continue the rollout to additional skills and add a dedicated `cm-learnings-researcher` agent for frontmatter-first retrieval as `.agents/learnings/` grows.
+**Future releases.** The schema is forward-compatible. v1.8 ships `cm-learnings-researcher` for frontmatter-first retrieval; v1.9 continues the rollout to additional wired skills.
+
+## v1.8 architecture
+
+- **Unified skill model.** `commands/` is gone. Workflows live at `skills/cm-flow-*/SKILL.md` and lifecycle commands at `skills/cm-{setup,uninstall}/SKILL.md`. The `kind: skill | workflow | lifecycle` frontmatter routes the validator.
+- **Sub-agent tier.** Three orchestrators (`cm-flow-research`, `cm-flow-audit`, `cm-flow-position`) dispatch 11 specialists in parallel via the Task tool on Claude Code; other platforms fall back to explicit sequencing. Contract: `references/sub-agent-dispatch.md`.
+- **Canonical install surface.** Skills install at `.claude/skills/<name>/` (the surface Claude Code reads natively). `.claude/commands/` carries only 14 backward-compat workflow shims.
+- **`cm-learnings-researcher`.** Frontmatter-first 7-step retrieval over `.agents/learnings/<category>.md`. The factored-out read side for the v1.7 Prior Learnings system.
+- **Headless mode.** `cm-flow-{compound,audit,retro,weekly}` accept JSON input and emit JSON output with documented schemas. Retro → compound is the headline chain.
+- **Integration auto-detection (opt-in).** Setup wizard scans MCP config and writes `.agents/integrations.md` so skills know what's available. Per-skill integration-aware behavior arrives in v1.9.
+- **Cursor plugin package.** `.cursor-plugin/` ships in the repo; Cursor Marketplace publication is the v1.8.1 target.
 
 ## Adding a New Skill
 
-1. Create `skills/{skill-name}/SKILL.md` with YAML frontmatter (`name`, `description`, `metadata.version`).
-2. Follow `skills/_TEMPLATE.md` — the validated 7-section structure (Role / Initial Assessment / Process / Output Format / Quality Bar with ≥5 Common Mistakes / ≥2 Examples / ≥3 Related Skills). Plus an optional **Prior Learnings Consulted** section before Process — copy from `_TEMPLATE.md` if your skill should compound knowledge.
-3. Run `node scripts/validate-skills.js` to verify structure, then `node scripts/generate-claude-md.js` to refresh the Skills index below.
-4. Update the skill counts and tables in `AGENTS.md` and `README.md` if the total changes.
+1. **Fastest path:** run `cm-skill-author` (the v1.8 meta-skill). It scaffolds a validator-passing SKILL.md and prints the `node scripts/validate-skills.js …` command to confirm.
+2. **Manual path:** create `skills/{skill-name}/SKILL.md` with YAML frontmatter (`name`, `description`, `when_to_use`, `kind: skill | workflow | lifecycle`, `metadata.version`).
+3. Follow `skills/_TEMPLATE.md` — the validated 7-section structure (Role / Initial Assessment / Process / Output Format / Quality Bar with ≥5 Common Mistakes / ≥2 Examples / ≥3 Related Skills). Plus an optional **Prior Learnings Consulted** section before Process. For an orchestrator skill, optionally add a **Sub-agent dispatch** section per `references/sub-agent-dispatch.md`.
+4. Run `node scripts/validate-skills.js` to verify structure (kind-aware — full check for `kind: skill`, lite for `kind: workflow | lifecycle`), then `node scripts/generate-claude-md.js` to refresh the Skills index below.
+5. Update the skill counts and tables in `AGENTS.md` and `README.md` if the total changes.
 
 ## MCP Integration
 
@@ -119,9 +136,9 @@ Install via `/cm-setup` (it offers MCP wiring) or `npx compounding-marketing` (w
 
 ## Important Conventions
 
-- **Run `/cm-context` first on every new project.** Skills are designed to read `.agents/product-marketing-context.md` and degrade gracefully when it's missing — but quality is much higher with it.
-- **Slash command syntax is `/cm-{name}` with a hyphen** (not the older colon-form).
-- **Learnings live in `.agents/learnings/{category}.md`.** Written by `/cm-compound`.
+- **Run `/cm-context` then `/cm-strategy` first on every new project.** Skills are designed to read `.agents/product-marketing-context.md` and `.agents/STRATEGY.md` and degrade gracefully when they're missing — but quality is much higher with both.
+- **Slash command syntax is `/cm-{name}` with a hyphen.** Workflows are canonical as `/cm-flow-{name}` in v1.8+ (legacy `/cm-{name}` short forms still work via backward-compat shims).
+- **Learnings live in `.agents/learnings/{category}.md`.** Written by `/cm-flow-compound`. Retrieved by `cm-learnings-researcher`.
 - **Edits to `CLAUDE.md` / `AGENTS.md` are wrapped in `<!-- COMPOUNDING-MARKETING-START/END -->` markers.** Re-running setup is idempotent — never duplicates the block.
 - **No file write happens without confirmation.** The wizard prompts for every collision (merge / overwrite-with-`.bak` / skip). `--dry-run` previews everything; `--uninstall` reverses it.
 

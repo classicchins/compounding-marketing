@@ -1,7 +1,7 @@
 {
   "name": "compounding-marketing",
-  "version": "1.7.0",
-  "description": "61 marketing skills for Claude Code, Codex CLI, ChatGPT, Cursor & more. Make each unit of marketing work easier than the last.",
+  "version": "1.8.0",
+  "description": "Cross-platform AI plugin: 91 marketing skills + workflows for SaaS — positioning, copy, CRO, SEO, paid ads, GTM, lifecycle, growth.",
   "keywords": [
     "marketing",
     "saas",
@@ -31,10 +31,10 @@
   "files": [
     "bin/",
     "skills/",
-    "commands/",
     "mcp/",
     "integrations/",
     "scripts/",
+    "references/",
     "docs/",
     ".agents/",
     ".claude-plugin/",

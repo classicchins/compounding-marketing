@@ -5,6 +5,73 @@ All notable changes to the Compounding Marketing plugin will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-05-23
+
+Headline release: **one paradigm, parallel execution, multi-surface distribution.** v1.7 made knowledge compound; v1.8 makes the *orchestration* compound. The 14 workflows and 2 lifecycle commands collapse into `skills/cm-flow-*/` and `skills/cm-{setup,uninstall}/` under a single unified skill model with `kind: skill | workflow | lifecycle` frontmatter. A new sub-agent tier ships 11 specialist skills + 3 orchestrators (`cm-flow-research`, `cm-flow-audit`, `cm-flow-position`) that fan out parallel work through a cross-platform dispatch contract. `.claude/skills/` becomes the canonical install surface, `.cursor-plugin/` is publish-ready, four workflows go headless with JSON input/output, and the v1.7 Prior Learnings read side is factored into a dedicated `cm-learnings-researcher` skill.
+
+### Added
+
+**Sub-agent tier (S2).** 11 new specialist skills designed to be dispatched in parallel by orchestrator workflows: `cm-icp-finder`, `cm-competitor-mapper`, `cm-customer-voice-miner`, `cm-market-sizing-runner`, `cm-seo-auditor`, `cm-conversion-auditor`, `cm-funnel-auditor`, `cm-content-auditor`, `cm-canvas-runner`, `cm-category-tester`, `cm-alternatives-mapper`. Three orchestrator workflows fan them out: `cm-flow-research`, `cm-flow-audit`, `cm-flow-position`. Cross-platform dispatch contract documented at `references/sub-agent-dispatch.md` — Claude Code uses the Task tool for true parallel execution; other platforms fall back to explicit sequencing.
+
+**`cm-learnings-researcher` (S3).** Frontmatter-first 7-step retrieval skill that scans `.agents/learnings/<category>.md` for the entries most relevant to the current run. The factored-out read side for the v1.7 Prior Learnings system. Wired skills can delegate to it as the learnings library grows.
+
+**`cm-skill-author` (A2).** Meta-skill that scaffolds a structurally valid SKILL.md (7-section gold-standard) and emits the `node scripts/validate-skills.js skills/<slug>/SKILL.md` command to confirm. Does not declare success until validation passes. Replaces the read-template-and-hope path for new contributors.
+
+**`cm-strategy` (A3) + `STRATEGY.template.md`.** A focus layer above context. `.agents/STRATEGY.md` names the current strategic bet — audience, motion, primary lever, anti-goals — in a structured shape every skill reads after `product-marketing-context.md`. The template ships in the plugin; the runtime file is per-project (gitignored).
+
+**`.cursor-plugin/` package (S4).** A Cursor-Marketplace-ready package directory ships alongside `.claude-plugin/`. v1.8 keeps `npx compounding-marketing --tool=cursor` as the supported install path; Marketplace publication targets v1.8.1.
+
+**Integration auto-detection — Phase 1 (S6).** Opt-in setup step that scans the user's MCP config for known integrations (Perplexity, Exa, Linear, GA4, Search Console, Mixpanel, Meta Ads, …) and writes `.agents/integrations.md` so skills know what's available. Per-skill integration-aware behavior is the v1.9 milestone.
+
+**`when_to_use:` frontmatter on every skill.** Aligns with the 2026 Agent Skills spec — every `SKILL.md` now declares both a description (for trigger matching) and a `when_to_use:` directive (for routing). Improves discovery in every host (Claude Code, Cursor, Codex, Zed, ChatGPT).
+
+**Kind-aware validator.** `scripts/validate-skills.js` now reads the `kind:` frontmatter and applies the right ruleset: full structural + content check for `kind: skill` (≥300 lines, role prompt, all 7 sections, ≥5 common mistakes, ≥2 examples, ≥3 related skills); lite check for `kind: workflow | lifecycle` (frontmatter + section presence — orchestrator content is the point, not bulk). Reports `75 skills passed, 14 workflows passed, 2 lifecycle passed, 0 failed, 0 warnings`.
+
+**Headless mode (A1).** `cm-flow-compound`, `cm-flow-audit`, `cm-flow-retro`, and `cm-flow-weekly` accept structured JSON input and emit structured JSON output with documented input/output schemas. The retro → compound chain is the headline use case: retro output becomes compound input directly, no human re-keying.
+
+### Changed
+
+**`commands/` collapsed into `skills/`.** The directory is gone. All 16 commands moved into `skills/` with `kind: workflow` (14) or `kind: lifecycle` (2). One paradigm, one validator, one install surface.
+
+| Old path | New path | Kind |
+|---|---|---|
+| `commands/cm-setup.md` | `skills/cm-setup/SKILL.md` | lifecycle |
+| `commands/cm-uninstall.md` | `skills/cm-uninstall/SKILL.md` | lifecycle |
+| `commands/cm-research.md` | `skills/cm-flow-research/SKILL.md` | workflow |
+| `commands/cm-position.md` | `skills/cm-flow-position/SKILL.md` | workflow |
+| `commands/cm-copy.md` | `skills/cm-flow-copy/SKILL.md` | workflow |
+| `commands/cm-launch.md` | `skills/cm-flow-launch/SKILL.md` | workflow |
+| `commands/cm-social.md` | `skills/cm-flow-social/SKILL.md` | workflow |
+| `commands/cm-email.md` | `skills/cm-flow-email/SKILL.md` | workflow |
+| `commands/cm-compound.md` | `skills/cm-flow-compound/SKILL.md` | workflow |
+| `commands/cm-sprint.md` | `skills/cm-flow-sprint/SKILL.md` | workflow |
+| `commands/cm-retro.md` | `skills/cm-flow-retro/SKILL.md` | workflow |
+| `commands/cm-audit.md` | `skills/cm-flow-audit/SKILL.md` | workflow |
+| `commands/cm-daily.md` | `skills/cm-flow-daily/SKILL.md` | workflow |
+| `commands/cm-standup.md` | `skills/cm-flow-standup/SKILL.md` | workflow |
+| `commands/cm-eod.md` | `skills/cm-flow-eod/SKILL.md` | workflow |
+| `commands/cm-weekly.md` | `skills/cm-flow-weekly/SKILL.md` | workflow |
+
+`.claude/skills/` is now the canonical install surface. `.claude/commands/cm-*.md` carries only the 14 backward-compat workflow shims that forward `/cm-launch` → `/cm-flow-launch`, etc.
+
+`README.md`, `AGENTS.md`, `CLAUDE.md` banners and counts updated: **91 skills (75 content + 14 workflows + 2 lifecycle)**. The auto-generated Skills section in `CLAUDE.md` regenerated by `scripts/generate-claude-md.js`.
+
+`package.json` — version bumped to `1.8.0`. Description updated to reflect the new count and broader scope. `files[]` array no longer references the removed `commands/` directory; `references/` is now included for the sub-agent dispatch contract.
+
+### Compatibility
+
+- **Backward-compatible slash commands.** Every legacy short form (`/cm-launch`, `/cm-research`, `/cm-position`, `/cm-copy`, `/cm-social`, `/cm-email`, `/cm-compound`, `/cm-sprint`, `/cm-retro`, `/cm-audit`, `/cm-daily`, `/cm-standup`, `/cm-eod`, `/cm-weekly`) continues to work via shim files at `.claude/commands/cm-*.md` that forward to the canonical `/cm-flow-*` skill. Shims are guaranteed through v2.0; new content and examples should prefer `/cm-flow-*`.
+- **`.agents/` data is untouched.** Existing `.agents/product-marketing-context.md` and `.agents/learnings/<category>.md` files keep working without migration. `.agents/STRATEGY.md` is a new opt-in artifact written by `cm-strategy`; skills degrade gracefully when it's absent.
+- **v1.7 Prior Learnings wiring is unchanged.** The five wired skills (`copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`) still run the in-line Prior Learnings Consulted contract. Delegation to `cm-learnings-researcher` is opt-in and arrives as the default in v1.8.1+; current behavior is identical to v1.7.
+- **Validator output line is stable** for CI consumers: `Skills validation: 75 skills passed, 14 workflows passed, 2 lifecycle passed, 0 failed, 0 warnings`.
+- **Cursor users.** Continue to install via `npx compounding-marketing --tool=cursor`. The `.cursor-plugin/` package is staged for v1.8.1 Marketplace publication and does not change the supported install path today.
+
+### Why this matters
+
+v1.7 made marketing **knowledge** compound through a structural read/write loop on `.agents/learnings/`. v1.8 makes the **orchestration** compound. The collapse to one skill paradigm removes the second authoring contract (a separate `commands/` shape) that every new contributor had to learn — and removes the validator carve-out that let workflow files drift. The sub-agent tier turns the highest-leverage workflows (research, audit, position) from sequential 2-3 hour passes into parallel 20-30 minute fan-outs on Claude Code, with documented graceful degradation on every other host. `.claude/skills/` as the canonical surface puts the plugin where Claude Code's native loader looks first. Headless mode on `cm-flow-{compound,audit,retro,weekly}` opens the door to scheduled / CI-driven marketing ops. Together: every artifact gets faster to produce, every artifact gets richer because parallel sub-agents bring more evidence, and every project's learnings flow into the next run without the human re-keying anything.
+
+---
+
 ## [1.7.0] - 2026-05-23
 
 Headline release: the **Prior Learnings system** — a versioned schema for `.agents/learnings/<category>.md`, a default-on consumption contract wired into 5 high-leverage skills, and a rewritten `/cm-compound` that enforces the schema on write. This is the read/write loop that makes "marketing knowledge compounds" a structural guarantee instead of a tagline.
@@ -304,6 +371,8 @@ Planned additions for future versions:
 
 ---
 
+[1.8.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.8.0
+[1.7.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.7.0
 [1.6.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.6.0
 [1.5.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.5.0
 [1.1.0]: https://github.com/classicchins/compounding-marketing/releases/tag/v1.1.0
