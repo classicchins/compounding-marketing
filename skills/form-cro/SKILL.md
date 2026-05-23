@@ -1,6 +1,7 @@
 ---
 name: form-cro
 description: Optimize forms (contact, demo request, lead gen) for higher completion rates. Covers field optimization, button copy, layout, friction reduction, A/B testing frameworks. Triggers - form optimization, contact form, lead form, form CRO, form conversion.
+when_to_use: When the user wants to optimize a specific form (contact, demo request, signup, lead-gen) for completion rate via field reduction, layout, microcopy, and A/B tests.
 metadata:
   version: 1.1.0
 ---

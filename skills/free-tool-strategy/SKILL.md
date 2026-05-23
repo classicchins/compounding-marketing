@@ -1,6 +1,7 @@
 ---
 name: free-tool-strategy
 description: Create free marketing tools and calculators that attract leads and demonstrate value. Common SaaS growth tactic. Triggers - free tool, calculator, lead magnet tool, marketing tool, free resource, interactive tool.
+when_to_use: When the user wants to build a free tool, calculator, or interactive resource as a lead-generation and SEO play — not when they want general lead-magnet ideas.
 metadata:
   version: 1.1.0
 ---

@@ -1,6 +1,7 @@
 ---
 name: social-media-strategy
 description: Plan and manage social media presence across platforms. Covers channel selection, posting cadence, content calendars, engagement tactics, growth loops, cross-platform repurposing. Triggers - social media strategy, content calendar, posting schedule, social media management, cross-platform strategy, social media planning.
+when_to_use: When the user is planning a multi-platform social presence — channel choices, posting cadence, content calendar, growth loops, repurposing — not a single post.
 metadata:
   version: 1.1.0
 ---

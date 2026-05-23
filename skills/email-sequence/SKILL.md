@@ -1,6 +1,7 @@
 ---
 name: email-sequence
 description: Design automated email flows (welcome, nurture, trial, abandoned cart). Maps emails to customer journey. Triggers - email sequence, drip campaign, email automation, welcome series, nurture sequence.
+when_to_use: When the user is designing a specific automated email flow (welcome, onboarding, trial, nurture, abandoned cart, win-back) and needs the sequence mapped end-to-end with copy direction.
 metadata:
   version: 1.1.0
 ---

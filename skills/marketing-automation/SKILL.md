@@ -1,6 +1,7 @@
 ---
 name: marketing-automation
 description: Set up and optimize marketing automation for B2B SaaS using HubSpot, ActiveCampaign, Marketo, or Klaviyo. Covers workflows, segmentation, scoring, and reporting. Triggers - marketing automation, email automation, HubSpot setup, ActiveCampaign, Marketo, workflow automation, lead nurture.
+when_to_use: When the user is setting up workflows, segmentation, lead scoring, or reporting in HubSpot, ActiveCampaign, Marketo, or Klaviyo, not when they need general email strategy.
 metadata:
   version: 1.1.0
 ---

@@ -1,6 +1,7 @@
 ---
 name: ad-creative
 description: Write ad copy and design ad creative for paid campaigns. Platform-specific best practices. Triggers - ad copy, ad creative, Facebook ad, Google ad, LinkedIn ad, ad writing.
+when_to_use: When the user needs ad copy and creative concepts (headline, primary text, image/video direction) for a specific paid campaign on Meta, Google, LinkedIn, or TikTok.
 metadata:
   version: 1.1.0
 ---

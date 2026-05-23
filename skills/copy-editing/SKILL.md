@@ -1,6 +1,7 @@
 ---
 name: copy-editing
 description: Edit and improve existing marketing copy for clarity, persuasion, brand voice, and conversion. Audits against CRO best practices, applies copywriting frameworks, provides before/after examples. Triggers - edit copy, improve copy, copy review, copy audit, refine copy, polish copy.
+when_to_use: When the user has existing marketing copy and wants it audited and rewritten for clarity, persuasion, brand voice, and conversion, with before/after examples.
 metadata:
   version: 1.1.0
 ---

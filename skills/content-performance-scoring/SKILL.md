@@ -1,6 +1,7 @@
 ---
 name: content-performance-scoring
 description: Score content quality before and after publishing using multi-dimensional framework. Covers SEO, readability, engagement prediction, and brand voice alignment. Triggers - content score, quality score, pre-publish checklist, content audit, SEO score, readability check.
+when_to_use: When the user wants to score a specific piece of content (pre- or post-publish) on SEO, readability, engagement potential, and brand voice alignment with a numeric framework.
 metadata:
   version: 1.1.0
 ---

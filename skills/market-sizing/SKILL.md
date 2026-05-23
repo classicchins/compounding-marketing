@@ -1,6 +1,7 @@
 ---
 name: market-sizing
 description: Calculate TAM/SAM/SOM for market opportunity analysis. Uses top-down and bottom-up methods to size addressable market. Includes data sources and validation approaches. Triggers - TAM, SAM, SOM, market size, total addressable market, market opportunity, market analysis.
+when_to_use: When the user needs a defensible TAM / SAM / SOM for a market opportunity using both top-down and bottom-up methods, with sources, for a deck, board update, or strategy doc.
 metadata:
   version: 1.1.0
 ---

@@ -1,6 +1,7 @@
 ---
 name: cold-email
 description: Write high-converting B2B cold outreach emails using direct-response frameworks. Personalized, value-first, clear CTA. Triggers - cold email, outreach email, prospecting, cold outreach, B2B email.
+when_to_use: When the user is writing a B2B cold outreach email or short sequence to a specific ICP and needs a direct-response draft (subject, opener, value, CTA), not advice on cold-email theory.
 metadata:
   version: 1.2.0
 ---

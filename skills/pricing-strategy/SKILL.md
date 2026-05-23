@@ -1,6 +1,7 @@
 ---
 name: pricing-strategy
 description: Design pricing page, packaging, and pricing strategy. Covers tiering, anchoring, feature bundling, pricing psychology, monetization models, A/B testing. Triggers - pricing page, pricing strategy, pricing tiers, packaging, pricing optimization, monetization.
+when_to_use: When the user is designing pricing tiers, packaging, or a pricing page and needs anchoring, bundling, pricing psychology, and monetization-model decisions made explicit.
 metadata:
   version: 1.1.0
 ---

@@ -1,6 +1,7 @@
 ---
 name: channel-strategy
 description: Prioritize marketing channels based on ICP, goals, and resources. Evaluates channel fit and creates focused channel plan. Triggers - channel strategy, channel selection, marketing channels, channel prioritization, channel mix.
+when_to_use: When the user has ICP and goals defined and needs to prioritize a small set of marketing channels to invest in — not just brainstorm every possible channel.
 metadata:
   version: 1.1.0
 ---

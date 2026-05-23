@@ -1,6 +1,7 @@
 ---
 name: competitive-analysis
 description: Strategic competitive analysis for positioning and differentiation. Maps competitors, alternatives, feature matrices, pricing, white space opportunities. Triggers - competitive analysis, competitor research, competitive landscape, market analysis, competitor comparison.
+when_to_use: When the user needs a structured competitive landscape map (competitors, alternatives, feature matrix, pricing, positioning, white space) for positioning or strategy work.
 metadata:
   version: 1.1.0
 ---

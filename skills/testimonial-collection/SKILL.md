@@ -1,6 +1,7 @@
 ---
 name: testimonial-collection
 description: Systematically gather customer testimonials, reviews, and social proof. Includes templates and processes. Triggers - testimonial collection, customer reviews, social proof, testimonial request, review gathering.
+when_to_use: When the user wants a system for gathering testimonials, reviews, and social proof at scale (request templates, timing triggers, review-site strategy), not a single quote.
 metadata:
   version: 1.1.0
 ---

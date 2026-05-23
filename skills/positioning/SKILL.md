@@ -1,6 +1,7 @@
 ---
 name: positioning
 description: Define market position using April Dunford's Obviously Awesome framework. Identify competitive alternatives, unique attributes, value delivered, best-fit customers, and market category. Triggers - positioning workshop, market position, differentiation strategy, April Dunford, positioning canvas, product positioning.
+when_to_use: When the user wants to define or refine market positioning using April Dunford's Obviously Awesome framework — competitive alternatives, unique attributes, value, ICP, and category.
 metadata:
   version: 1.1.0
 ---

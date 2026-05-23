@@ -1,6 +1,7 @@
 ---
 name: customer-interview
 description: Plan, conduct, and synthesize customer interviews for product and marketing insights. Includes interview guides, question frameworks, and synthesis templates. Triggers - customer interview, user interview, interview guide, customer calls, user research interview.
+when_to_use: When the user is planning, running, or synthesizing customer discovery interviews and needs an interview guide, question framework, or synthesis template.
 metadata:
   version: 1.1.0
 ---

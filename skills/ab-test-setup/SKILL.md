@@ -1,6 +1,7 @@
 ---
 name: ab-test-setup
 description: Design statistically valid A/B tests with proper hypothesis, sample size, and decision criteria. Triggers - A/B test, split test, experiment, hypothesis testing, conversion test.
+when_to_use: When the user wants to design a specific A/B test (hypothesis, sample size, MDE, success criteria) for a page, flow, or campaign — not when they just want general experimentation advice.
 metadata:
   version: 1.1.0
 ---

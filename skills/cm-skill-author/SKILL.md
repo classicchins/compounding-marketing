@@ -1,6 +1,7 @@
 ---
 name: cm-skill-author
 description: Scaffold a new structurally-valid SKILL.md for the compounding-marketing plugin. Generates the 7-section gold-standard template, fills it with skill-specific content, and validates against scripts/validate-skills.js before declaring done. Triggers - new skill, author skill, write skill, skill template, create skill, skill author, scaffold skill, generate skill.
+when_to_use: When the user wants to author a new SKILL.md for the compounding-marketing plugin and needs the 7-section gold-standard structure scaffolded and validated against scripts/validate-skills.js.
 metadata:
   version: 1.0.0
 ---

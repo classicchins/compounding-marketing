@@ -1,6 +1,7 @@
 ---
 name: lead-magnets
 description: Design lead magnets (ebooks, templates, checklists, calculators) that attract and qualify leads. Maps to customer journey. Triggers - lead magnet, content upgrade, downloadable, ebook, template, checklist, calculator.
+when_to_use: When the user wants to design a specific lead magnet (ebook, template, checklist, swipe file, mini-tool) mapped to a stage of the customer journey, with promotion plan.
 metadata:
   version: 1.1.0
 ---

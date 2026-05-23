@@ -1,6 +1,7 @@
 ---
 name: cm-strategy
 description: Create and maintain `.agents/STRATEGY.md` — the one-page focus document above `product-marketing-context.md`. Captures target problem, primary ICP, key metrics, and active tracks of work so every planning skill can check requests against the current focus. Triggers - strategy, STRATEGY.md, target problem, key metrics, active tracks, focus, what are we working on, quarterly plan, roadmap focus.
+when_to_use: When the user wants to create or update .agents/STRATEGY.md — the one-page focus document defining target problem, primary ICP, key metrics, and active tracks of work above the product context doc.
 metadata:
   version: 1.0.0
 ---

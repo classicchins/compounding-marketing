@@ -1,6 +1,7 @@
 ---
 name: seo-audit
 description: Comprehensive SEO audit covering technical, on-page, content, and off-page optimization. Identifies issues and prioritizes fixes by impact. Triggers - SEO audit, technical SEO, on-page SEO, SEO analysis, SEO optimization, site audit.
+when_to_use: When the user wants a comprehensive SEO audit (technical, on-page, content, off-page) of a live site with issues prioritized by impact and effort.
 metadata:
   version: 1.0.1
 ---

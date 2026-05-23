@@ -1,6 +1,7 @@
 ---
 name: schema-markup
 description: Implement structured data (Schema.org) for rich snippets, knowledge panels, and AI search. Triggers - schema markup, structured data, rich snippets, schema.org, JSON-LD.
+when_to_use: When the user wants to implement Schema.org structured data (JSON-LD) on pages to earn rich snippets, knowledge panels, and AI-search citations.
 metadata:
   version: 1.1.0
 ---

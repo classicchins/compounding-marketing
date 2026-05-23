@@ -1,10 +1,36 @@
 # /cm:audit — Marketing Audit
 
-Comprehensive marketing health check across all channels and assets.
+Comprehensive marketing health check across all channels and assets. In v1.8, this command operates as an **orchestrator**: it dispatches four parallel specialist sub-agents (SEO, content, conversion, funnel) and merges their structured returns into the audit's findings array. Wave-1 headless mode is preserved — dispatch happens at the work-execution layer, not the I/O layer.
 
 ## What It Does
 
 A structured audit of your entire marketing operation — messaging consistency, channel performance, funnel health, and asset quality. Run quarterly or before major strategic shifts.
+
+## Specialists
+
+The orchestrator dispatches four specialist sub-agents in parallel. See [`references/sub-agent-dispatch.md`](../references/sub-agent-dispatch.md) for the dispatch contract.
+
+| Specialist | Scope | Methodology drawn from | Expected output |
+|---|---|---|---|
+| **[`cm-seo-auditor`](../skills/cm-seo-auditor/SKILL.md)** | Technical / on-page / content / link SEO signals. 6-12 findings with severity. | `seo-audit` | `findings: [SEO-N]` with `dimension`, `severity`, `evidence`, `recommended_skill`, `priority`. |
+| **[`cm-content-auditor`](../skills/cm-content-auditor/SKILL.md)** | Content quality across 4 dimensions (SEO alignment, readability, engagement, brand voice). Pattern + worst-offender findings. | `content-performance-scoring` | `findings: [CON-N]` with `dimension`, `severity`, `evidence`, `affected_surfaces`. |
+| **[`cm-conversion-auditor`](../skills/cm-conversion-auditor/SKILL.md)** | Conversion surfaces — landing pages, signup flow, lead-gen forms. | `page-cro` + `signup-flow-cro` + `form-cro` | `findings: [CONV-N]` with `dimension` (pages/signup/forms), `severity`, `evidence` with benchmark. |
+| **[`cm-funnel-auditor`](../skills/cm-funnel-auditor/SKILL.md)** | Stage-by-stage funnel drop-offs, tracking gaps, attribution-model fit. Emits top-level `biggest_funnel_dropoff` for the Audit Report. | `attribution-modeling` + `analytics-tracking` | `findings: [FUN-N]` + top-level `biggest_funnel_dropoff`. |
+
+Each specialist consumes a structured brief built by the orchestrator (§ Dispatch sequence below) and returns a structured JSON payload conforming to [`references/sub-agent-dispatch.md`](../references/sub-agent-dispatch.md) §3.
+
+## Dispatch sequence
+
+Dispatch happens at **Step 6** of the Process below (or as the entire execution path in headless mode). I/O layer is unchanged — interactive mode still walks the user through diagnostic prompts; headless mode still accepts JSON input via the resolution order documented under "Modes". The orchestration is *how* findings are produced inside that I/O contract.
+
+### Orchestration steps
+
+1. **Build briefs.** For each of the four specialists, construct a brief per [`references/sub-agent-dispatch.md`](../references/sub-agent-dispatch.md) §2. Each brief includes `metrics` for that specialist's dimension (e.g., `metrics.seo` for `cm-seo-auditor`), pulled from the audit input JSON in headless mode or from the user's interactive responses in interactive mode.
+2. **Detect platform and dispatch.** Per [`references/sub-agent-dispatch.md`](../references/sub-agent-dispatch.md) §1: Claude Code uses `Agent`, Codex uses `spawn_agent`, Cursor uses `Subagent`, Zed/ChatGPT/web fall back to serial.
+3. **Merge returns.** Execute the merge step from [`references/sub-agent-dispatch.md`](../references/sub-agent-dispatch.md) §4 — dedupe findings, resolve conflicts (e.g., thin-content surfaced by both `cm-seo-auditor` and `cm-content-auditor`), consolidate recommendations by `for_skill`, aggregate open questions.
+4. **Promote special fields.** `cm-funnel-auditor` emits a top-level `biggest_funnel_dropoff` field — the orchestrator writes it directly into the Audit Report (preserving the Wave-1 output schema).
+5. **Stack-rank findings.** Sort by severity (critical > high > medium > low), then by `priority` (`fix_now` > `improve_next` > unset). Distribute into the Audit Report's `priority_stack`.
+6. **Produce the report.** Per Modes below — file in headless, structured Markdown in interactive.
 
 ## Time Investment
 
@@ -149,13 +175,16 @@ Headless mode runs Steps 1–6 of the Process below in deterministic order using
 
 **Optional:** Run `competitive-analysis` skill for deep dive.
 
-### 6. Priority Stack Ranking
+### 6. Dispatch specialists and merge findings
 
-Based on audit findings, stack rank:
-1. **Fix now** — Broken things costing money/opportunity
-2. **Improve next** — Underperforming but not broken
-3. **Invest later** — New opportunities identified
-4. **Deprioritize** — Channels/tactics not worth the effort
+**This is where the orchestration described under "Dispatch sequence" above runs.** In v1.8, Steps 1–5 above describe the audit dimensions; this step is where the four specialists (`cm-seo-auditor`, `cm-content-auditor`, `cm-conversion-auditor`, `cm-funnel-auditor`) actually produce findings against those dimensions in parallel.
+
+After the merge step, stack-rank findings into the priority buckets:
+
+1. **Fix now** — Findings tagged `priority: "fix_now"` or `severity: critical`. Broken things costing money/opportunity.
+2. **Improve next** — `severity: high` and not `fix_now`. Underperforming but not broken.
+3. **Invest later** — `severity: medium`. New opportunities identified.
+4. **Deprioritize** — `severity: low`. Channels/tactics not worth the effort.
 
 ## Output
 
@@ -194,10 +223,20 @@ Based on audit findings, stack rank:
 
 ## Skills Used
 
-- `competitive-analysis` (optional deep dive)
-- `page-cro` (for underperforming pages)
-- `analytics-tracking` (for gaps in measurement)
-- `content-strategy` (for content gaps)
+### Specialists dispatched (v1.8)
+
+- [`cm-seo-auditor`](../skills/cm-seo-auditor/SKILL.md) — SEO findings pass.
+- [`cm-content-auditor`](../skills/cm-content-auditor/SKILL.md) — content quality findings.
+- [`cm-conversion-auditor`](../skills/cm-conversion-auditor/SKILL.md) — pages / signup / forms.
+- [`cm-funnel-auditor`](../skills/cm-funnel-auditor/SKILL.md) — funnel drop-off + attribution fit.
+
+### Downstream skills (consumers of audit recommendations)
+
+- `seo-audit`, `site-architecture`, `schema-markup`, `programmatic-seo` — for SEO findings.
+- `content-performance-scoring`, `copy-editing`, `brand-voice`, `content-strategy` — for content findings.
+- `page-cro`, `signup-flow-cro`, `form-cro`, `copywriting` — for conversion findings.
+- `attribution-modeling`, `analytics-tracking`, `onboarding-cro`, `paywall-upgrade-cro` — for funnel findings.
+- `competitive-analysis` — optional deep dive on competitive signals.
 
 ## Common Mistakes
 

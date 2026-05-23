@@ -1,6 +1,7 @@
 ---
 name: copywriting
 description: Write conversion-focused marketing copy for any page type (homepage, landing page, pricing, feature pages). Uses proven frameworks and customer language. Triggers - write copy, landing page copy, homepage copy, page copy, marketing copy, conversion copy, sales copy.
+when_to_use: When the user needs to write or rewrite conversion-focused marketing copy for a specific page (homepage, pricing, feature, lander, email, or ad) and wants a delivered draft, not just guidance.
 metadata:
   version: 1.2.0
 ---

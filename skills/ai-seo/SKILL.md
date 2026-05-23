@@ -1,6 +1,7 @@
 ---
 name: ai-seo
 description: Optimize for AI search (ChatGPT, Perplexity, Google SGE). Covers AEO (Answer Engine Optimization) and GEO (Generative Engine Optimization). Triggers - AI search, AEO, GEO, ChatGPT SEO, AI optimization, answer engine optimization.
+when_to_use: When the user wants to optimize pages or content for AI search surfaces (ChatGPT, Perplexity, Claude, Google AI Overviews) using AEO and GEO tactics, not classical Google SEO alone.
 metadata:
   version: 1.1.1
 ---

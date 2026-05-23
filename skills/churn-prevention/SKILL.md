@@ -1,6 +1,7 @@
 ---
 name: churn-prevention
 description: Identify churn signals, design retention campaigns, create save offers. Reduce customer churn. Triggers - churn reduction, retention, cancel flow, save offer, win-back, churn prevention.
+when_to_use: When the user is seeing measurable churn or cancel-flow drop-off and needs a retention plan, save offers, win-back sequence, or churn-signal scoring.
 metadata:
   version: 1.1.0
 ---

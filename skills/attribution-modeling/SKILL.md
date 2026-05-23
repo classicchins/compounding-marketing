@@ -1,6 +1,7 @@
 ---
 name: attribution-modeling
 description: Set up marketing attribution to understand which channels drive conversions. Covers first-touch, last-touch, multi-touch models. Triggers - attribution, marketing attribution, attribution model, channel attribution, multi-touch attribution.
+when_to_use: When the user needs to choose and set up a marketing attribution model (first-touch, last-touch, linear, position-based, data-driven) to credit channels for conversions.
 metadata:
   version: 1.1.0
 ---

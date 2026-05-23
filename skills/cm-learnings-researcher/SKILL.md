@@ -1,6 +1,7 @@
 ---
 name: cm-learnings-researcher
 description: Frontmatter-first retrieval agent for `.agents/learnings/<category>.md`. Other skills call this researcher to find the 1-3 most relevant prior learnings without re-scanning the whole vault. Triggers - research learnings, search past learnings, prior learnings lookup, retrieve learnings, learnings researcher, learning relevance.
+when_to_use: When a calling skill or human needs the 1-3 most relevant prior learnings from .agents/learnings/<category>.md for the current task, without re-scanning the whole vault.
 metadata:
   version: 1.0.0
 ---

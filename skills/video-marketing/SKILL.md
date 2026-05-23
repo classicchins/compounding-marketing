@@ -1,6 +1,7 @@
 ---
 name: video-marketing
 description: Plan video content strategy — explainer videos, product demos, testimonials, thought leadership. Includes scripting and distribution. Triggers - video strategy, video content, explainer video, product demo video, video marketing, video script.
+when_to_use: When the user is planning a video content strategy or scripting a specific video (explainer, demo, testimonial, thought leadership) with a distribution plan attached.
 metadata:
   version: 1.1.0
 ---

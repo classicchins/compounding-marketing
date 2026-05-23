@@ -1,6 +1,7 @@
 ---
 name: newsletter-growth
 description: Strategies and tactics to grow email newsletter subscribers. Covers lead magnets, signup optimization, content upgrades, partnerships, and paid acquisition. Triggers - newsletter growth, email list growth, subscriber growth, list building, email acquisition.
+when_to_use: When the user is trying to grow newsletter subscribers and needs a focused plan covering lead magnets, signup UX, content upgrades, partnerships, and paid acquisition.
 metadata:
   version: 1.1.0
 ---

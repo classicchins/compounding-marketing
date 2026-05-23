@@ -1,6 +1,7 @@
 ---
 name: cm-context
 description: The foundational product-marketing context document. Run this first before any marketing work. Creates `.agents/product-marketing-context.md` with product details, positioning, audience, competitors, and brand voice. Triggers - new project, missing context, product brief, context document, foundation setup.
+when_to_use: When starting marketing work on a new project and there is no .agents/product-marketing-context.md yet — this skill creates that foundation document before any other marketing work runs.
 metadata:
   version: 1.1.0
 ---
