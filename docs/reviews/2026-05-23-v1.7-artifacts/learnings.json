@@ -1,0 +1,84 @@
+{
+  "search_context": {
+    "feature_task": "Ship v1.7 Prior Learnings system — versioned schema for .agents/learnings/<category>.md, default-on consumption contract wired into 5 skills, rewritten /cm-compound with strict validation, validator soft-warnings for new section",
+    "keywords_used": [
+      "learnings", "compounding", "schema versioning", "content contract",
+      "multi-location duplication", "frontmatter", "validator soft-warnings",
+      "skill versioning", "wired skills", "install safety",
+      "AGENTS.md/CLAUDE.md merge wrapper", "multi-surface delivery", "MCP detection"
+    ],
+    "sources_scanned": [
+      "docs/brainstorms/2026-03-15-plugin-quality-brainstorm.md",
+      "docs/brainstorms/2026-03-15-repo-cleanup-brainstorm.md",
+      "docs/brainstorms/2026-05-23-v1.8-ideation.md",
+      "docs/plans/2026-03-15-001-feat-setup-bugs-and-skill-quality-plan.md",
+      "docs/philosophy.md",
+      "docs/contributing.md",
+      "skills/_LEARNINGS_SCHEMA.md (new file on v1.7-ideation branch)",
+      "scripts/validate-skills.js"
+    ],
+    "files_scanned": 8,
+    "relevant_matches": 4,
+    "note": "No docs/solutions/ directory exists in this repo. The analogue is .agents/learnings/ (the very system this PR formalizes) plus docs/brainstorms/ and docs/plans/. Both were searched."
+  },
+  "critical_patterns": null,
+  "relevant_learnings": [
+    {
+      "rank": 1,
+      "title": "CLAUDE.md merge wrapper — endIdx > startIdx guard is required for idempotent safety",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/docs/plans/2026-03-15-001-feat-setup-bugs-and-skill-quality-plan.md",
+      "module": "bin/setup.js — CLAUDE.md / AGENTS.md marker replacement",
+      "problem_type": "convention (inferred from plan doc)",
+      "relevance": "The v1.7 PR touches CLAUDE.md and AGENTS.md. The team already diagnosed that the marker-replacement logic can silently corrupt content if endIdx <= startIdx (malformed markers). The fix — guard + append-fresh-block-with-warning on malformed state — was resolved in v1.1.5. If the v1.7 PR edits the marker block content (e.g., to add the new Learnings section to the embedded skill catalog), it must verify the setup wizard still carries this guard, not just that the content is correct.",
+      "key_insight": "The COMPOUNDING-MARKETING-START/END block is safe only when the wizard enforces endIdx > startIdx before replacement, and falls back to append + warn on malformed state. Any PR that changes the content injected between the markers should smoke-test a round-trip re-install on a repo that already has the markers (not just a fresh install).",
+      "severity": null
+    },
+    {
+      "rank": 2,
+      "title": "v1.8 architecture decision: learnings retrieval does not scale past ~50 entries without a frontmatter-first researcher agent",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/docs/brainstorms/2026-05-23-v1.8-ideation.md",
+      "module": ".agents/learnings/<category>.md — consumption side",
+      "problem_type": "architecture_pattern (inferred)",
+      "relevance": "The v1.7 schema and 5 wired skills implement direct full-file reads of learnings on every skill execution. The v1.8 ideation doc explicitly calls this out as the design limit: at ~50 entries per category file the direct-read approach breaks (context window pressure, loss of signal). The team has already spec-ed the successor — a cm-learnings-researcher agent with frontmatter-first filtering (the exact pattern used by compounding-engineering's ce-learnings-researcher). v1.7 ships the write-side contract and seeds the 5 read-side wires correctly; the read pattern will need a follow-up in v1.8 (S3). The PR should not introduce anything in the wired-skill sections that assumes entries will always be fully read — leave room for the frontmatter-first search to slot in.",
+      "key_insight": "Wire the 5 skills to read learnings via a stable path convention (.agents/learnings/<category>.md), not by embedding the full read logic in-skill. The exact reading strategy (direct read vs. researcher agent) needs to be swappable without editing all 5 skills again in v1.8. If the current wiring instruction says 'read the full file', make sure that instruction degrades gracefully when the file grows large.",
+      "severity": null
+    },
+    {
+      "rank": 3,
+      "title": "Multi-location doc sync: skill count tables exist in CLAUDE.md, AGENTS.md, and README.md — all three must be updated atomically",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/docs/brainstorms/2026-03-15-plugin-quality-brainstorm.md",
+      "module": "CLAUDE.md / AGENTS.md / README.md — skill catalog and counts",
+      "problem_type": "convention (inferred)",
+      "relevance": "The v1.7 PR adds skills/_LEARNINGS_SCHEMA.md (a new file) and bumps versions on 5 existing skills. The contributing guide and CLAUDE.md both document that skill count/table changes must be propagated to CLAUDE.md, AGENTS.md, and README.md. _LEARNINGS_SCHEMA.md is not a skill (it has schema: learnings in its frontmatter, not name:/description: skill fields), so validate-skills.js should not count it — but the PR must verify the validator skips it correctly, and that docs counts are not inflated.",
+      "key_insight": "_TEMPLATE.md and _LEARNINGS_SCHEMA.md files in skills/ are meta-files, not counted skills. The validator already handles _TEMPLATE.md (it checks for name in frontmatter). Confirm _LEARNINGS_SCHEMA.md is either excluded by the same guard or explicitly listed in the skip-list, so docs counts and the generated CLAUDE.md Skills section stay accurate.",
+      "severity": null
+    },
+    {
+      "rank": 4,
+      "title": "Learnings schema v1.1 (richer frontmatter for retrieval) is already planned — design v1.0 with upgrade path in mind",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/docs/brainstorms/2026-05-23-v1.8-ideation.md",
+      "module": "skills/_LEARNINGS_SCHEMA.md — schema versioning",
+      "problem_type": "design_pattern (inferred)",
+      "relevance": "The v1.8 ideation doc (A5) explicitly plans to add optional tags, linked_projects, last_referenced, and success_signals fields to each entry in v1.8, making the schema backward-compatible from v1.0. The v1.7 PR introduces schema version 1.0.0. The schema and cm-compound validator should be written such that unknown fields on an entry do not cause validation failures — i.e., validators must be additive-field-tolerant, not strict-closed. If the cm-compound rewrite uses field-exhaustive validation (rejects entries with any unrecognized field), v1.8 will require another cm-compound edit just to accept the new fields.",
+      "key_insight": "Write the cm-compound validator to be open to additional optional fields beyond the six required ones. The version field in the schema frontmatter (version: 1.0.0) is the right escape hatch — but only if the validator checks version and treats unknown fields as warnings, not errors, when version >= 1.0.0.",
+      "severity": null
+    },
+    {
+      "rank": 5,
+      "title": "Windows symlink fallback and line-aware .gitignore matching — install safety patterns from v1.1.5",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/docs/plans/2026-03-15-001-feat-setup-bugs-and-skill-quality-plan.md",
+      "module": "bin/setup.js — install safety",
+      "problem_type": "convention (inferred from plan doc)",
+      "relevance": "The v1.7 PR touches package.json (version bump) and may touch the setup wizard indirectly (CLAUDE.md/AGENTS.md content changes flow through the wizard on install). The plan doc documents two install-safety patterns that are easy to regress: (1) symlink → copy fallback for Windows; (2) line-aware .gitignore matching to avoid false-positive matches like .cm-config.json.example. These were fixed in v1.1.5 and should be verified still present after the v1.7 changes.",
+      "key_insight": "Before shipping v1.7, do a quick pass confirming bin/setup.js still carries: (a) createLink() try-catch with EPERM/EACCES copy fallback; (b) lines.includes() for .gitignore checks, not string .includes(). Neither of these should have regressed, but the plan doc flags them as the two most subtle install-safety patterns in the codebase.",
+      "severity": null
+    }
+  ],
+  "recommendations": [
+    "Round-trip smoke test the CLAUDE.md/AGENTS.md marker replacement on a repo that already has the v1.6 markers installed before cutting the v1.7 release — the endIdx > startIdx guard is the known fragile point.",
+    "Verify that scripts/validate-skills.js excludes skills/_LEARNINGS_SCHEMA.md from the skill count (it has a schema: learnings frontmatter key, not a name: skill key). If the exclusion logic only checks for _TEMPLATE.md by name, add _LEARNINGS_SCHEMA.md to the skip-list or make the guard check for the name/description frontmatter pattern instead of filenames.",
+    "Write the cm-compound entry validator to be open to unknown optional fields (treat them as pass-through, not errors). The v1.8 A5 item will add tags, linked_projects, last_referenced, and success_signals without a breaking schema change — but only if the v1.7 validator does not reject entries containing fields outside the six required ones.",
+    "In the 5 wired skills' Prior Learnings Consulted sections, instruct the model to read .agents/learnings/<category>.md rather than embedding explicit line-count assumptions or full-read mandates. The v1.8 S3 item (cm-learnings-researcher agent) will replace the direct read with a frontmatter-first filtered read — that substitution should require no edits to the 5 wired skills if the instruction is read-path-agnostic.",
+    "The v1.8 ideation doc is the forward-planning source of truth. Items S1 (commands/skills collapse), S3 (cm-learnings-researcher), and A5 (schema v1.1 richer frontmatter) are the three most directly affected by v1.7 design choices. Any v1.7 decision that would make S1, S3, or A5 harder should be flagged during review."
+  ]
+}

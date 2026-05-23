@@ -2,7 +2,7 @@
 name: copywriting
 description: Write conversion-focused marketing copy for any page type (homepage, landing page, pricing, feature pages). Uses proven frameworks and customer language. Triggers - write copy, landing page copy, homepage copy, page copy, marketing copy, conversion copy, sales copy.
 metadata:
-  version: 1.1.0
+  version: 1.2.0
 ---
 
 # Conversion Copywriting
@@ -46,6 +46,34 @@ Ask 5-8 of these before drafting:
 8. **What brand voice constraints exist?** (Formal/casual, technical/plain, etc. — pull from brand-voice doc if present.)
 
 If the user cannot answer the page goal or the primary CTA, stop. Copy with no goal is decoration.
+
+---
+
+## Prior Learnings Consulted
+
+Before writing a single line of copy, consult `.agents/learnings/copywriting.md`. Past copy projects have produced findings about headline framing, voice, framework selection, and what fails on this product's ICP — those findings must inform this run. The full consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](../_LEARNINGS_SCHEMA.md).
+
+**Sequence (do not skip):**
+
+1. **Resolve the file.** Look for `.agents/learnings/copywriting.md`. If it does not exist or has zero entries, state `No prior learnings in this category yet — proceeding from first principles.` and continue to Process.
+2. **Parse the schema.** Confirm YAML frontmatter and entries_count match. If malformed, surface the inconsistency and continue without applying.
+3. **Select up to 3 relevant entries** in reverse-chronological order. For copywriting, "relevant" means the entry's Implication would meaningfully change *this* deliverable. Match against:
+   - **Page type / context** (homepage hero, pricing page, feature page, lander, email, ad)
+   - **ICP / persona** (same buyer or adjacent?)
+   - **Framework** (PAS, AIDA, 4Us, Jobs-to-be-Done) — has one beaten others here before?
+   - **Copy element being written** (H1, subhead, CTA, body, bullet, social proof block)
+   - **Voice constraint** (any brand-voice guardrails the prior learning enforced — e.g., "no AI claims")
+
+   Bullet fields beyond the six required are safe to ignore — the schema is forward-compatible.
+4. **Surface to user.** Before producing the deliverable, output:
+   ```
+   Prior learnings considered:
+   - [YYYY-MM-DD] <title> (confidence: <level>) — <one-line summary of implication>
+   ```
+   If nothing applies, write: `Prior learnings considered: none relevant to this request.`
+5. **Apply by default; override explicitly.** If a learning conflicts with the current ICP / page type / channel, name the entry by date and state why it does not apply before deviating.
+
+Common high-leverage learnings for this skill: outcome-led vs. feature-led H1 performance, CTA verb that converted best, objection-handling blocks that lifted conversion, words that flopped (e.g., "AI-powered" on cold traffic), customer-language patterns from interviews that beat marketer-written copy.
 
 ---
 

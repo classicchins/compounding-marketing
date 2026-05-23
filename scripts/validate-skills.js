@@ -23,6 +23,20 @@ const MIN_COMMON_MISTAKES = 5;
 const MIN_EXAMPLES = 2;
 const MIN_RELATED_SKILLS = 3;
 
+// Skills "wired" with the Prior Learnings Consulted section in v1.7.
+// Future releases roll this out to all 61 skills. Missing section emits a
+// warning (not an error) for skills in this list — catches regressions
+// without breaking the build during the rollout. Source of truth for the
+// consumption contract: skills/_LEARNINGS_SCHEMA.md.
+const PRIOR_LEARNINGS_WIRED = new Set([
+  'copywriting',
+  'cold-email',
+  'positioning',
+  'paid-ads',
+  'icp-research',
+]);
+const PRIOR_LEARNINGS_HEADING = /^##\s+prior learnings consulted\s*$/im;
+
 // Section requirements. Each canonical section can be matched by any of
 // its accepted heading variants (case-insensitive, at any H2 level).
 const REQUIRED_SECTIONS = [
@@ -238,6 +252,12 @@ function validate(filePath) {
     errors.push(`Related Skills section has ${related} cross-references (minimum ${MIN_RELATED_SKILLS})`);
   }
 
+  // Soft check: wired skills should retain the Prior Learnings Consulted section.
+  const skillName = fm && fm.name ? fm.name : path.basename(path.dirname(filePath));
+  if (PRIOR_LEARNINGS_WIRED.has(skillName) && !PRIOR_LEARNINGS_HEADING.test(content)) {
+    warnings.push(`wired skill is missing "## Prior Learnings Consulted" section (see skills/_LEARNINGS_SCHEMA.md)`);
+  }
+
   return { errors, warnings, lineCount, mistakes, examples, related };
 }
 
@@ -260,11 +280,15 @@ function main() {
   let passed = 0;
   let failed = 0;
   const failures = [];
+  const warned = [];
 
   for (const file of files) {
     const rel = path.relative(process.cwd(), file);
-    // Skip the template itself
-    if (path.basename(file) === '_TEMPLATE.md' || path.basename(path.dirname(file)).startsWith('_')) {
+    // Skip flat template / schema files in skills/ — only files named SKILL.md inside
+    // a subdirectory are real skills. Underscore-prefixed siblings (_TEMPLATE.md,
+    // _LEARNINGS_SCHEMA.md, future _*.md) and dirs starting with `_` are out of scope.
+    const base = path.basename(file);
+    if (base.startsWith('_') || path.basename(path.dirname(file)).startsWith('_')) {
       continue;
     }
     const result = validate(file);
@@ -274,8 +298,9 @@ function main() {
       failures.push({ file: rel, result });
     } else {
       passed++;
+      if (result.warnings.length > 0) warned.push({ file: rel, result });
+      totalWarnings += result.warnings.length;
     }
-    totalWarnings += result.warnings.length;
   }
 
   // Report
@@ -285,7 +310,7 @@ function main() {
     console.log('FAILURES:');
     console.log('---------');
     for (const { file, result } of failures) {
-      console.log(`\n  ${file}  (${result.lineCount} lines, ${result.mistakes} mistakes, ${result.examples} examples, ${result.related} related)`);
+      console.log(`\n  ${file}  (${result.lineCount ?? '?'} lines, ${result.mistakes ?? '?'} mistakes, ${result.examples ?? '?'} examples, ${result.related ?? '?'} related)`);
       for (const err of result.errors) {
         console.log(`    ✗ ${err}`);
       }
@@ -294,10 +319,21 @@ function main() {
       }
     }
     console.log('');
-    process.exit(1);
   }
 
-  process.exit(0);
+  if (warned.length > 0) {
+    console.log('WARNINGS (non-blocking):');
+    console.log('------------------------');
+    for (const { file, result } of warned) {
+      console.log(`\n  ${file}`);
+      for (const warn of result.warnings) {
+        console.log(`    ⚠ ${warn}`);
+      }
+    }
+    console.log('');
+  }
+
+  process.exit(failures.length > 0 ? 1 : 0);
 }
 
 main();

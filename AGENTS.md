@@ -45,6 +45,22 @@ When a user asks for marketing help, load the full `SKILL.md` and execute its Pr
 - **80% research, 20% execution.** Use research skills (`icp-research`, `customer-research`, `competitive-analysis`, `market-sizing`) to ground every tactical decision.
 - **Compound learnings.** After each project, run `/cm-compound` to write insights into `.agents/learnings/<category>.md` so future work builds on solid ground.
 
+## Prior Learnings System (v1.7)
+
+Knowledge compounds through a strict read/write loop.
+
+**Write side — `/cm-compound`.** Captures one schema-valid entry per learning. Six required fields: `Context`, `Finding`, `Evidence`, `Implication`, `Linked skills`, `Confidence` (lowercase `low | medium | high`). Validates before write — entries missing evidence or with vague implications are rejected, not silently fixed. Entries land above existing ones (reverse-chronological) with `last_updated` and `entries_count` frontmatter incremented. Full schema lives in `skills/_LEARNINGS_SCHEMA.md`.
+
+**Read side — Prior Learnings Consulted section.** Five skills run this contract before producing output: `copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`. The contract is 5 steps:
+
+1. Resolve `.agents/learnings/<this-skill-name>.md`. If absent, state so and proceed from first principles.
+2. Parse YAML frontmatter; reject malformed files without applying.
+3. Select up to 3 reverse-chronological entries whose `Implication` would meaningfully change this run.
+4. Surface them under the literal heading **`Prior learnings considered:`** before producing the deliverable — never hidden.
+5. Apply by default; override explicitly by date and reason if deviating.
+
+Future releases will roll the read side out to all 61 skills. The schema is forward-compatible; the validator warns (non-blocking) when a wired skill drops the section.
+
 ## Skill Categories (61 total)
 
 | Category | # | Example skills |
@@ -79,6 +95,6 @@ Use `/cm-daily` morning, `/cm-eod` end of day, `/cm-weekly` Friday, `/cm-sprint`
 
 ## Quality Standards
 
-Every skill ships with the 7-section structure above. Enforced by `scripts/validate-skills.js` — run `npm run validate` after edits. Minimums: ≥300 lines, ≥5 common mistakes, ≥2 worked examples, ≥3 related skills, all 7 sections present. Setup wizard always prompts before touching user files and tracks every write in `.compounding-marketing-install.json` so `--uninstall` reverses cleanly.
+Every skill ships with the 7-section structure above. Enforced by `scripts/validate-skills.js` — run `npm run validate` after edits. Minimums: ≥300 lines, ≥5 common mistakes, ≥2 worked examples, ≥3 related skills, all 7 sections present. Plus an optional **Prior Learnings Consulted** section before Process — copy from `_TEMPLATE.md` if your skill should compound knowledge. Setup wizard always prompts before touching user files and tracks every write in `.compounding-marketing-install.json` so `--uninstall` reverses cleanly.
 
 This is not a prompt library. This is a marketing methodology.

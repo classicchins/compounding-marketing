@@ -5,6 +5,50 @@ All notable changes to the Compounding Marketing plugin will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-05-23
+
+Headline release: the **Prior Learnings system** — a versioned schema for `.agents/learnings/<category>.md`, a default-on consumption contract wired into 5 high-leverage skills, and a rewritten `/cm-compound` that enforces the schema on write. This is the read/write loop that makes "marketing knowledge compounds" a structural guarantee instead of a tagline.
+
+### Added
+
+**Learnings schema (v1.0.0).** First-class, versioned spec for the file shape that `/cm-compound` writes and wired skills read.
+- `skills/_LEARNINGS_SCHEMA.md` — single source of truth. Defines YAML frontmatter (`category`, `last_updated`, `entries_count`), the 6-field entry structure (Context / Finding / Evidence / Implication / Linked skills / Confidence), the lowercase-only `Confidence` enum, the 5-step consumption contract, the authoring rules `/cm-compound` enforces, and the schema-evolution policy.
+- Schema version: `1.0.0`. Future minor versions may add optional fields; major bumps will ship with a migration plan.
+- Skipped by the validator's skill-discovery loop, which only enumerates `skills/<dir>/SKILL.md` paths (flat files in `skills/` are out of scope).
+
+**Prior Learnings Consulted — wired in 5 skills.** A new H2 section added to the highest-leverage skills, executed before any output, that surfaces prior findings to the user with explicit apply-or-override semantics.
+- `skills/copywriting/SKILL.md` (→ v1.2.0)
+- `skills/cold-email/SKILL.md` (→ v1.2.0)
+- `skills/positioning/SKILL.md` (→ v1.1.0)
+- `skills/paid-ads/SKILL.md` (→ v1.2.0)
+- `skills/icp-research/SKILL.md` (→ v1.2.0)
+- Each section is **tailored to the skill** — match criteria call out the dimensions that matter most to that category (e.g., paid-ads weights down learnings >90 days old due to platform drift; positioning surfaces canvas-axis matches; copywriting matches on page type + framework + voice constraint).
+- The literal heading `Prior learnings considered:` is the consumption contract — wired skills surface selected entries under this exact label so the user sees how past work shapes the current output.
+- Future releases will roll the section out to all 61 skills. The schema is forward-compatible.
+
+**Canonical section in `_TEMPLATE.md`.** Authors copy/paste the section from `skills/_TEMPLATE.md` when adding a new skill. The template's version of the section documents the full 5-step contract (resolve file → parse schema → select up to 3 entries → surface under canonical heading → apply or explicitly override).
+
+**Validator soft check.** `scripts/validate-skills.js` now warns (non-blocking) when a skill listed in `PRIOR_LEARNINGS_WIRED` is missing the section — catches regressions during future rollouts without breaking the build. Passing files with warnings are now printed in a dedicated `WARNINGS (non-blocking)` block; the exit code remains driven by errors only.
+
+**v1.8 ideation brainstorm.** `docs/brainstorms/2026-05-23-v1.8-ideation.md` captures a side-by-side comparison of compounding-marketing vs. Superpowers, compounding-engineering, claudesidian + Nexus, and the 2026 multi-surface delivery landscape (Agent Skills spec, AGENTS.md formalization, Cursor Marketplace + team controls, `.claude/skills/` migration). Outputs a tier S/A/B feature ranking for v1.8 scope.
+
+### Changed
+
+- `commands/cm-compound.md` — full rewrite. Replaces the freeform 5-step capture with an 8-step schema-enforcing flow: confirm there's evidence, pick category, draft six required fields, validate before write, locate or create the category file with frontmatter, insert above existing entries (reverse-chronological), update frontmatter (`last_updated` + `entries_count`), and confirm the compound by naming the wired skills that will now consume the learning. Rejects writes that fail validation rather than silently fixing them.
+- `package.json` — version bumped to `1.7.0`.
+
+### Compatibility
+
+- **Backward compatible.** Existing `.agents/learnings/<category>.md` files without YAML frontmatter continue to work — wired skills proceed without applying entries from malformed files and surface the inconsistency so the user can decide whether to migrate.
+- **Validator unchanged for non-wired skills.** Only the 5 listed skills produce a Prior Learnings warning; the other 56 pass identically to v1.6.
+- **Schema is forward-compatible.** Minor schema bumps will add optional fields; reading code can ignore unknown fields without erroring.
+
+### Why this matters
+
+Marketing knowledge compounds only when each project deposits something concrete that the next project can withdraw. v1.6 had the deposit half (`/cm-compound`) but the withdrawal side was implicit — the model could read `.agents/learnings/` if it remembered to. v1.7 makes both sides structural: a schema neither side can drift from, a default-on read step in the 5 highest-leverage skills, and a write command that rejects entries without evidence. The five wired skills (copywriting, cold-email, positioning, paid-ads, icp-research) cover the surfaces where compounding pays back fastest — the next launch's headline beats the last one's because last quarter's pricing-page test result is in the context window before the model writes a word.
+
+---
+
 ## [1.6.0] - 2026-05-12
 
 Headline release: marketplace install for Claude Code, a hardened opt-in npx wizard with `--dry-run` / `--uninstall`, real per-tool install paths verified against each platform's docs (Claude Code, Cursor, Codex, Zed, ChatGPT), and all 61 skills expanded to a single gold-standard structure (~37,500 lines total).

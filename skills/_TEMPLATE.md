@@ -39,6 +39,57 @@ If the user can't answer the critical ones, **stop and clarify** before producin
 
 ---
 
+## Prior Learnings Consulted
+
+> **Wired in v1.7 for:** `copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`.
+> Other skills may include this section optionally. The consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](_LEARNINGS_SCHEMA.md) and must be followed verbatim — wired skills parse by label, but bullet field names and order must match the schema exactly so future parsers can rely on either dimension.
+
+Before producing output, this skill consults `.agents/learnings/<this-skill-name>.md`. This is how marketing knowledge compounds across projects: prior findings about what works (and what doesn't) for *this category of work* directly inform the current run.
+
+**Execute this sequence before the Process section runs.** Do not skip — even if learnings exist, they must be surfaced so the user can override.
+
+### Step 1: Resolve the category file
+
+Look for `.agents/learnings/<this-skill-name>.md` (e.g., `.agents/learnings/copywriting.md`).
+
+- **If the file does not exist:** state `No prior learnings in this category yet — proceeding from first principles.` Continue to the Process section.
+- **If the file exists but has zero entries:** treat as above.
+- **If the file exists with entries:** proceed to Step 2.
+
+### Step 2: Parse the schema
+
+Read the YAML frontmatter. Confirm that `entries_count` matches the actual number of `## YYYY-MM-DD` headings. If the file is malformed, state the inconsistency and continue without applying its entries — do not silently use bad data.
+
+### Step 3: Select up to 3 relevant entries
+
+Iterate entries in **reverse-chronological order**. For each, judge relevance against the current request: page type, channel, ICP, copy framework, stage, persona, deliverable type. Take **up to 3** — prefer most-recent first, then highest-confidence.
+
+A learning is relevant if its `Implication` would meaningfully change *this* deliverable. If nothing meaningfully changes, take zero.
+
+Bullet fields beyond the six required are safe to ignore — the schema is forward-compatible.
+
+### Step 4: Surface them to the user
+
+In your response, **before** producing the deliverable, include a section with the literal heading **`Prior learnings considered:`** and list each selected entry exactly as:
+
+```
+- [YYYY-MM-DD] <title> (confidence: <level>) — <one-line summary of implication>
+```
+
+If you selected zero entries, write: `Prior learnings considered: none relevant to this request.`
+
+This is non-negotiable. The user must see how past work informed the output, even if the answer is "nothing applied."
+
+### Step 5: Apply or explicitly override
+
+Default behavior: **apply** the implications of every selected entry. If the current request requires deviating (different ICP, different stage, different channel, the prior learning is wrong), state the override inline:
+
+> Overriding the 2026-XX-XX learning on \<topic\> because \<specific reason\>. New approach: \<what you're doing instead\>.
+
+Then proceed to Process. The override must name the entry by date and reason — vague hand-waves like "this case is different" are not acceptable.
+
+---
+
 ## Process
 
 The core workflow. 5-10 numbered steps. Each step has: what to do, why it matters, decision criteria, gotchas.

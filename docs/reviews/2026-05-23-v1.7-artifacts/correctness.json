@@ -1,0 +1,171 @@
+{
+  "reviewer": "correctness",
+  "findings": [
+    {
+      "id": "schema-version-drift-step2",
+      "title": "Step 2 of consumption contract drifts across schema doc, _TEMPLATE.md, wired skills, and cm-compound's file-creation template",
+      "severity": "P2",
+      "confidence": 90,
+      "category": "contract_drift",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/copywriting/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/cold-email/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/positioning/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/paid-ads/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/icp-research/SKILL.md"
+      ],
+      "why_it_matters": "The v1.7 system is a parsing contract between three places: cm-compound (writer), the schema doc (spec), and the 5 wired skills (readers). They disagree on what fields exist in instance learnings files. Schema doc Required-frontmatter explicitly says THREE fields: category, last_updated, entries_count. But schema doc Step 2 of the consumption contract says 'Read the YAML frontmatter to confirm SCHEMA VERSION and entries_count' (there is no schema-version field in instance files). _TEMPLATE.md Step 2 says 'Confirm `schema` is `learnings` (or implicit, for legacy files)' — implying every freshly-created file should have a `schema: learnings` key. cm-compound's file-creation template (Step 5) writes ONLY category/last_updated/entries_count, so every file it creates is 'legacy/implicit' from _TEMPLATE.md's standpoint on day one. The 5 wired skills land on a third wording: 'Confirm YAML frontmatter and entries_count match' (no mention of schema field at all). A future contributor reading _TEMPLATE will add a schema field; a contributor reading cm-compound will not — and the wired-skill Step 2 will accept both, which means the contract is no contract.",
+      "evidence": "skills/_LEARNINGS_SCHEMA.md lines 41-47 enumerate exactly 3 required frontmatter fields. Line 133 says 'Read the YAML frontmatter to confirm schema version and entries_count.' skills/_TEMPLATE.md line 61: 'Confirm `schema` is `learnings` (or implicit, for legacy files)'. commands/cm-compound.md lines 79-84 create files with only category/last_updated/entries_count. Wired skills (e.g., skills/copywriting/SKILL.md line 59) say 'Confirm YAML frontmatter and entries_count match.'",
+      "remediation": "Pick one. Recommended: drop 'schema version' / 'schema field' language from _LEARNINGS_SCHEMA.md Step 2 and _TEMPLATE.md Step 2 — Step 2 should say 'Confirm YAML frontmatter (category, last_updated, entries_count) parses and entries_count matches the actual number of dated entry headings.' That matches what cm-compound actually writes and what the wired skills already check.",
+      "autofix": "soft"
+    },
+    {
+      "id": "frontmatter-instance-vs-schema-conflation",
+      "title": "Schema doc's own frontmatter (`schema: learnings`, `version: 1.0.0`) reads as a template for instance files",
+      "severity": "P3",
+      "confidence": 70,
+      "category": "documentation_clarity",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md"
+      ],
+      "why_it_matters": "_LEARNINGS_SCHEMA.md opens with YAML frontmatter containing `schema: learnings`, `version: 1.0.0`, `applies_to:`, `enforced_by:`, `consumed_by:`. A reader scanning top-down will reasonably assume instance learnings files should also have `schema:` and `version:` keys — exactly the misread that produced the Step 2 drift above. The 'Required YAML frontmatter' section ~30 lines later contradicts this with a 3-field set. Add an inline note that the top-of-file frontmatter is metadata about THIS schema file, not a template for instance files. This is the kind of foot-gun that resurfaces every time someone re-reads the doc to fix something.",
+      "evidence": "skills/_LEARNINGS_SCHEMA.md lines 1-11 vs. lines 39-47.",
+      "remediation": "Add a one-line note at line 11 or inside the YAML comment block: '# This file's frontmatter is metadata ABOUT the schema. Instance files at .agents/learnings/<category>.md use only the 3-field frontmatter shown below.'",
+      "autofix": "soft"
+    },
+    {
+      "id": "above-vs-immediately-after-insert-position",
+      "title": "cm-compound Step 6 wording 'immediately after the frontmatter and intro block' vs Step 4/schema wording 'above existing entries' — same intent, but for a fresh file the two phrasings could diverge",
+      "severity": "P3",
+      "confidence": 60,
+      "category": "contract_clarity",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_LEARNINGS_SCHEMA.md"
+      ],
+      "why_it_matters": "Step 4 of 'What it does' says 'Writes the new entry above existing entries (reverse-chronological).' Step 6's body says 'The new entry goes immediately after the frontmatter and intro block, above the most-recent existing entry.' Schema doc Authoring Rule 6 says 'Insert the new entry above existing entries (reverse-chronological order).' For a freshly-created file there is no 'intro block' beyond the H1 + one-line description from the creation template (Step 5) — an LLM consumer might insert between the frontmatter and the H1, or before the H1, or after the description paragraph. The three phrasings should resolve to a single deterministic insertion point.",
+      "evidence": "commands/cm-compound.md line 23 ('Writes the new entry above existing entries'), lines 79-91 (the creation template includes H1 + description + ---), line 97 ('immediately after the frontmatter and intro block'). skills/_LEARNINGS_SCHEMA.md line 163.",
+      "remediation": "Make the insertion point explicit: 'Insert immediately after the second `---` separator (the one that closes the intro block), before any existing `## YYYY-MM-DD` heading.' That nails it for both first-entry and Nth-entry cases.",
+      "autofix": "soft"
+    },
+    {
+      "id": "validator-explicit-schema-path-not-skipped",
+      "title": "Validator's `_*`-prefix skip does not protect `_LEARNINGS_SCHEMA.md` when passed as an explicit CLI arg",
+      "severity": "P3",
+      "confidence": 95,
+      "category": "minor_logic",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js"
+      ],
+      "why_it_matters": "CHANGELOG line 17 claims 'Marked as a template (`_LEARNINGS_SCHEMA.md`); validator skips it via the existing `_*` prefix rule.' That is only true under automatic iteration: line 271-275 lists *directories* under skills/ and joins SKILL.md, so the top-level file `skills/_LEARNINGS_SCHEMA.md` is never picked up. But if someone runs `node scripts/validate-skills.js skills/_LEARNINGS_SCHEMA.md`, the skip at line 288 fails both checks (basename !== '_TEMPLATE.md'; parent dir basename is 'skills', which does not start with '_') and the file will be validated and fail (no frontmatter `name`, no role prompt, etc.). The skip rule that does exist works for the _TEMPLATE.md case but not the new schema file.",
+      "evidence": "scripts/validate-skills.js line 288: `if (path.basename(file) === '_TEMPLATE.md' || path.basename(path.dirname(file)).startsWith('_')) continue;`",
+      "remediation": "Broaden the skip to any underscore-prefixed top-level skills file: `if (path.basename(file).startsWith('_') || path.basename(path.dirname(file)).startsWith('_')) continue;` — matches both `_TEMPLATE.md` and `_LEARNINGS_SCHEMA.md`, and is forward-compatible with future `_*.md` template files.",
+      "autofix": "soft"
+    },
+    {
+      "id": "validator-failure-report-undefined-fields-on-read-error",
+      "title": "Validator failure report prints `undefined` for lineCount/mistakes/examples/related when the file-read catch fires",
+      "severity": "P3",
+      "confidence": 100,
+      "category": "minor_logic",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js"
+      ],
+      "why_it_matters": "If fs.readFileSync throws, validate() returns at line 210 with only `{ errors, warnings: [] }`. The FAILURES section at line 310 reads `result.lineCount`, `result.mistakes`, `result.examples`, `result.related` — all undefined. The console line becomes `(undefined lines, undefined mistakes, undefined examples, undefined related)`. Purely cosmetic — this only fires on a missing/permission-denied SKILL.md.",
+      "evidence": "scripts/validate-skills.js lines 207-211 vs. line 310.",
+      "remediation": "Either initialize the metrics fields in the catch return (`return { errors: [...], warnings: [], lineCount: 0, mistakes: 0, examples: 0, related: 0 }`) or guard the print: `(${result.lineCount ?? '?'} lines, ...)`.",
+      "autofix": "soft"
+    },
+    {
+      "id": "step-7-numbering-bullet-vs-six-fields",
+      "title": "cm-compound Step 3 enumerates 7 numbered items but Step 4 validates 'six fields' — easy LLM consumer to miscount",
+      "severity": "P3",
+      "confidence": 55,
+      "category": "documentation_clarity",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md"
+      ],
+      "why_it_matters": "Step 3 of cm-compound presents the per-entry capture as a numbered 1-7 list where item 1 is Title and items 2-7 are the six bulleted fields. Step 4 then validates 'All six fields (Context, Finding, Evidence, Implication, Linked skills, Confidence)' — Title is correctly excluded because it's the heading text, not a bullet. An LLM consumer (which is the entire user of this file) reading 'walk through fields in order' may treat 'Title' as a 7th field and try to write `- **Title:** ...` as a bullet, corrupting the schema. Re-numbering Step 3 as '1. Title (entry heading) ... 2-7. The six required bulleted fields:' or splitting Title above the numbered list would prevent the misread.",
+      "evidence": "commands/cm-compound.md lines 50-61.",
+      "remediation": "Restructure Step 3 to clearly distinguish the heading line (Title) from the 6 bulleted fields. E.g., pull Title out as a separate preamble, then number the 6 fields 1-6 to match Step 4's count.",
+      "autofix": "soft"
+    },
+    {
+      "id": "wired-skills-step2-omits-malformed-handling-detail",
+      "title": "Wired skills Step 2 says 'surface and continue without applying' but does not specify whether to still surface a `Prior learnings considered:` line",
+      "severity": "P3",
+      "confidence": 50,
+      "category": "contract_clarity",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/copywriting/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/cold-email/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/positioning/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/paid-ads/SKILL.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/icp-research/SKILL.md"
+      ],
+      "why_it_matters": "Each wired skill's Step 2 says: 'If malformed, surface the inconsistency and continue without applying.' Step 4 says: 'If nothing applies, write: Prior learnings considered: none relevant to this request.' For the malformed case, it's ambiguous whether the literal `Prior learnings considered:` heading should still appear (with 'malformed file, no entries applied') or whether the model should just print a free-form inconsistency note and skip the heading. The whole point of the heading being a literal contract is so downstream tooling can detect it — if it appears in the happy path but not the malformed path, downstream parsers will break.",
+      "evidence": "skills/copywriting/SKILL.md lines 59 + 66-71 and the same shape in all 5 wired skills.",
+      "remediation": "Add to Step 4: 'If the file is malformed, still emit the literal `Prior learnings considered:` line with body `file at .agents/learnings/<category>.md is malformed (<reason>); no entries applied`. The heading is non-negotiable.'",
+      "autofix": "soft"
+    },
+    {
+      "id": "validator-warning-on-failed-file-printed-twice",
+      "title": "A wired skill that fails for unrelated reasons AND drops the Prior Learnings section gets its warning printed in FAILURES only (not WARNINGS), which is correct, but `totalWarnings` still counts it",
+      "severity": "P3",
+      "confidence": 75,
+      "category": "minor_logic",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js"
+      ],
+      "why_it_matters": "Lines 292-301: a failed-with-warnings file is added to `failures` (not `warned`) but `totalWarnings += result.warnings.length` still runs. The summary line ('61 passed, 0 failed, N warnings') will include warnings from failed files, but the WARNINGS block at line 321 only iterates `warned`, so those warnings appear only in the FAILURES block. Not wrong, but the summary count can mislead — a user sees 'X warnings' and scrolls to the WARNINGS section and finds <X. Cosmetic, but if the intent is the warning count to mirror the WARNINGS block, the totalling should change.",
+      "evidence": "scripts/validate-skills.js lines 292-304.",
+      "remediation": "Either rename the variable to make scope explicit (`warningsAcrossAllFiles`) or move `totalWarnings += ...` inside the `else` branch so the headline count matches the WARNINGS block.",
+      "autofix": "soft"
+    },
+    {
+      "id": "claudemd-not-updated-for-v17",
+      "title": "CLAUDE.md does not mention the v1.7 Prior Learnings system or the wired-skill contract",
+      "severity": "P2",
+      "confidence": 80,
+      "category": "doc_consistency",
+      "files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/CLAUDE.md"
+      ],
+      "why_it_matters": "AGENTS.md got a dedicated 'Prior Learnings System (v1.7)' section (lines 48-62). README.md got a 'Built to compound (v1.7)' paragraph. CHANGELOG.md describes the system in detail. CLAUDE.md (the file Claude Code reads first on every session in this repo) was updated for the v1.7 release (`git diff` shows 22 lines changed) but a grep for 'v1.7' or 'wired' returns nothing. Claude Code sessions opening this repo will not learn about the read-side contract from the file specifically designed to teach Claude about the project. This is the inverse of the AGENTS.md/CLAUDE.md/README.md triple-source-of-truth pattern this plugin promotes.",
+      "evidence": "Bash grep for 'v1.7|wired' against CLAUDE.md returned no matches; same grep against AGENTS.md hit lines 48, 54, 62. CLAUDE.md was changed in the v1.7 commit but the changes did not add a Prior Learnings section.",
+      "remediation": "Add a short 'Prior Learnings (v1.7)' subsection to CLAUDE.md matching the one in AGENTS.md — same 5-step contract, same list of 5 wired skills, same pointer to skills/_LEARNINGS_SCHEMA.md.",
+      "autofix": "soft"
+    }
+  ],
+  "residual_risks": [
+    {
+      "risk": "Validator soft-warning is purely structural: it checks for the literal heading `## Prior Learnings Consulted`. It does NOT check that the section is positioned before Process, contains the 5 numbered steps, references the literal user-facing heading `Prior learnings considered:`, or links to _LEARNINGS_SCHEMA.md. A wired skill could keep an empty 'Prior Learnings Consulted' H2 and pass the validator while breaking the read contract.",
+      "where": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js line 257-259"
+    },
+    {
+      "risk": "There is no validator yet for `.agents/learnings/<category>.md` instance files. _LEARNINGS_SCHEMA.md line 51 says 'the validator (future, parallel work) will confirm it matches the actual entry count' — explicitly future. cm-compound is the only enforcement, and it is markdown instruction to an LLM, not a parser; whether validation actually runs depends on the LLM's compliance with the instructions.",
+      "where": "skills/_LEARNINGS_SCHEMA.md, commands/cm-compound.md"
+    },
+    {
+      "risk": "The 'positional parse' claim in _LEARNINGS_SCHEMA.md line 55 ('wired skills parse positionally as well as by label, so do not reorder') is aspirational — no actual parser exists; the wired skills are markdown instructing an LLM to follow positions. If a future wired skill is implemented as code, that code would have to be written from the schema doc — and there is no parser reference implementation today.",
+      "where": "skills/_LEARNINGS_SCHEMA.md"
+    }
+  ],
+  "testing_gaps": [
+    {
+      "gap": "No fixture test for cm-compound producing a schema-valid file. The intent could be validated by feeding cm-compound a known input through the LLM and verifying the resulting `.agents/learnings/copywriting.md` parses against the schema in _LEARNINGS_SCHEMA.md.",
+      "suggested_test": "Snapshot fixture: a worked-example input and the expected file output (verbatim) for the first-entry case AND a second-entry case (append to existing file)."
+    },
+    {
+      "gap": "No CI check that the 5 wired skills' Prior Learnings sections stay structurally aligned. Today the validator only checks for the H2 heading; nothing checks that all 5 sections retain the 5-step structure, the literal `Prior learnings considered:` heading reference, or the link to _LEARNINGS_SCHEMA.md.",
+      "suggested_test": "Extend validate-skills.js to assert, for each PRIOR_LEARNINGS_WIRED skill: (1) section contains 5 numbered steps; (2) section contains the literal string 'Prior learnings considered:'; (3) section links to skills/_LEARNINGS_SCHEMA.md."
+    },
+    {
+      "gap": "No test for the validator's CLI single-file path with `_LEARNINGS_SCHEMA.md` (the skip rule does not cover it — see finding validator-explicit-schema-path-not-skipped).",
+      "suggested_test": "`node scripts/validate-skills.js skills/_LEARNINGS_SCHEMA.md` should exit 0, not fail with 'missing role prompt' etc."
+    }
+  ]
+}

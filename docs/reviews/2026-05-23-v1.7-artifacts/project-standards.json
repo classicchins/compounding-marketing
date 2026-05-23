@@ -1,0 +1,62 @@
+{
+  "reviewer": "project-standards",
+  "findings": [
+    {
+      "id": "PS-001",
+      "severity": "P1",
+      "confidence": 100,
+      "title": "Broken relative link in _TEMPLATE.md for _LEARNINGS_SCHEMA.md",
+      "rule_citation": "CLAUDE.md §Adding a New Skill step 2: 'Follow `skills/_TEMPLATE.md` — the validated 7-section structure'; AGENTS.md §Quality Standards: 'Every skill ships with the 7-section structure above. Enforced by `scripts/validate-skills.js`'. Both establish _TEMPLATE.md as the canonical authoring reference authors must follow.",
+      "violation": "skills/_TEMPLATE.md line 45 (diff +45): the markdown link target is `(../_LEARNINGS_SCHEMA.md)`. From `skills/_TEMPLATE.md`, the `..` path segment resolves to the repo root, i.e., `/compounding-marketing/_LEARNINGS_SCHEMA.md`. The actual file is at `skills/_LEARNINGS_SCHEMA.md`. The correct relative path from `skills/_TEMPLATE.md` is `(_LEARNINGS_SCHEMA.md)` or `(./_LEARNINGS_SCHEMA.md)`. Every wired skill links to `(../_LEARNINGS_SCHEMA.md)` from a subdirectory (e.g., `skills/copywriting/SKILL.md`), where `..` correctly resolves to `skills/`. The _TEMPLATE.md link uses the same pattern but it sits one level shallower, making the target path wrong.",
+      "affected_file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/skills/_TEMPLATE.md",
+      "diff_line": "+> Other skills may include this section optionally. The consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](../_LEARNINGS_SCHEMA.md) and must be followed verbatim"
+    },
+    {
+      "id": "PS-002",
+      "severity": "P2",
+      "confidence": 75,
+      "title": "CLAUDE.md and AGENTS.md still document '7-section structure' after wired skills gained an 8th section",
+      "rule_citation": "CLAUDE.md §Adding a New Skill step 2: 'the validated 7-section structure (Role / Initial Assessment / Process / Output Format / Quality Bar with ≥5 Common Mistakes / ≥2 Examples / ≥3 Related Skills)'. AGENTS.md §How skills work: 'a validated 7-section body' with the same 7-item list. AGENTS.md §Quality Standards: 'all 7 sections present'.",
+      "violation": "The 5 wired skills (`copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`) now contain 8 H2-level sections: the 7 canonical sections plus the new `## Prior Learnings Consulted` section inserted before `## Process`. Neither CLAUDE.md nor AGENTS.md was updated to reflect this. The 'Adding a New Skill' step 2 in CLAUDE.md lists only the original 7 sections and does not instruct new skill authors to include the Prior Learnings Consulted section that `_TEMPLATE.md` now contains. CLAUDE.md §Prior Learnings System (v1.7) does note the section exists in `_TEMPLATE.md` but does not update the authoritative skill-structure definition or the step-by-step authoring instructions.",
+      "affected_files": [
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/CLAUDE.md",
+        "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/AGENTS.md"
+      ],
+      "diff_lines": [
+        "CLAUDE.md line 107 (unchanged): 'Follow `skills/_TEMPLATE.md` — the validated 7-section structure (Role / Initial Assessment / Process / Output Format / Quality Bar with ≥5 Common Mistakes / ≥2 Examples / ≥3 Related Skills).'",
+        "AGENTS.md line 20 (unchanged): 'a validated 7-section body' with 7-item enumeration.",
+        "AGENTS.md line 98 (unchanged): 'all 7 sections present'."
+      ]
+    },
+    {
+      "id": "PS-003",
+      "severity": "P2",
+      "confidence": 75,
+      "title": "CHANGELOG incorrectly states the validator skips _LEARNINGS_SCHEMA.md via the '_* prefix rule'",
+      "rule_citation": "CLAUDE.md §Repository Structure documents `validate-skills.js` as enforcing the 7-section skill structure. AGENTS.md §Quality Standards: 'Enforced by `scripts/validate-skills.js` — run `npm run validate` after edits.' Both imply the validator behavior description in CHANGELOG must be accurate for operators to trust the toolchain.",
+      "violation": "CHANGELOG.md [1.7.0] Added block states: 'Marked as a template (`_LEARNINGS_SCHEMA.md`); validator skips it via the existing `_*` prefix rule.' The actual skip logic in `scripts/validate-skills.js` line 288 is: `path.basename(file) === '_TEMPLATE.md' || path.basename(path.dirname(file)).startsWith('_')`. This skips `_TEMPLATE.md` by filename, and skips skills whose *parent directory* starts with `_`. `skills/_LEARNINGS_SCHEMA.md` is not named `_TEMPLATE.md` and its parent directory is `skills/` (no leading `_`). It is skipped only because the validator discovers files as `skills/<dir>/SKILL.md` (line 274) and `_LEARNINGS_SCHEMA.md` is a flat file, not a `SKILL.md` in a subdirectory. The documented reason ('_* prefix rule') does not match the actual mechanism.",
+      "affected_file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/CHANGELOG.md",
+      "diff_line": "+- Marked as a template (`_LEARNINGS_SCHEMA.md`); validator skips it via the existing `_*` prefix rule."
+    }
+  ],
+  "residual_risks": [
+    {
+      "id": "RR-001",
+      "description": "The Prior Learnings Consulted section in the 5 wired skills is inserted between Initial Assessment and Process using the H2 heading '## Prior Learnings Consulted'. The validator's REQUIRED_SECTIONS list does not include this heading and does not require it for non-wired skills. However, CLAUDE.md §Prior Learnings System states 'The literal heading is the consumption contract — wired skills parse positionally.' If a future skill author copies the section from _TEMPLATE.md with a variant heading (e.g., '## Prior Learnings' or '## Learnings Consulted'), the soft-check regex `PRIOR_LEARNINGS_HEADING = /^##\\s+prior learnings consulted\\s*$/im` will emit a warning — which is non-blocking. The risk is that a heading variant silently passes validation and breaks the positional parsing contract without a hard failure."
+    },
+    {
+      "id": "RR-002",
+      "description": "bin/setup.js filters skill directories with `if (d.startsWith('_')) return false` (line 571). This correctly excludes a hypothetical `skills/_learnings-schema/` directory. However `_LEARNINGS_SCHEMA.md` is a flat file in `skills/`, not a directory. The wizard iterates `skills/<dir>/SKILL.md` paths, so the flat file is never encountered. No wizard change is needed, but there is no explicit documentation in setup.js or CLAUDE.md that flat `_*.md` files in `skills/` are intentionally out of scope for the installer — a future contributor might attempt to 'install' the schema file by creating a `skills/_learnings-schema/SKILL.md` structure that the filter would then block."
+    }
+  ],
+  "testing_gaps": [
+    {
+      "id": "TG-001",
+      "description": "There is no automated check that verifies the relative link `(../_LEARNINGS_SCHEMA.md)` in `skills/_TEMPLATE.md` resolves to an existing file. The broken link (PS-001) would silently pass `node scripts/validate-skills.js` because the validator skips `_TEMPLATE.md` by name and does not resolve markdown link targets."
+    },
+    {
+      "id": "TG-002",
+      "description": "The validator's soft check for `PRIOR_LEARNINGS_WIRED` skills uses `skillName = fm && fm.name ? fm.name : path.basename(path.dirname(filePath))`. A skill whose YAML frontmatter `name` field differs from its directory name would use the frontmatter name for the PRIOR_LEARNINGS_WIRED lookup. No test verifies that the 5 wired skill directory names match their `name` frontmatter fields, which is the assumed invariant."
+    }
+  ]
+}

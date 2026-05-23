@@ -1,0 +1,72 @@
+{
+  "reviewer": "testing",
+  "findings": [
+    {
+      "id": "T1",
+      "severity": "medium",
+      "confidence": 75,
+      "category": "untested_branch",
+      "title": "Heading regex silently misses trailing-colon variant — warning will not fire",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js",
+      "line_range": [38, 38],
+      "detail": "PRIOR_LEARNINGS_HEADING = /^##\\s+prior learnings consulted\\s*$/im uses \\s* before $ (multiline end-of-line). A heading written as '## Prior Learnings Consulted:' (trailing colon — a natural variant when authors copy from the schema doc or template) does NOT match, so the validator silently accepts the skill as having the section when it does not. No test fixture exercises this miss. The current five wired skills all use the exact correct heading, so the production tree passes today, but the check is fragile for the 56-skill rollout ahead.",
+      "reproduction": "node -e \"const r=/^##\\\\s+prior learnings consulted\\\\s*$/im; console.log(r.test('## Prior Learnings Consulted:'));\" => false — validator would push warning, not suppress it — CORRECTION: the warning would NOT fire because the regex returns false meaning the section is 'missing' so the warning fires correctly. Re-analysis: the regex returning false means PRIOR_LEARNINGS_HEADING.test(content) is false, so the warning WOULD fire. The real miss is the opposite: a heading like '## Prior Learnings Consulted — Copywriting' returns false (fires warning correctly) but an author who writes exactly that expects it to count as the section. The validator will warn on an intentional variant. This is a UX gap, not a silent miss.",
+      "revised_detail": "The regex /^##\\s+prior learnings consulted\\s*$/im rejects any suffix after the heading text (e.g., '## Prior Learnings Consulted — Copywriting', '## Prior Learnings Consulted (v1.7)'). No test fixture confirms what the acceptable heading variants are. If authors write a suffixed form during the 56-skill rollout, they receive a warning with no guidance on why, and must diff the heading character-by-character to find the issue. Confidence 75: the gap is visible from the regex alone, impact is noise/friction during rollout, not a silent miss."
+    },
+    {
+      "id": "T2",
+      "severity": "medium",
+      "confidence": 75,
+      "category": "behavioral_change_no_test",
+      "title": "process.exit refactor: failures block no longer exits early — warned[] always printed even when failures exist",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js",
+      "line_range": [316, 333],
+      "detail": "In the base commit, the failures block called process.exit(1) before the warnings block was reached. The new code removes that early exit, meaning both the FAILURES section and the new WARNINGS section print when failures exist. This changes the observable output of the validator in the mixed case (some files fail, some pass-with-warnings). No test fixture or explicit validation run covers this scenario — it is only exercised if a real skill file has errors at the same time a different wired skill has warnings. Currently 61 skills pass with 0 warnings, so this combined path is never exercised by a normal run."
+    },
+    {
+      "id": "T3",
+      "severity": "high",
+      "confidence": 75,
+      "category": "missing_edge_case_coverage",
+      "title": "No round-trip verification between cm-compound write and wired-skill read",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/commands/cm-compound.md",
+      "detail": "cm-compound defines a strict write schema (six required fields, YAML frontmatter with entries_count, reverse-chronological insertion). The five wired skills define a read contract (parse frontmatter, iterate ## YYYY-MM-DD headings, select up to 3, surface under 'Prior learnings considered:'). There is no fixture, sample learnings file, or automated check anywhere in the repo that confirms a file written by a cm-compound run is parseable by the wired-skill read sequence. The .agents/learnings/ directory does not exist, no example learnings file is committed (even as a fixture), and .gitignore does not exclude .agents/learnings/ — meaning no reference file is tracked. The schema doc (skills/_LEARNINGS_SCHEMA.md) contains a worked example but it is prose, not a validated fixture. A subtle mismatch between the write format (e.g., frontmatter field naming, separator placement, date heading format) and the read instructions in a wired skill would be undetectable until a user's first real run.",
+      "verification_surface_gap": "A committed fixture at .agents/learnings/copywriting.md (or docs/fixtures/learnings-example.md) matching the _LEARNINGS_SCHEMA.md worked example would close this gap without requiring a test runner. Alternatively, a minimal node script that parses the schema's worked example and confirms the six fields are extractable would be sufficient."
+    },
+    {
+      "id": "T4",
+      "severity": "low",
+      "confidence": 50,
+      "category": "untested_branch",
+      "title": "Validator malformed-learnings-file path has no fixture",
+      "file": "/Users/Chinmaya/BigDeal-Ventures/compounding-marketing/scripts/validate-skills.js",
+      "detail": "The _LEARNINGS_SCHEMA.md spec states entries_count drift should be surfaced, and wired skill read steps say to continue without applying entries if the file is malformed. The validator (validate-skills.js) does not validate learnings files at all — it only validates SKILL.md files. There is no test fixture of a known-bad learnings file that exercises this read-side malformed-input path. Confidence 50: this is not a validator code gap (the validator was not designed to check learnings files), but it is an unverified contract in the wired-skill instructions."
+    }
+  ],
+  "residual_risks": [
+    {
+      "id": "RR1",
+      "title": "56-skill rollout has no gating mechanism beyond manual heading discipline",
+      "detail": "The PRIOR_LEARNINGS_WIRED set must be expanded as skills are wired. If a skill is wired in the SKILL.md (Prior Learnings Consulted section added) but NOT added to the PRIOR_LEARNINGS_WIRED set in validate-skills.js, the section regresses silently — the validator will not warn. Conversely, if a skill is added to PRIOR_LEARNINGS_WIRED before the section is written, the warning fires correctly. The two must be kept in sync manually; no automated check enforces the pairing."
+    },
+    {
+      "id": "RR2",
+      "title": "entries_count drift detection is deferred to a 'future parallel work' note",
+      "detail": "_LEARNINGS_SCHEMA.md §frontmatter states 'the validator (future, parallel work) will confirm it matches the actual entry count.' This check is not implemented. A learnings file with a wrong entries_count value will not be caught by any current mechanism, and the wired-skill read steps say to 'flag the drift' — but only if the AI agent notices it, not if an automated check enforces it."
+    }
+  ],
+  "testing_gaps": [
+    {
+      "id": "TG1",
+      "title": "No test exercises the warned[] printing path in validate-skills.js",
+      "detail": "The new warned[] accumulation and WARNINGS output block (lines 283, 298, 321-331) is new behavior. It is never exercised by 'npm run validate' in the current state of the repo (all 61 skills pass with 0 warnings). A developer verifying the warning works correctly must manually corrupt a wired skill's heading, run the validator, observe output, then restore the heading. A small fixture or inline comment test would make this verifiable.",
+      "suggested_surface": "A deliberately minimal fixture skill under skills/_fixtures/wired-skill-missing-section/SKILL.md (with name matching a PRIOR_LEARNINGS_WIRED entry) that is explicitly skipped from the production validation run but usable as a manual verification target."
+    },
+    {
+      "id": "TG2",
+      "title": "No CI enforces that the validator passes on every commit",
+      "detail": "There is no .github/workflows/ directory. npm run validate is the only gate and it is manual. A developer who adds a new skill file with a structural error, or renames a wired skill's heading, gets no automated feedback. This is a pre-existing gap, but the v1.7 changes add new soft-warning behavior that is entirely invisible in CI.",
+      "is_preexisting": true
+    }
+  ]
+}

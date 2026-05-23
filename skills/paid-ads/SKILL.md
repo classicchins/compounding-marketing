@@ -2,7 +2,7 @@
 name: paid-ads
 description: Plan and optimize paid advertising campaigns (Google, Facebook, LinkedIn). Covers targeting, budgeting, campaign structure. Triggers - paid ads, PPC, Google Ads, Facebook Ads, LinkedIn Ads, paid campaigns.
 metadata:
-  version: 1.1.1
+  version: 1.2.0
 ---
 
 # Paid Advertising Strategy
@@ -25,6 +25,36 @@ Before building any campaign plan, gather context:
 4. **Confirm unit economics** — you need LTV, ARPU, gross margin, and target LTV:CAC ratio before setting budgets.
 
 If any of these are missing, flag them as blockers before proceeding.
+
+---
+
+## Prior Learnings Consulted
+
+Before designing a campaign plan, consult `.agents/learnings/paid-ads.md`. Paid acquisition produces hard, attributable data on every dimension that matters — platform fit, creative format, audience segment, bid strategy, ROAS by stage. Prior campaigns leave a trail of CAC and conversion evidence that should directly shape this plan. Re-spending budget to relearn a known answer is the most expensive mistake in this skill. The full consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](../_LEARNINGS_SCHEMA.md).
+
+**Sequence (do not skip):**
+
+1. **Resolve the file.** Look for `.agents/learnings/paid-ads.md`. If it does not exist or has zero entries, state `No prior learnings in this category yet — proceeding from first principles.` and continue.
+2. **Parse the schema.** Confirm YAML frontmatter and entries_count match. If malformed, surface and continue without applying.
+3. **Select up to 3 relevant entries** in reverse-chronological order. For paid ads, "relevant" means the entry's Implication would meaningfully change *this* plan's platform mix, structure, creative, or budget allocation. Match against:
+   - **Platform** (Google, Meta, LinkedIn, TikTok, X, programmatic) — same platform, same vertical?
+   - **Funnel stage** (top, mid, bottom) — different stages have different ROAS targets
+   - **Campaign type** (Search, PMax, Demand Gen, Sponsored Content, retargeting, video)
+   - **Audience type** (lookalike, in-market, custom intent, interest, retargeting, ABM)
+   - **Bidding strategy** (manual CPC, tCPA, tROAS, max conversions)
+   - **Creative format** (static, carousel, video, UGC, doc-style)
+   - **CAC / payback** that the prior run produced — and whether it cleared the LTV:CAC target
+
+   Bullet fields beyond the six required are safe to ignore — the schema is forward-compatible.
+4. **Surface to user.** Before producing the deliverable, output:
+   ```
+   Prior learnings considered:
+   - [YYYY-MM-DD] <title> (confidence: <level>) — <one-line summary of implication>
+   ```
+   If nothing applies, write: `Prior learnings considered: none relevant to this request.`
+5. **Apply by default; override explicitly.** Paid platforms drift (algorithm changes, auction dynamics, audience saturation). If a learning is >90 days old, weight it down explicitly and consider re-testing rather than blind-applying. If you override, name the entry by date and cite the platform/auction change driving the deviation.
+
+Common high-leverage learnings for this skill: a platform that under-delivered for this ICP, a creative format that 2x'd CTR, an audience segment that converted to paid (vs. just to lead), a bid strategy that broke when ad spend scaled past $X/day, a CAC ceiling the channel could not break through.
 
 ---
 

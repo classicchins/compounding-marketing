@@ -79,12 +79,32 @@ The full alphabetical catalog is at the bottom of this file (auto-generated).
 1. **Foundation — `/cm-context`.** Always run first on a new project. Captures product, audience, positioning, competitors, brand voice into `.agents/product-marketing-context.md`. Every other skill reads it.
 2. **Position before tactics — `/cm-position`.** Run a Dunford-style positioning workshop before writing copy, planning channels, or building pages. Outputs feed `messaging-framework` and `value-proposition`.
 3. **Execute — per skill or via workflow.** For one-off work, invoke the skill directly ("write a case study for…" or `/cm-case-study`). For multi-step projects, use `/cm-copy`, `/cm-launch`, `/cm-research`, `/cm-social`, `/cm-email`.
-4. **Compound — `/cm-compound`.** After completing each project, capture what worked, what didn't, and reusable assets into `.agents/learnings/<category>.md`. Future projects start ahead.
+4. **Compound — `/cm-compound`.** After completing each project, capture one schema-valid learning entry into `.agents/learnings/<category>.md`. v1.7 makes this a strict contract: six required fields (`Context`, `Finding`, `Evidence`, `Implication`, `Linked skills`, `Confidence`), validated on write, rejected if missing evidence. Five skills now read these entries before producing output — see "Prior Learnings System" below.
+
+## Prior Learnings System (v1.7)
+
+The read/write loop that makes knowledge compound. Source of truth: [`skills/_LEARNINGS_SCHEMA.md`](skills/_LEARNINGS_SCHEMA.md) (schema version 1.0.0).
+
+**Write side.** `/cm-compound` appends a single schema-valid entry to `.agents/learnings/<category>.md`. Six required fields per entry — `Context`, `Finding`, `Evidence`, `Implication`, `Linked skills`, `Confidence` (lowercase `low | medium | high` only). Validation rejects writes that fail the schema rather than silently correcting them. Append-only, reverse-chronological, with frontmatter (`category`, `last_updated`, `entries_count`) updated on each write.
+
+**Read side — wired in 5 skills in v1.7.** A new H2 section, **Prior Learnings Consulted**, runs before the Process in: `copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`. The contract:
+
+1. Resolve `.agents/learnings/<this-skill-name>.md`. If absent or empty, state so and proceed.
+2. Parse YAML frontmatter; if malformed, surface and continue without applying.
+3. Select up to 3 reverse-chronological entries whose `Implication` would meaningfully change this run.
+4. Surface them under the literal heading **`Prior learnings considered:`** — never hidden.
+5. Apply by default; override explicitly by entry date and reason.
+
+The literal heading is the consumption contract — wired skills parse positionally. Authors of new skills can copy/paste the canonical section from `skills/_TEMPLATE.md`.
+
+**Validator.** `scripts/validate-skills.js` emits a non-blocking warning when a skill listed in `PRIOR_LEARNINGS_WIRED` is missing the section. Warnings print in their own block; only errors fail the build.
+
+**Future releases.** The schema is forward-compatible. v1.8 will continue the rollout to additional skills and add a dedicated `cm-learnings-researcher` agent for frontmatter-first retrieval as `.agents/learnings/` grows.
 
 ## Adding a New Skill
 
 1. Create `skills/{skill-name}/SKILL.md` with YAML frontmatter (`name`, `description`, `metadata.version`).
-2. Follow `skills/_TEMPLATE.md` — the validated 7-section structure (Role / Initial Assessment / Process / Output Format / Quality Bar with ≥5 Common Mistakes / ≥2 Examples / ≥3 Related Skills).
+2. Follow `skills/_TEMPLATE.md` — the validated 7-section structure (Role / Initial Assessment / Process / Output Format / Quality Bar with ≥5 Common Mistakes / ≥2 Examples / ≥3 Related Skills). Plus an optional **Prior Learnings Consulted** section before Process — copy from `_TEMPLATE.md` if your skill should compound knowledge.
 3. Run `node scripts/validate-skills.js` to verify structure, then `node scripts/generate-claude-md.js` to refresh the Skills index below.
 4. Update the skill counts and tables in `AGENTS.md` and `README.md` if the total changes.
 
