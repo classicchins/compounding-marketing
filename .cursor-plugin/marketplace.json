@@ -1,0 +1,53 @@
+{
+  "$schema": "https://cursor.com/schemas/plugin-marketplace.json",
+  "name": "compounding-marketing",
+  "displayName": "Compounding Marketing",
+  "version": "1.8.0",
+  "description": "75 marketing skills + 14 workflow orchestrators + 2 lifecycle commands for B2B SaaS. Positioning, messaging, copywriting, CRO, SEO, GTM, paid ads, lifecycle email, growth — all installable with safe per-project bootstrap and full rollback.",
+  "author": {
+    "name": "Chinmaya Shankar",
+    "email": "c@bigdeal.ventures",
+    "url": "https://github.com/classicchins/compounding-marketing"
+  },
+  "homepage": "https://github.com/classicchins/compounding-marketing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/classicchins/compounding-marketing"
+  },
+  "license": "MIT",
+  "category": "marketing",
+  "tags": [
+    "saas",
+    "marketing",
+    "positioning",
+    "messaging",
+    "copywriting",
+    "seo",
+    "ai-seo",
+    "cro",
+    "paid-ads",
+    "cold-email",
+    "lifecycle-email",
+    "gtm",
+    "launch",
+    "content",
+    "social",
+    "mcp"
+  ],
+  "engines": {
+    "cursor": ">=0.50.0"
+  },
+  "components": {
+    "skills": 91,
+    "rules": 16,
+    "mcpServers": 2
+  },
+  "skills": "./skills/",
+  "rules": "./rules/",
+  "mcp": "./mcp.json",
+  "defaultActivation": "default-off",
+  "teamControls": {
+    "supported": ["default-off", "default-on", "required"],
+    "recommended": "default-off"
+  }
+}

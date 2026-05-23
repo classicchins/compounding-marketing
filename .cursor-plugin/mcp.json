@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "perplexity": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@perplexity-ai/mcp-server"],
+      "env": {
+        "PERPLEXITY_API_KEY": "${PERPLEXITY_API_KEY}"
+      },
+      "description": "AI-powered web research. Used by icp-research, competitive-analysis, market-sizing, ai-seo."
+    },
+    "exa": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "exa-mcp-server"],
+      "env": {
+        "EXA_API_KEY": "${EXA_API_KEY}"
+      },
+      "description": "Neural search + company intelligence. Used by competitor-content-monitoring, competitive-analysis, icp-research."
+    }
+  }
+}

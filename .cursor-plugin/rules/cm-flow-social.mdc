@@ -1,0 +1,11 @@
+---
+description: End-to-end social media campaign workflow — defines campaign goal, picks platforms, builds a 30-day content calendar, plans engagement tactics, sets measurement. Triggers - social campaign, social media campaign, plan a social campaign, 30-day social plan, social workflow.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-social
+
+Refer to `../../skills/cm-flow-social/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

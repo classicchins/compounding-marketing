@@ -1,0 +1,11 @@
+---
+description: Per-project bootstrap that wires Compounding Marketing into the current project — installs skills, registers slash commands, optionally configures MCP servers, records a manifest. Triggers - install, setup, bootstrap, wire plugin, configure marketing skills.
+globs:
+alwaysApply: false
+---
+
+# cm-setup
+
+Refer to `../../skills/cm-setup/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

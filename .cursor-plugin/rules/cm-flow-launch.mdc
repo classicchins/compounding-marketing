@@ -1,0 +1,11 @@
+---
+description: End-to-end launch workflow — runs launch-strategy, gtm-strategy (if new product), and channel-strategy, then assembles a unified launch plan with timeline, owners, channel tactics, and success metrics. Triggers - launch workflow, launch plan, plan a launch, full launch planning.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-launch
+
+Refer to `../../skills/cm-flow-launch/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

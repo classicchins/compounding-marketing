@@ -1,0 +1,11 @@
+---
+description: End-to-end copywriting workflow — reads positioning + messaging, runs the copywriting skill, audits via page-cro, returns polished copy plus A/B test ideas. Triggers - copy workflow, end-to-end copy, write and audit copy, copy plus CRO.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-copy
+
+Refer to `../../skills/cm-flow-copy/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

@@ -1,0 +1,11 @@
+---
+description: 10-minute morning marketing review — what's live, performance snapshot, wins, flags, the ONE priority for today. Keeps you oriented without drowning in dashboards. Triggers - daily marketing review, daily check-in, marketing morning review, daily standup with self.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-daily
+
+Refer to `../../skills/cm-flow-daily/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

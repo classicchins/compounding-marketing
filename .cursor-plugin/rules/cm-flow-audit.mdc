@@ -1,0 +1,11 @@
+---
+description: Quarterly marketing health check that dispatches four parallel specialists (SEO, content, conversion, funnel) and merges their findings into a prioritized audit report. Interactive or headless mode. Triggers - marketing audit, marketing health check, quarterly audit, audit workflow, audit pack.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-audit
+
+Refer to `../../skills/cm-flow-audit/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

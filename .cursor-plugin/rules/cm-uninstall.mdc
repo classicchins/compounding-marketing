@@ -1,0 +1,11 @@
+---
+description: Reverse a previous Compounding Marketing install using the recorded manifest — restores .bak backups byte-identical, strips marker blocks, removes only wizard-created files. Triggers - uninstall, remove plugin, rollback install, reverse setup.
+globs:
+alwaysApply: false
+---
+
+# cm-uninstall
+
+Refer to `../../skills/cm-uninstall/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

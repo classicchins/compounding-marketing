@@ -48,7 +48,7 @@ function printBanner() {
 ${c('cyan', '╔═══════════════════════════════════════════════════════════════╗')}
 ${c('cyan', '║')}                                                               ${c('cyan', '║')}
 ${c('cyan', '║')}     ${c('bright', 'COMPOUNDING MARKETING')} ${c('dim', `v${PKG_VERSION}`)}                              ${c('cyan', '║')}
-${c('cyan', '║')}     ${c('dim', '61 skills · 16 workflows · Safe install · Cross-platform')}  ${c('cyan', '║')}
+${c('cyan', '║')}     ${c('dim', '91 skills · Safe install · Cross-platform')}                  ${c('cyan', '║')}
 ${c('cyan', '║')}                                                               ${c('cyan', '║')}
 ${c('cyan', '╚═══════════════════════════════════════════════════════════════╝')}
 `);
@@ -662,44 +662,46 @@ async function registerSkillsForTool(rl, targets, fsx, manifest) {
   }
 
   if (style === 'claude-symlinks') {
-    fsx.mkdir(targets.commandsDir);
+    // v1.8 S5: .claude/skills/<name>/ is canonical for Claude Code. We symlink
+    // every skill directory there. The .claude/commands/ directory is now used
+    // ONLY for the legacy workflow shims (e.g., /cm-research → cm-flow-research).
+    // We no longer write a .claude/commands/<name>.md per skill — Claude Code
+    // discovers them via .claude/skills/<name>/SKILL.md and the SKILL.md's own
+    // `name:` + `description:` + `when_to_use:` frontmatter.
     if (targets.skillsLinkDir) fsx.mkdir(targets.skillsLinkDir);
 
     let skillCount = 0;
     for (const skill of skillDirs) {
       const skillFile = path.join(skillsSource, skill, 'SKILL.md');
       if (!fs.existsSync(skillFile)) continue;
-      const cmdLinkName = skill.startsWith('cm-') ? `${skill}.md` : `cm-${skill}.md`;
-      const cmdLinkPath = path.join(targets.commandsDir, cmdLinkName);
-      if (!fs.existsSync(cmdLinkPath)) {
-        const linkTarget = path.relative(targets.commandsDir, skillFile);
-        if (fsx.symlink(linkTarget, cmdLinkPath, cmdLinkName)) skillCount++;
-      }
       if (targets.skillsLinkDir) {
         const skillDirLink = path.join(targets.skillsLinkDir, skill);
         if (!fs.existsSync(skillDirLink)) {
           const linkTarget = path.relative(targets.skillsLinkDir, path.join(skillsSource, skill));
-          fsx.symlink(linkTarget, skillDirLink, skill);
+          if (fsx.symlink(linkTarget, skillDirLink, skill)) skillCount++;
         }
       }
     }
 
     // v1.8 backward-compat shims: write `.claude/commands/<old>.md` for every
     // legacy workflow name that points at its new `cm-flow-*` skill. Tracked in
-    // manifest.createdFiles so --uninstall removes them.
+    // manifest.createdFiles so --uninstall removes them. These are the ONLY
+    // files we write under .claude/commands/ in v1.8.
     let shimCount = 0;
-    for (const [oldName, newName] of Object.entries(LEGACY_WORKFLOW_SHIMS)) {
-      if (!skillMeta.has(newName)) continue; // skill missing → skip its shim
-      const shimPath = path.join(targets.commandsDir, `${oldName}.md`);
-      if (fs.existsSync(shimPath)) continue;
-      const skillRelPath = path.relative(path.dirname(shimPath), path.join(skillsSource, newName, 'SKILL.md'));
-      fsx.write(shimPath, shimBody(oldName, newName, skillRelPath), 'shim');
-      shimCount++;
+    if (targets.commandsDir) {
+      fsx.mkdir(targets.commandsDir);
+      for (const [oldName, newName] of Object.entries(LEGACY_WORKFLOW_SHIMS)) {
+        if (!skillMeta.has(newName)) continue; // skill missing → skip its shim
+        const shimPath = path.join(targets.commandsDir, `${oldName}.md`);
+        if (fs.existsSync(shimPath)) continue;
+        const skillRelPath = path.relative(path.dirname(shimPath), path.join(skillsSource, newName, 'SKILL.md'));
+        fsx.write(shimPath, shimBody(oldName, newName, skillRelPath), 'shim');
+        shimCount++;
+      }
     }
 
-    console.log(c('green', `  ✓ Registered ${skillCount} skills as /cm-{name}`));
-    if (shimCount > 0) console.log(c('green', `  ✓ Wrote ${shimCount} backward-compat command shims (legacy names → cm-flow-*)`));
-    if (targets.skillsLinkDir) console.log(c('green', `  ✓ Linked ${skillDirs.length} skill dirs under ${targets.skillsLinkDir}`));
+    if (targets.skillsLinkDir) console.log(c('green', `  ✓ Linked ${skillCount} skills under ${targets.skillsLinkDir} (canonical)`));
+    if (shimCount > 0) console.log(c('green', `  ✓ Wrote ${shimCount} backward-compat command shims in ${targets.commandsDir} (legacy names → cm-flow-*)`));
   }
 
   else if (style === 'cursor-mdc') {
@@ -923,6 +925,269 @@ function printClaudeCodeMcpHint(mcpConfig) {
   }
 }
 
+// ─── v1.8 S6: Integration auto-detection (Phase 1) ──────────────────────────
+// Scan per-tool MCP configs (opt-in), map known server packages to friendly
+// integration names + capability tags, and write .agents/integrations.md.
+// Phase 2 (per-skill adaptation) is explicitly v1.9 — DO NOT add per-skill
+// `if Slack available` logic here.
+
+// Server-package-name → { name, tags }. Match keys are checked against either
+// the MCP server's command/args string OR the server's own key in mcpServers
+// (some configs use the package as the key, others use a friendly alias).
+const INTEGRATION_MAP = [
+  { match: ['@modelcontextprotocol/server-slack', 'slack-mcp', 'mcp-slack'], name: 'Slack', tags: ['messaging'] },
+  { match: ['@notionhq/notion-mcp-server', 'mcp-notion', 'notion-mcp'], name: 'Notion', tags: ['docs'] },
+  { match: ['@linear/mcp-server', 'linear-mcp', '@linear/mcp', 'mcp-linear'], name: 'Linear', tags: ['tickets'] },
+  { match: ['@hubspot/mcp-server', 'hubspot-mcp'], name: 'HubSpot', tags: ['crm', 'email', 'marketing-automation'] },
+  { match: ['@salesforce/mcp-server', 'salesforce-mcp'], name: 'Salesforce', tags: ['crm'] },
+  { match: ['stripe-mcp', '@stripe/mcp-server', '@stripe/agent-toolkit'], name: 'Stripe', tags: ['billing'] },
+  { match: ['@gmail/mcp-server', 'gmail-mcp', '@google/gmail-mcp'], name: 'Gmail', tags: ['email'] },
+  { match: ['@googlecalendar/mcp-server', 'google-calendar-mcp', '@google/calendar-mcp'], name: 'Google Calendar', tags: ['calendar'] },
+  { match: ['@googledrive/mcp-server', 'google-drive-mcp', '@google/drive-mcp'], name: 'Google Drive', tags: ['docs', 'storage'] },
+  { match: ['@mixpanel/mcp-server', 'mixpanel-mcp'], name: 'Mixpanel', tags: ['analytics'] },
+  { match: ['@amplitude/mcp-server', 'amplitude-mcp'], name: 'Amplitude', tags: ['analytics'] },
+  { match: ['@posthog/mcp-server', 'posthog-mcp', 'mcp-posthog'], name: 'PostHog', tags: ['analytics', 'feature-flags'] },
+  { match: ['@github/mcp-server', 'github-mcp', 'mcp-github', '@modelcontextprotocol/server-github'], name: 'GitHub', tags: ['code', 'tickets'] },
+  { match: ['@perplexity-ai/mcp-server', 'perplexity-mcp'], name: 'Perplexity', tags: ['search', 'research'] },
+  { match: ['exa-mcp-server', 'exa-mcp', '@exa-ai/mcp-server'], name: 'Exa', tags: ['search', 'research'] },
+];
+
+// Try to read a JSON config. Returns null if missing or unparseable.
+function tryReadJson(filePath) {
+  try {
+    if (!fs.existsSync(filePath)) return null;
+    return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  } catch (_) { return null; }
+}
+
+// Very-light TOML extractor for `[mcp_servers.<name>]` table headers + their
+// `command = "..."` / `args = [...]` entries. We don't need a full parser —
+// only the table names and a representative command/args string for mapping.
+function extractTomlMcpServers(content) {
+  const out = {}; // name → { command, argsString }
+  if (!content) return out;
+  const lines = content.split('\n');
+  let current = null;
+  for (const raw of lines) {
+    const line = raw.trim();
+    const hdr = line.match(/^\[mcp_servers\.([A-Za-z0-9_\-.]+)\]/);
+    if (hdr) {
+      current = hdr[1];
+      out[current] = { command: '', argsString: '' };
+      continue;
+    }
+    if (!current) continue;
+    if (line.startsWith('[')) { current = null; continue; }
+    const cmd = line.match(/^command\s*=\s*"([^"]*)"/);
+    if (cmd) out[current].command = cmd[1];
+    const args = line.match(/^args\s*=\s*(\[.*\])/);
+    if (args) out[current].argsString = args[1];
+  }
+  return out;
+}
+
+// Collect MCP entries from every supported config location. Each entry is
+// { source, key, signature } where signature is the package name / command
+// used for mapping.
+function scanMcpConfigs(cwd) {
+  const home = os.homedir();
+  const results = [];
+
+  const addJsonScan = (filePath, sourceLabel) => {
+    const data = tryReadJson(filePath);
+    if (!data) return;
+    const servers = data.mcpServers || data.mcp_servers || {};
+    for (const [key, spec] of Object.entries(servers)) {
+      const sigParts = [key];
+      if (spec && typeof spec === 'object') {
+        if (spec.command) sigParts.push(spec.command);
+        if (Array.isArray(spec.args)) sigParts.push(...spec.args);
+      }
+      results.push({ source: sourceLabel, key, signature: sigParts.filter(Boolean).join(' ') });
+    }
+  };
+
+  // Claude Code project + global
+  addJsonScan(path.join(cwd, '.mcp.json'), 'claude-code-project');
+  addJsonScan(path.join(home, '.claude.json'), 'claude-code-global');
+
+  // Claude Desktop (per-OS)
+  const platform = process.platform;
+  let claudeDesktop;
+  if (platform === 'darwin') claudeDesktop = path.join(home, 'Library', 'Application Support', 'Claude', 'claude_desktop_config.json');
+  else if (platform === 'win32') claudeDesktop = process.env.APPDATA ? path.join(process.env.APPDATA, 'Claude', 'claude_desktop_config.json') : null;
+  else claudeDesktop = path.join(home, '.config', 'Claude', 'claude_desktop_config.json');
+  if (claudeDesktop) addJsonScan(claudeDesktop, 'claude-desktop');
+
+  // Cursor project + global
+  addJsonScan(path.join(cwd, '.cursor', 'mcp.json'), 'cursor-project');
+  addJsonScan(path.join(home, '.cursor', 'mcp.json'), 'cursor-global');
+
+  // Zed
+  const zedSettings = tryReadJson(path.join(home, '.config', 'zed', 'settings.json'));
+  if (zedSettings && zedSettings.context_servers) {
+    for (const [key, spec] of Object.entries(zedSettings.context_servers)) {
+      const sigParts = [key];
+      if (spec && spec.command) sigParts.push(spec.command);
+      if (spec && Array.isArray(spec.args)) sigParts.push(...spec.args);
+      results.push({ source: 'zed', key, signature: sigParts.filter(Boolean).join(' ') });
+    }
+  }
+
+  // Codex (CLI + Desktop share this file)
+  const codexPath = path.join(home, '.codex', 'config.toml');
+  try {
+    if (fs.existsSync(codexPath)) {
+      const toml = fs.readFileSync(codexPath, 'utf8');
+      const servers = extractTomlMcpServers(toml);
+      for (const [key, spec] of Object.entries(servers)) {
+        const signature = [key, spec.command, spec.argsString].filter(Boolean).join(' ');
+        results.push({ source: 'codex', key, signature });
+      }
+    }
+  } catch (_) { /* ignore */ }
+
+  return results;
+}
+
+// Bucket raw scan results into known integrations and unknowns, with sources.
+function classifyIntegrations(scanResults) {
+  const known = new Map(); // name → { tags: Set, sources: Set, raw: Set }
+  const unknown = []; // { source, key, signature }
+  for (const entry of scanResults) {
+    const sig = entry.signature.toLowerCase();
+    const key = entry.key.toLowerCase();
+    const hit = INTEGRATION_MAP.find(m => m.match.some(needle => {
+      const n = needle.toLowerCase();
+      return sig.includes(n) || key === n || key.includes(n.split('/').pop());
+    }));
+    if (hit) {
+      if (!known.has(hit.name)) known.set(hit.name, { tags: new Set(hit.tags), sources: new Set(), raw: new Set() });
+      const bucket = known.get(hit.name);
+      bucket.sources.add(entry.source);
+      bucket.raw.add(entry.key);
+    } else {
+      unknown.push(entry);
+    }
+  }
+  return { known, unknown };
+}
+
+// Format a YYYY-MM-DD HH:MM stamp without depending on a date library.
+function formatScanTimestamp(d = new Date()) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function renderIntegrationsMarkdown(known, unknown) {
+  const lines = [];
+  lines.push('# Detected integrations');
+  lines.push('');
+  lines.push(`Last scanned: ${formatScanTimestamp()}`);
+  lines.push('Scope: project + global (Claude Code, Cursor, Codex CLI/Desktop, Zed, Claude Desktop)');
+  lines.push('');
+  lines.push('> Generated by `npx compounding-marketing` (v' + PKG_VERSION + ', integration auto-detection — Phase 1). To re-scan, re-run the wizard and opt in to the integration scan step.');
+  lines.push('');
+  lines.push('## Available');
+  lines.push('');
+  if (known.size === 0) {
+    lines.push('_No known integrations detected. Re-run the wizard after installing an MCP server (Slack, Notion, Linear, HubSpot, etc.)._');
+  } else {
+    const sortedNames = Array.from(known.keys()).sort();
+    for (const name of sortedNames) {
+      const { tags, sources } = known.get(name);
+      lines.push(`- **${name}** — ${Array.from(sources).sort().join(', ')}`);
+      lines.push(`  - Tags: ${Array.from(tags).sort().join(', ')}`);
+    }
+  }
+  lines.push('');
+  lines.push('## Unknown (raw server names)');
+  lines.push('');
+  if (unknown.length === 0) {
+    lines.push('_None._');
+  } else {
+    for (const u of unknown) {
+      lines.push(`- \`${u.key}\` (${u.source}) — manually add a mapping if useful`);
+    }
+  }
+  lines.push('');
+  const allTags = new Set();
+  for (const { tags } of known.values()) for (const t of tags) allTags.add(t);
+  lines.push('## Capability tags detected');
+  lines.push('');
+  lines.push(allTags.size === 0 ? '_None._' : Array.from(allTags).sort().map(t => '`' + t + '`').join(', '));
+  lines.push('');
+  lines.push('## How skills use this');
+  lines.push('');
+  lines.push('This file is ambient context. Wired skills (v1.8: read-only; v1.9: per-skill integration-aware paths) reference these integrations. To re-scan, re-run `npx compounding-marketing` (the integration scan step is opt-in).');
+  lines.push('');
+  return lines.join('\n');
+}
+
+async function runIntegrationScan(rl, projectRoot, flags, fsx, manifest) {
+  // Step prompt — opt-in, default NO.
+  console.log(c('blue', '\n━━━ Optional: Integration auto-detection (Phase 1) ━━━'));
+  if (flags.yes) {
+    console.log(c('dim', '  Skipped (--yes flag; integration scan is opt-in).'));
+    return;
+  }
+  const proceed = await confirm(
+    rl,
+    'Scan installed AI tools for available integrations (Slack, Notion, Linear, HubSpot, etc.)?',
+    false
+  );
+  if (!proceed) {
+    console.log(c('dim', '  ⊘ Skipped integration scan.'));
+    return;
+  }
+
+  const scan = scanMcpConfigs(projectRoot);
+  const { known, unknown } = classifyIntegrations(scan);
+
+  // Write .agents/integrations.md (project-scoped; visible).
+  const targetPath = path.join(projectRoot, '.agents', 'integrations.md');
+  const content = renderIntegrationsMarkdown(known, unknown);
+
+  if (fs.existsSync(targetPath)) {
+    fsx.backup(targetPath);
+  }
+  fsx.write(targetPath, content, 'integrations-md');
+
+  // Append a pointer to product-marketing-context.md if it exists and doesn't already mention integrations.
+  const pmcPath = path.join(projectRoot, '.agents', 'product-marketing-context.md');
+  if (fs.existsSync(pmcPath)) {
+    try {
+      const pmc = fs.readFileSync(pmcPath, 'utf8');
+      if (!/Available tools|## Available integrations|integrations\.md/i.test(pmc)) {
+        const pointer = `\n\n## Available integrations\n\nDetected via \`npx compounding-marketing\` integration scan. See \`.agents/integrations.md\` for the current list, sources, and capability tags. Wired skills consult this file when planning channel- or tool-specific work.\n`;
+        fsx.backup(pmcPath);
+        fsx.append(pmcPath, pointer, 'integrations pointer');
+        manifest.appendedMarkers.push({ path: pmcPath });
+      }
+    } catch (_) { /* ignore */ }
+  }
+
+  // Console summary.
+  const tagSet = new Set();
+  for (const { tags } of known.values()) for (const t of tags) tagSet.add(t);
+  console.log('\n  ' + c('bright', 'Detected integrations:'));
+  if (known.size === 0) {
+    console.log(c('dim', '    (none — no known MCP servers found)'));
+  } else {
+    const sortedNames = Array.from(known.keys()).sort();
+    const padW = Math.max(...sortedNames.map(n => n.length));
+    for (const name of sortedNames) {
+      const { sources } = known.get(name);
+      console.log(c('green', `    ✓ ${name.padEnd(padW)}  (${Array.from(sources).sort().join(', ')})`));
+    }
+  }
+  for (const u of unknown) {
+    console.log(c('yellow', `    ? unknown${u.key ? ' '.repeat(Math.max(0, 4)) : ''}  (${u.source})  — server: ${u.key}`));
+  }
+  console.log(c('dim', `\n  Wrote ${path.relative(projectRoot, targetPath)} (${known.size} integration${known.size === 1 ? '' : 's'}, ${tagSet.size} capability tag${tagSet.size === 1 ? '' : 's'}).`));
+  console.log(c('dim', '  Skills with marketing-relevant connections will reference these in v1.9.\n'));
+}
+
 // ─── ChatGPT instructions ───────────────────────────────────────────────────
 function printChatGPTInstructions(installRoot) {
   console.log(`
@@ -1132,7 +1397,7 @@ async function main() {
   if (flags.help) { printHelp(); return; }
   if (flags.info) {
     console.log(`Compounding Marketing v${PKG_VERSION}`);
-    console.log(`61 marketing skills · 16 workflow commands`);
+    console.log(`91 marketing skills (75 content + 14 workflows + 2 lifecycle)`);
     console.log(`https://github.com/classicchins/compounding-marketing`);
     return;
   }
@@ -1289,6 +1554,14 @@ async function main() {
       }
     }
 
+    // 4ei: v1.8 S6 — Integration auto-detection (opt-in). Purely additive; never modifies SKILL.md files.
+    {
+      const integrationProjectRoot = scope === 'custom'
+        ? path.resolve(customTarget)
+        : (scope === 'global' ? cwd : cwd);
+      await runIntegrationScan(rl, integrationProjectRoot, flags, fsx, manifest);
+    }
+
     // 4f: Optional .gitignore for the install dir
     if (scope === 'project' && !isLocalClone) {
       const addToGitignore = flags.yes
@@ -1302,26 +1575,29 @@ async function main() {
     persistManifest(manifest, mPath, flags);
     if (!flags.dryRun) console.log(c('dim', `\n  Manifest: ${mPath}`));
 
-    // 4h: Post-install verification — broken symlinks
-    if (targets.commandsDir && fs.existsSync(targets.commandsDir) && !flags.dryRun) {
-      const broken = [];
-      for (const entry of fs.readdirSync(targets.commandsDir)) {
-        if (!entry.startsWith('cm-')) continue;
-        const fullPath = path.join(targets.commandsDir, entry);
-        try {
-          const lstat = fs.lstatSync(fullPath);
-          if (lstat.isSymbolicLink()) fs.statSync(fullPath);
-        } catch (err) {
-          if (err.code === 'ENOENT') broken.push(entry);
+    // 4h: Post-install verification — broken symlinks in commandsDir and skillsLinkDir
+    if (!flags.dryRun) {
+      const dirsToScan = [targets.commandsDir, targets.skillsLinkDir].filter(d => d && fs.existsSync(d));
+      const broken = []; // { dir, name }
+      for (const dir of dirsToScan) {
+        for (const entry of fs.readdirSync(dir)) {
+          if (!entry.startsWith('cm-')) continue;
+          const fullPath = path.join(dir, entry);
+          try {
+            const lstat = fs.lstatSync(fullPath);
+            if (lstat.isSymbolicLink()) fs.statSync(fullPath);
+          } catch (err) {
+            if (err.code === 'ENOENT') broken.push({ dir, name: entry });
+          }
         }
       }
       if (broken.length > 0) {
         console.log(c('yellow', `\n  ⚠  ${broken.length} broken symlink(s):`));
-        broken.forEach(b => console.log(c('yellow', `    - ${b}`)));
+        broken.forEach(b => console.log(c('yellow', `    - ${path.join(b.dir, b.name)}`)));
         if (!flags.yes) {
           const fix = await confirm(rl, '  Remove broken symlinks?', true);
           if (fix) {
-            for (const b of broken) { try { fs.unlinkSync(path.join(targets.commandsDir, b)); } catch (_) {} }
+            for (const b of broken) { try { fs.unlinkSync(path.join(b.dir, b.name)); } catch (_) {} }
             console.log(c('green', '  ✓ Removed broken symlinks'));
           }
         }
@@ -1330,19 +1606,29 @@ async function main() {
 
     if (tool === 'chatgpt') printChatGPTInstructions(targets.installRoot);
 
+    // Per-tool install-path summary line for the banner.
+    const installPathHint = (() => {
+      if (tool === 'claude-code' || tool === 'claude-cowork') {
+        return `Installed to ${c('cyan', '.claude/skills/')} (canonical) + ${c('cyan', '.claude/commands/')} shims for backward-compat workflow names.`;
+      }
+      if (tool === 'cursor') return `Installed Cursor rules in ${c('cyan', '.cursor/rules/')} pointing at ${c('cyan', 'compounding-marketing/skills/')}.`;
+      if (tool === 'codex') return `Installed skill directories under ${c('cyan', targets.skillsLinkDir)}.`;
+      return '';
+    })();
+
     // ─── Done ────────────────────────────────────────────────────────────
     console.log(`
 ${c('cyan', '╔═══════════════════════════════════════════════════════════════╗')}
 ${c('cyan', '║')}     ${c('green', '✓ Setup Complete!')}${flags.dryRun ? c('magenta', ' (dry-run)') : '                                          '}${c('cyan', '║')}
 ${c('cyan', '╚═══════════════════════════════════════════════════════════════╝')}
-
+${installPathHint ? '\n  ' + installPathHint + '\n' : ''}
 ${c('bright', 'Next Steps:')}
 
   ${c('cyan', '1.')} Foundation:
      ${c('dim', `${tool === 'claude-code' || tool === 'claude-cowork' ? '/cm-context' : '"run the cm-context skill"'} to create your product-marketing context.`)}
 
   ${c('cyan', '2.')} Big projects:
-     ${c('dim', '/cm-research · /cm-position · /cm-copy · /cm-launch · /cm-sprint')}
+     ${c('dim', '/cm-research · /cm-position · /cm-copy · /cm-launch · /cm-sprint (legacy names — also available as /cm-flow-*)')}
 
   ${c('cyan', '3.')} Roll back any time:
      ${c('dim', 'npx compounding-marketing --uninstall')}

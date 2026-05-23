@@ -1,0 +1,11 @@
+---
+description: 30-45 minute Friday review that synthesizes the week, finds patterns, celebrates wins, diagnoses problems, and plans next week. Interactive or headless mode. Triggers - weekly marketing review, Friday review, weekly recap, weekly synthesis, week-in-review.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-weekly
+
+Refer to `../../skills/cm-flow-weekly/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

@@ -1,0 +1,11 @@
+---
+description: Capture a schema-valid learning entry to `.agents/learnings/<category>.md` — six required fields (Context, Finding, Evidence, Implication, Linked skills, Confidence), interactive or headless mode. The write side of the compounding loop. Triggers - capture learning, compound learning, log insight, learnings entry, post-experiment learning.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-compound
+
+Refer to `../../skills/cm-flow-compound/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.
