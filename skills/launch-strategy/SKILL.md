@@ -1,6 +1,7 @@
 ---
 name: launch-strategy
 description: Plan comprehensive product launches with timeline, channels, and tactics. Covers pre-launch, launch day, and post-launch activities. Triggers - product launch, launch plan, launch strategy, go-to-market launch, feature launch.
+when_to_use: When the user is launching a product, major feature, or campaign and needs an end-to-end plan covering pre-launch, launch day, and post-launch across channels.
 metadata:
   version: 1.1.0
 ---

@@ -1,6 +1,7 @@
 ---
 name: referral-program
 description: Design referral and affiliate programs that incentivize customer advocacy. Covers incentive structures, tracking, and promotion. Triggers - referral program, affiliate program, customer referrals, referral marketing, word-of-mouth.
+when_to_use: When the user is designing a referral or affiliate program (incentive structure, tracking, promotion, fraud control) for a product with existing customers.
 metadata:
   version: 1.1.1
 ---

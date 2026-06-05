@@ -1,6 +1,7 @@
 ---
 name: popup-cro
 description: Optimize popups and overlays for lead capture without harming user experience. Covers timing, triggers, offer types, copy frameworks, mobile optimization. Triggers - popup optimization, lightbox, overlay, exit-intent, popup CRO, lead capture popup.
+when_to_use: When the user wants to add or optimize popups, slide-ins, or exit-intent overlays for lead capture without tanking UX or SEO, and needs timing, copy, and offer guidance.
 metadata:
   version: 1.1.0
 ---

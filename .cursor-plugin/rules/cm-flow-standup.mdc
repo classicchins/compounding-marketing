@@ -1,0 +1,11 @@
+---
+description: 5-minute async marketing standup — yesterday's shipped work, today's priorities, blockers, optional metric check. For team syncs or solo accountability. Triggers - marketing standup, async standup, daily marketing standup, team check-in, marketing huddle.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-standup
+
+Refer to `../../skills/cm-flow-standup/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

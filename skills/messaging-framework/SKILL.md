@@ -1,6 +1,7 @@
 ---
 name: messaging-framework
 description: Convert positioning into actionable messaging pillars with proof points, objection handling, and segment mapping. Builds on positioning work to create a reusable messaging system. Triggers - messaging pillars, core messages, messaging strategy, proof points, message architecture, value messaging.
+when_to_use: When positioning is already defined and the user needs to convert it into messaging pillars, proof points, objection handling, and per-segment messaging maps that teams can reuse.
 metadata:
   version: 1.1.0
 ---

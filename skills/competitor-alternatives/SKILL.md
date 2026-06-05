@@ -1,6 +1,7 @@
 ---
 name: competitor-alternatives
 description: Create comparison and alternative pages optimized for bottom-of-funnel SEO ("X vs Y", "X alternative"). Captures high-intent search traffic. Triggers - comparison page, alternative page, vs page, competitor comparison, X vs Y, competitor alternative.
+when_to_use: When the user wants to publish bottom-of-funnel "X vs Y" comparison pages or "alternative to X" pages targeting high-intent search and competitor-shopping traffic.
 metadata:
   version: 1.1.0
 ---

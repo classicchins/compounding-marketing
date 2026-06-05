@@ -1,6 +1,7 @@
 ---
 name: email-deliverability
 description: Ensure emails reach the inbox (not spam). Covers email authentication (SPF, DKIM, DMARC), domain warmup, IP warmup, sender reputation, spam avoidance, list hygiene. Triggers - email deliverability, inbox placement, spam folder, email authentication, SPF, DKIM, DMARC, domain warmup, sender reputation.
+when_to_use: When the user is hitting spam folders, warming a new sending domain, or setting up SPF/DKIM/DMARC, and needs an authentication and reputation plan.
 metadata:
   version: 1.1.0
 ---

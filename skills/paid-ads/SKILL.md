@@ -1,6 +1,7 @@
 ---
 name: paid-ads
 description: Plan and optimize paid advertising campaigns (Google, Facebook, LinkedIn). Covers targeting, budgeting, campaign structure. Triggers - paid ads, PPC, Google Ads, Facebook Ads, LinkedIn Ads, paid campaigns.
+when_to_use: When the user is planning or optimizing paid acquisition campaigns (Google, Meta, LinkedIn, TikTok) and needs targeting, budget, campaign structure, and measurement set up.
 metadata:
   version: 1.2.0
 ---

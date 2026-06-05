@@ -1,0 +1,11 @@
+---
+description: Structured post-mortem for campaigns, launches, or sprints — keep/stop/start, surprises, action items, learnings to feed cm-flow-compound. Interactive or headless mode. Triggers - retrospective, post mortem, campaign retro, sprint retro, launch debrief.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-retro
+
+Refer to `../../skills/cm-flow-retro/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

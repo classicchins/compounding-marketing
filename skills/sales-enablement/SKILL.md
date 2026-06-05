@@ -1,6 +1,7 @@
 ---
 name: sales-enablement
 description: Create sales collateral (pitch decks, one-pagers, battle cards) that help sales teams close deals. Triggers - sales enablement, pitch deck, sales collateral, battle cards, sales materials, one-pager.
+when_to_use: When the user needs sales collateral built — pitch deck, one-pager, battle card, objection-handling doc — to help reps close deals against specific competitors and personas.
 metadata:
   version: 1.1.0
 ---

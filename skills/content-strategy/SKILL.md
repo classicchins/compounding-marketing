@@ -1,6 +1,7 @@
 ---
 name: content-strategy
 description: Plan content topics, formats, distribution, and calendar. Maps content to customer journey and business goals. Triggers - content plan, content calendar, editorial calendar, content topics, content strategy, blog planning.
+when_to_use: When the user needs a content plan — topics, formats, distribution, and editorial calendar mapped to the customer journey — not a one-off blog post.
 metadata:
   version: 1.1.0
 ---

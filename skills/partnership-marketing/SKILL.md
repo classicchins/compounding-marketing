@@ -1,6 +1,7 @@
 ---
 name: partnership-marketing
 description: Design co-marketing partnerships, integrations, and affiliate programs. Leverage other brands' audiences. Triggers - partnerships, co-marketing, integration marketing, affiliate, partner program.
+when_to_use: When the user wants to design co-marketing, integration marketing, or affiliate partnerships that borrow another brand's audience to grow reach.
 metadata:
   version: 1.1.0
 ---

@@ -1,0 +1,11 @@
+---
+description: End-to-end email campaign workflow — picks campaign type, segments audience, drafts subject lines and copy, plans send timing, defines success metrics. Triggers - email campaign workflow, send an email campaign, email campaign setup, plan an email blast.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-email
+
+Refer to `../../skills/cm-flow-email/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

@@ -1,6 +1,7 @@
 ---
 name: analytics-tracking
 description: Set up event tracking, conversion pixels, and analytics for marketing campaigns. Covers GA4, Meta Pixel, LinkedIn Insight Tag. Triggers - analytics setup, event tracking, conversion tracking, GA4, tracking pixels.
+when_to_use: When the user is implementing event, conversion, or pixel tracking (GA4, Meta Pixel, LinkedIn Insight Tag, GTM) and needs an event taxonomy and install plan, not a general analytics philosophy chat.
 metadata:
   version: 1.1.0
 ---

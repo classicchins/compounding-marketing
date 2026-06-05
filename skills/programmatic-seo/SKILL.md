@@ -1,6 +1,7 @@
 ---
 name: programmatic-seo
 description: Create hundreds or thousands of SEO-optimized pages at scale using templates and data. Common for location pages, comparison pages, category pages. Triggers - programmatic SEO, scaled SEO, template-based pages, location pages, comparison pages.
+when_to_use: When the user wants to publish hundreds or thousands of templated, data-driven SEO pages (location, comparison, category) and needs the template, data, and quality-control plan.
 metadata:
   version: 1.1.0
 ---

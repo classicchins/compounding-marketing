@@ -1,6 +1,7 @@
 ---
 name: gtm-strategy
 description: Design go-to-market motion (PLG vs. sales-led vs. hybrid). Analyzes product fit, defines funnel, outlines team structure. Triggers - go-to-market, GTM strategy, sales motion, PLG, product-led growth, sales-led.
+when_to_use: When the user is choosing or refining a go-to-market motion (PLG vs sales-led vs hybrid) for a product and needs the motion, funnel, and team structure mapped.
 metadata:
   version: 1.1.1
 ---

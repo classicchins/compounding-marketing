@@ -1,6 +1,7 @@
 ---
 name: social-content
 description: Create social media content (Twitter threads, LinkedIn posts, engagement posts) aligned to brand voice and marketing goals. Triggers - social media, Twitter thread, LinkedIn post, social content, tweet, engagement post.
+when_to_use: When the user needs specific social posts written (Twitter thread, LinkedIn post, engagement post) aligned to brand voice and a marketing goal — not a long-term strategy.
 metadata:
   version: 1.1.0
 ---

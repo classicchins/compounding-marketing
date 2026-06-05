@@ -1,6 +1,7 @@
 ---
 name: paywall-upgrade-cro
 description: Optimize paywall and upgrade flows for higher conversion to paid plans. Covers trigger logic, pricing psychology, plan comparison design, objection handling, upgrade funnel optimization. Triggers - paywall, upgrade flow, pricing page, freemium conversion, free-to-paid conversion.
+when_to_use: When the user wants to lift free-to-paid conversion by redesigning paywall triggers, upgrade flows, plan comparison, and objection-handling on the pricing surface.
 metadata:
   version: 1.1.0
 ---

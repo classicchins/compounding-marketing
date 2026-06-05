@@ -1,6 +1,7 @@
 ---
 name: webinar-strategy
 description: Plan and promote webinars for lead generation, product education, and thought leadership. Triggers - webinar, webinar strategy, event marketing, online event, virtual event.
+when_to_use: When the user is planning a webinar for lead-gen, education, or thought leadership and needs the full plan — topic, promotion, registration, live ops, follow-up.
 metadata:
   version: 1.1.0
 ---

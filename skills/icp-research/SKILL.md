@@ -1,6 +1,7 @@
 ---
 name: icp-research
 description: Develop detailed Ideal Customer Profile through data analysis and pattern identification. Defines firmographics, behaviors, psychographics, and qualification criteria. Triggers - ICP, ideal customer profile, target customer, customer profile, best-fit customer, persona development.
+when_to_use: When the user has 20+ closed-won customers and needs a data-grounded Ideal Customer Profile (firmographics, behaviors, psychographics, disqualifiers, fit-score model), not a brainstormed persona.
 metadata:
   version: 1.2.0
 ---

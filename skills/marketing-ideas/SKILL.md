@@ -1,6 +1,7 @@
 ---
 name: marketing-ideas
 description: 140+ tactical marketing ideas for SaaS across acquisition, activation, retention, and revenue. Brainstorm and prioritize tactics. Triggers - marketing ideas, marketing tactics, growth ideas, marketing brainstorm, tactic ideas.
+when_to_use: When the user wants a brainstormed slate of tactical marketing ideas across acquisition, activation, retention, or revenue, drawn from a 140+ idea catalog and prioritized.
 metadata:
   version: 1.1.0
 ---

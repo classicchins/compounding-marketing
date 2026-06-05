@@ -1,6 +1,7 @@
 ---
 name: marketing-psychology
 description: Apply psychological principles to marketing and persuasion. Covers cognitive biases, influence triggers, behavioral economics, ethical persuasion. Triggers - persuasion, psychology, cognitive bias, influence, behavioral economics, conversion psychology.
+when_to_use: When the user wants to apply cognitive biases, influence triggers, or behavioral-economics principles to a specific marketing artifact (page, ad, email, pricing, onboarding).
 metadata:
   version: 1.1.0
 ---

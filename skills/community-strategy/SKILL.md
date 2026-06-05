@@ -1,6 +1,7 @@
 ---
 name: community-strategy
 description: Build and grow online communities (Slack, Discord, forum) to increase engagement, retention, and advocacy. Triggers - community building, Slack community, Discord server, community strategy, online community.
+when_to_use: When the user is planning to launch or grow a community (Slack, Discord, forum, Circle) and needs a focused plan covering charter, rituals, moderation, and growth loops.
 metadata:
   version: 1.1.0
 ---

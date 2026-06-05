@@ -1,6 +1,7 @@
 ---
 name: press-pr
 description: Plan and execute PR and media outreach for product launches, funding announcements, and thought leadership. Includes press release templates, media list building, and pitch frameworks. Triggers - press release, PR strategy, media outreach, press pitch, media relations, journalist outreach.
+when_to_use: When the user has news worth pitching (launch, funding, milestone, study) and needs a press release, media list, and pitch plan — not when they want general thought-leadership content.
 metadata:
   version: 1.1.0
 ---

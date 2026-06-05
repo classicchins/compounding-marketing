@@ -1,6 +1,7 @@
 ---
 name: onboarding-cro
 description: Optimize user onboarding for higher activation rates. Covers aha moment engineering, progressive onboarding, empty state design, drop-off analysis. Triggers - onboarding optimization, user activation, onboarding flow, aha moment, time to value.
+when_to_use: When the user wants to lift activation rates by redesigning product onboarding — defining the aha moment, sequencing steps, fixing empty states, and removing drop-off.
 metadata:
   version: 1.1.0
 ---

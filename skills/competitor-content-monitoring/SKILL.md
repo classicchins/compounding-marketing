@@ -1,6 +1,7 @@
 ---
 name: competitor-content-monitoring
 description: Track competitor content publishing and identify content gaps using neural search and alerts. Covers Exa, Google Alerts, RSS monitoring, and competitive intelligence workflow. Triggers - competitor content, content gap analysis, competitive monitoring, competitor watch, content intelligence.
+when_to_use: When the user wants ongoing competitive content intelligence — tracking what competitors publish, identifying content gaps, and setting up Exa/Google Alerts/RSS workflows.
 metadata:
   version: 1.1.0
 ---

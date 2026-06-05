@@ -1,6 +1,7 @@
 ---
 name: product-hunt-launch
 description: Plan and execute a successful Product Hunt launch. From pre-launch preparation to launch day execution and post-launch follow-up. Triggers - product hunt, PH launch, product launch, launch day, PH strategy.
+when_to_use: When the user has a specific Product Hunt launch date (or is choosing one) and needs the full pre-launch, launch-day, and post-launch playbook executed.
 metadata:
   version: 1.1.0
 ---

@@ -1,0 +1,11 @@
+---
+description: End-to-end research workflow that dispatches four parallel specialists (ICP finder, competitor mapper, customer-voice miner, market-sizing runner) and merges their returns into a single Research Pack. Triggers - deep research, market research workflow, research pack, run research, foundation research.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-research
+
+Refer to `../../skills/cm-flow-research/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

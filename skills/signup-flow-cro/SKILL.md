@@ -1,6 +1,7 @@
 ---
 name: signup-flow-cro
 description: Optimize signup flows for higher completion rates. Covers step reduction, progressive disclosure, friction audit, error handling, conversion psychology. Triggers - signup flow, registration flow, signup optimization, signup CRO, account creation flow.
+when_to_use: When the user wants to lift signup completion by auditing and redesigning the registration flow — step count, field reduction, progressive disclosure, error handling.
 metadata:
   version: 1.1.0
 ---

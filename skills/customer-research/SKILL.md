@@ -1,6 +1,7 @@
 ---
 name: customer-research
 description: Synthesize customer interviews and feedback into actionable insights using Jobs-to-be-Done framework. Maps switching triggers, hiring criteria, anxieties, and desired outcomes. Triggers - JTBD, jobs to be done, customer interviews, user research, customer insights, interview synthesis.
+when_to_use: When the user has 5+ customer interview transcripts or feedback artifacts available and wants them synthesized into JTBD outputs (switching triggers, hiring criteria, anxieties, desired outcomes).
 metadata:
   version: 1.1.0
 ---

@@ -1,6 +1,7 @@
 ---
 name: case-study
 description: Write compelling customer success stories using story arc framework (Before → Decision → After). Leads with results, includes metrics and quotes. Triggers - case study, customer story, success story, testimonial, customer spotlight.
+when_to_use: When the user has a real customer success story with metrics and a willing reference, and needs a published case study using the Before / Decision / After arc.
 metadata:
   version: 1.1.0
 ---

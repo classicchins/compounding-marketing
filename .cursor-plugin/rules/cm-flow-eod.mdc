@@ -1,0 +1,11 @@
+---
+description: 5-10 minute end-of-day marketing ritual — what shipped, what's in progress, blockers, tomorrow's first task. Captures context while fresh and sets up a fast-start morning. Triggers - end of day marketing, EOD wrap, marketing closing ritual, end of day review.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-eod
+
+Refer to `../../skills/cm-flow-eod/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

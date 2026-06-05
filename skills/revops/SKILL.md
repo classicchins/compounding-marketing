@@ -1,6 +1,7 @@
 ---
 name: revops
 description: Design revenue operations processes — lead lifecycle, CRM management, handoff between marketing and sales. Triggers - RevOps, revenue operations, lead management, CRM, marketing-sales alignment, lead lifecycle.
+when_to_use: When the user is designing or fixing the marketing-to-sales handoff — lead lifecycle stages, CRM hygiene, routing, SLAs, and reporting — not just running marketing campaigns.
 metadata:
   version: 1.1.0
 ---

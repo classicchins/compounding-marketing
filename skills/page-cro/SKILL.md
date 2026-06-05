@@ -1,6 +1,7 @@
 ---
 name: page-cro
 description: Analyze and optimize marketing pages for conversions. Audits value prop clarity, headline effectiveness, CTA placement, trust signals. Triggers - CRO, conversion optimization, landing page optimization, page optimization, conversion audit.
+when_to_use: When the user has a specific marketing page underperforming and wants a CRO audit covering value-prop clarity, headline, CTA, hierarchy, trust signals, and friction.
 metadata:
   version: 1.1.0
 ---

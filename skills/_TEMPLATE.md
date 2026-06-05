@@ -1,9 +1,26 @@
 ---
 name: skill-name-here
 description: One-sentence description of what this skill does. Triggers - keyword 1, keyword 2, keyword 3.
+when_to_use: One sentence beginning "When the user…" that names the precise situation in which this skill should be auto-selected. Used by the model's skill-routing layer and surfaced in `/cm-*` slash-command help.
+kind: skill        # one of: skill (default, content/research) | workflow (orchestrating cm-flow-*) | lifecycle (cm-setup, cm-uninstall)
 metadata:
   version: 1.0.0
 ---
+
+<!--
+v1.8 frontmatter contract (validated by scripts/validate-skills.js):
+
+  - `name`, `description`, `metadata.version` are required on every skill.
+  - `when_to_use` is required on every v1.8 skill — it disambiguates skills with overlapping triggers
+    and is consumed by the routing layer. Keep it to one sentence, beginning with "When the user…".
+  - `kind` is required on workflow + lifecycle skills, optional (defaults to `skill`) on content skills.
+    The three legal values are `skill`, `workflow`, `lifecycle`. The validator is kind-aware via
+    `validateLite()` — workflows and lifecycle skills run a lighter section gate than content skills.
+  - For sub-agent specialist skills (dispatched by an orchestrator), include the word `sub-agent` or
+    `specialist` in `description`, set `when_to_use` to "When orchestrator <X> needs <Y>", and add the
+    optional `## Sub-agent contract` section under Initial Assessment (see references/sub-agent-dispatch.md §8).
+-->
+
 
 # Skill Title (Human-Readable)
 
@@ -39,10 +56,24 @@ If the user can't answer the critical ones, **stop and clarify** before producin
 
 ---
 
+## Sub-agent contract *(specialists only — optional for normal skills)*
+
+> Include this section only if `kind: skill` and `description` includes the phrase `sub-agent` or `specialist`. Generalist content skills can omit it entirely.
+
+For a specialist skill dispatched by an orchestrator (`cm-flow-research`, `cm-flow-audit`, `cm-flow-position`), document the three contract surfaces explicitly. The canonical reference is [`references/sub-agent-dispatch.md`](../../references/sub-agent-dispatch.md).
+
+1. **Expected brief shape.** Which fields of the §2 brief this specialist requires (`task`, `context_refs`, `scope`, `user_inputs`, `peers`, `time_budget_minutes`, `output_format`). If any are mandatory beyond the four required-of-all-specialists, list them and the failure mode if missing.
+2. **Return shape.** The exact JSON (or markdown) payload this specialist emits — `status`, `specialist`, `schema_version`, `summary`, `findings[]`, `recommendations[]`, `open_questions[]`, `missing[]`. Specialists must conform to §3.
+3. **Time budget.** Soft cap in minutes (typical: 3-7 minutes). Specialists must self-limit; orchestrators do not kill long-runners but warn.
+
+Specialists **must not** ask the user follow-up questions. If a brief is incomplete, return `status: "incomplete"` with `missing` populated and let the orchestrator decide.
+
+---
+
 ## Prior Learnings Consulted
 
-> **Wired in v1.7 for:** `copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`.
-> Other skills may include this section optionally. The consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](_LEARNINGS_SCHEMA.md) and must be followed verbatim — wired skills parse by label, but bullet field names and order must match the schema exactly so future parsers can rely on either dimension.
+> **Wired by default in v1.7 (unchanged in v1.8) for:** `copywriting`, `cold-email`, `positioning`, `paid-ads`, `icp-research`.
+> Other skills may include this section optionally. v1.8 added the opt-in `cm-learnings-researcher` specialist for ad-hoc cross-category retrieval — it is *not* a replacement for in-skill wiring. The consumption contract is defined in [`skills/_LEARNINGS_SCHEMA.md`](_LEARNINGS_SCHEMA.md) and must be followed verbatim — wired skills parse by label, but bullet field names and order must match the schema exactly so future parsers can rely on either dimension.
 
 Before producing output, this skill consults `.agents/learnings/<this-skill-name>.md`. This is how marketing knowledge compounds across projects: prior findings about what works (and what doesn't) for *this category of work* directly inform the current run.
 

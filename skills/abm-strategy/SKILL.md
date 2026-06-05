@@ -1,6 +1,7 @@
 ---
 name: abm-strategy
 description: Plan and execute account-based marketing (ABM) campaigns for B2B SaaS. Covers target account selection, tier framework, personalization playbooks, multi-channel orchestration, measurement. Triggers - ABM, account-based marketing, target accounts, enterprise marketing, B2B campaigns, account targeting.
+when_to_use: When the user is building a target-account marketing plan for a defined list of enterprise accounts and needs tiering, personalization plays, and orchestration across channels.
 metadata:
   version: 1.1.0
 ---

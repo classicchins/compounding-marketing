@@ -1,6 +1,7 @@
 ---
 name: value-proposition
 description: Design value propositions for customer segments using Strategyzer Value Proposition Canvas. Maps customer jobs, pains, and gains to product features, pain relievers, and gain creators. Triggers - value prop, value proposition canvas, customer jobs, pains and gains, value design, segment value prop.
+when_to_use: When the user wants to design per-segment value propositions using the Strategyzer Value Proposition Canvas — mapping customer jobs, pains, and gains to features, relievers, and creators.
 metadata:
   version: 1.1.0
 ---

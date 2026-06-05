@@ -1,0 +1,11 @@
+---
+description: Plan a focused 2-week marketing sprint — one sprint goal, 3-5 concrete deliverables, task breakdown, capacity check, success criteria. Prevents scope creep. Triggers - sprint planning, marketing sprint, plan a sprint, two week sprint, sprint goal.
+globs:
+alwaysApply: false
+---
+
+# cm-flow-sprint
+
+Refer to `../../skills/cm-flow-sprint/SKILL.md` for the full workflow.
+
+This rule is loaded on demand when Cursor's agent matches the user's intent against the description above. The underlying skill defines the process, output format, and quality bar — follow them as written.

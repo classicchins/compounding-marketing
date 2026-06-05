@@ -1,6 +1,7 @@
 ---
 name: site-architecture
 description: Design URL structure, navigation hierarchy, and internal linking for SEO and UX. Triggers - site structure, URL structure, information architecture, site hierarchy, navigation.
+when_to_use: When the user is designing or restructuring URL hierarchy, navigation, and internal linking for SEO and UX — typically during a site rebuild, migration, or scale-up.
 metadata:
   version: 1.1.0
 ---

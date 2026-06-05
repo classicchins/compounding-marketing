@@ -1,6 +1,7 @@
 ---
 name: linkedin-ads
 description: Plan and optimize LinkedIn advertising campaigns for B2B lead generation. Covers targeting, ad formats, budgeting, and optimization. Triggers - LinkedIn ads, LinkedIn advertising, B2B ads, LinkedIn campaigns, sponsored content.
+when_to_use: When the user is planning or optimizing LinkedIn ads for B2B lead-gen and needs targeting, ad format, budget, and creative structure dialed in — not Meta or Google ads.
 metadata:
   version: 1.1.0
 ---

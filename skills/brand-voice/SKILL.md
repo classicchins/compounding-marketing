@@ -1,6 +1,7 @@
 ---
 name: brand-voice
 description: Document brand voice, tone, and writing guidelines with "this, not that" examples. Creates consistent voice across all content. Triggers - brand voice guide, tone of voice, writing guidelines, brand personality, voice consistency, style guide.
+when_to_use: When the user needs to document brand voice and tone with "this, not that" examples that other writers and AI agents can apply consistently across content.
 metadata:
   version: 1.0.1
 ---
